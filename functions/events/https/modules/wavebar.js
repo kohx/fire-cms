@@ -52,17 +52,26 @@ function getMatch(string) {
     let pairs = []
     for (let prop in matches) {
         const match = matches[prop]
-        pairs[match] = `<|||>${match}<|||>`
+        const pair = { key: match, valeu: `|||||${match}|||||` }
+        pairs.push(pair)
     }
 
-    console.log('=>',pairs)
+    let tests = []
+    for (let key in matches) {
+        tests[matches[key]] = `<|||>${matches[key]}<|||>`
+    }
 
-    let c = 0
-    pairs.forEach((value, key) => {
-        console.log(`${c}->`, line)
-        line = line.replace(new RegExp(key, 'g'), value)
-        c++
-    })
+    for (let key in tests) {
+        const value = tests[key]
+        console.log('key', key)
+        console.log('value', value)
+        line = line.replace(new RegExp(key), value)
+    }
+
+    // for (let prop in pairs) {
+    //     const pair = pairs[prop]
+    //     line = line.replace(pair.key, pair.valeu)
+    // }
 
     return line.split('<|||>')
 }
