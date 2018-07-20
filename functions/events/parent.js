@@ -1,0 +1,66 @@
+const functions = require('firebase-functions')
+const admin = require('firebase-admin')
+admin.initializeApp()
+
+// firebase-admin 5.13.0 なら動く！
+// https://stackoverflow.com/questions/51412652/i-dont-know-how-to-set-firebase-firestore-settings-at-case-admin-firestore
+const firestoreSettings = { timestampsInSnapshots: true }
+admin.firestore().settings(firestoreSettings)
+
+module.exports.functions = functions
+module.exports.admin = admin
+
+Object.defineProperty(global, '__stack', {
+    get: function () {
+        var orig = Error.prepareStackTrace;
+        Error.prepareStackTrace = function (_, stack) { return stack; };
+        var err = new Error;
+        Error.captureStackTrace(err, arguments.callee);
+        var stack = err.stack;
+        Error.prepareStackTrace = orig;
+        return stack;
+    }
+})
+
+Object.defineProperty(global, '__line', {
+    get: function () {
+        return __stack[1].getLineNumber();
+    }
+})
+
+function decodedTokenFromIdToken(idToken) {
+    return new Promise((resolve, reject) => {
+        admin.auth().verifyIdToken(idToken)
+            .then(decodedToken => {
+                // console.log('decodedToken', decodedToken)
+                resolve(decodedToken)
+            })
+            .catch(error => reject(error))
+    })
+}
+
+function userRecordByDecodedToken(decodedToken) {
+    return new Promise((resolve, reject) => {
+        admin.auth().getUser(decodedToken.uid)
+            .then(userRecord => {
+                // console.log('userRecord', userRecord)
+                resolve(userRecord)
+            })
+            .catch(error => reject(error))
+    })
+}
+
+module.exports.getUser = function (idToken) {
+    return Promise.resolve()
+        .then(() => {
+            return decodedTokenFromIdToken(idToken)
+        })
+        .then(decodedToken => {
+            return userRecordByDecodedToken(decodedToken)
+        })
+        .then(user => {
+            // console.log(user)
+            return user
+        })
+        .catch(error => reject(error))
+}
