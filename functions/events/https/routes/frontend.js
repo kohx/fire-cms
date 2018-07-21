@@ -78,7 +78,6 @@ router.get('/*',
         //     console.log(csrfToken)
         // }
         const renderd = wavebar.render(req.vessel.thing)
-        console.log('renderd!!!')
         res.status(200)
             .send(renderd)
     }

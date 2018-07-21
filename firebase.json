@@ -1,11 +1,11 @@
 {
   "hosting": {
     "public": "public",
-    "cleanUrls": true,
+    "cleanUrls": false,
     "trailingSlash": false,
     "rewrites": [
       {
-        "source": "**",
+        "source": "!**/*.@(html|css|js|png|jpg|jpeg|gif)",
         "function": "app"
       }
     ],

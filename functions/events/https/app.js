@@ -10,8 +10,9 @@ const path = require('path')
 const fs = require('fs')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const cors = require('cors')({ origin: true })
-const favicon = require('serve-favicon')
+const cors = require('cors')({
+    origin: true
+})
 
 /* module */
 const cipher = require('../../modules/cipher')
@@ -29,30 +30,67 @@ var frontendRouter = require('./routes/frontend')
 const app = express()
 app.use(cors)
 app.use(cookieParser())
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({
+    extended: false
+}))
 app.use(bodyParser.json())
 
-
 /* app modules */
-
-/*  */
-// admin.firestore().collection('configs')
-//     .get()
-//     .then(docs => {
-//         let configs = {}
-//         docs.forEach((doc, key) => {
-//             configs[doc.id] = doc.data()
-//         })
-//     })
 
 /* app middleware */
 app.use(allRoute.getInfo)
 
 /* route */
-app.use('/static', express.static(path.join(__dirname, 'public')))
-app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')))
 app.use(`/*`, frontendRouter)
 app.use(`/backend`, backendRouter)
+
+// 404
+app.use((req, res, next) => {
+    let err = new Error('Not Found!')
+    err.status = 404
+    next(err)
+})
+
+// error
+app.use((err, req, res, next) => {
+
+    console.log('last: ', err)
+
+    const status = err.status || 500
+    res.status(status)
+    admin.firestore().collection('things').doc(String(status)).get()
+        .then(doc => {
+            const thing = doc.data()
+            if (thing.content) {
+                const renderd = wavebar.render(thing, {
+                    errStatus: err.status,
+                    errMessage: err.message,
+                })
+                res.send(renderd)
+            } else {
+                res.send(`<!doctype html>
+                                <head>
+                                <title>${err.status || 500}</title>
+                                </head>
+                                <body>
+                                <h1>${err.status || 500}</h1>
+                                <p>${err.message}</p>
+                                </body>
+                            </html>`)
+            }
+        })
+        .catch(err => {
+            res.send(`<!doctype html>
+                                <head>
+                                <title>500</title>
+                                </head>
+                                <body>
+                                <h1>500</h1>
+                                <p>${err.message}</p>
+                                </body>
+                            </html>`)
+        })
+})
 
 // app.get('/signin', (req, res, next) => {
 //     const csrfToken = serverSign.csrf(res)
@@ -92,55 +130,6 @@ app.use(`/backend`, backendRouter)
 //             res.json(err)
 //         })
 // })
-
-// 404
-app.use((req, res, next) => {
-    let err = new Error('Not Found!')
-    err.status = 404
-    next(err)
-})
-
-// error
-app.use(
-    (err, req, res, next) => {
-
-        console.log('last: ', err)
-
-        const status = err.status || 500
-        res.status(status)
-        admin.firestore().collection('things').doc(String(status)).get()
-            .then(doc => {
-                const thing = doc.data()
-                if (thing.content) {
-                    const renderd = wavebar.render(thing, {
-                        errStatus: err.status,
-                        errMessage: err.message,
-                    })
-                    res.send(renderd)
-                } else {
-                    res.send(`<!doctype html>
-                                <head>
-                                <title>${err.status || 500} from err!</title>
-                                </head>
-                                <body>
-                                <h1>${err.status || 500}</h1>
-                                <p>${err.message}</p>
-                                </body>
-                            </html>`)
-                }
-            })
-            .catch(err => {
-                res.send(`<!doctype html>
-                                <head>
-                                <title>500 from catch err!!</title>
-                                </head>
-                                <body>
-                                <h1>500</h1>
-                                <p>${err.message}</p>
-                                </body>
-                            </html>`)
-            })
-    })
 
 /* export function */
 exports.app = functions.https.onRequest(app)
