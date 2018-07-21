@@ -6,7 +6,7 @@
     "rewrites": [
       {
         "source": "**",
-        "function": "frontend"
+        "function": "app"
       }
     ],
     "ignore": [

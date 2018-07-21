@@ -3,7 +3,7 @@ const modules = {
     // test: require('./events/store/test'),
     // auth: require('./events/auth'),
     // storage: require('./events/storage'),
-    sessionLogin: require('./events/https/frontend'),
+    app: require('./events/https/app'),
 }
 
 // call modules

@@ -120,7 +120,7 @@ app.use(
                 } else {
                     res.send(`<!doctype html>
                                 <head>
-                                <title>${err.status || 500}</title>
+                                <title>${err.status || 500} from err!</title>
                                 </head>
                                 <body>
                                 <h1>${err.status || 500}</h1>
@@ -132,7 +132,7 @@ app.use(
             .catch(err => {
                 res.send(`<!doctype html>
                                 <head>
-                                <title>500</title>
+                                <title>500 from catch err!!</title>
                                 </head>
                                 <body>
                                 <h1>500</h1>
@@ -143,4 +143,4 @@ app.use(
     })
 
 /* export function */
-exports.frontend = functions.https.onRequest(app)
+exports.app = functions.https.onRequest(app)

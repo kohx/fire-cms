@@ -3,6 +3,9 @@ const functions = parent.functions
 const admin = parent.admin
 const vm = require('vm')
 
+const templateTagReg = /\{\|.*?\|\}/g
+const replaceMarke = '<|||>'
+
 // TODO::
 // error checker
 // change collection
@@ -41,9 +44,9 @@ module.exports.render = (thing, add = null) => {
         params = Object.assign(params, add)
     }
 
-    const matches = getMatch(thing.content)
-    // console.log('matches--->', matches)
-    const builded = build(matches, params)
+    const separated = separateString(thing.content)
+    // console.log('separated--->', separated)
+    const builded = build(separated, params)
     // console.log('builded--->', builded)
     const compiled = compile(builded, params)
     // console.log('compiled--->', compiled)
@@ -55,39 +58,21 @@ module.exports.render = (thing, add = null) => {
 }
 
 // get match
-function getMatch(string) {
-    const cond = /\{\|.*?\|\}/g
-    let line = string.replace(/[\n\r]/g, '')
-    const matches = line.match(cond)
+function separateString(string) {
+    let line = lining(string)
+    const matches = line.match(templateTagReg)
 
-    let pairs = []
-    for (let prop in matches) {
-        const match = matches[prop]
-        const pair = {
-            key: match,
-            valeu: `|||||${match}|||||`
-        }
-        pairs.push(pair)
-    }
-
-    let tests = []
+    let replaces = []
     for (let key in matches) {
-        tests[matches[key]] = `<|||>${matches[key]}<|||>`
+        replaces[matches[key]] = `${replaceMarke}${matches[key]}${replaceMarke}`
     }
 
-    for (let key in tests) {
-        const value = tests[key]
-        console.log('key', key)
-        console.log('value', value)
+    for (let key in replaces) {
+        const value = replaces[key]
         line = line.replace(new RegExp(regEscape(key), 'g'), value)
     }
 
-    // for (let prop in pairs) {
-    //     const pair = pairs[prop]
-    //     line = line.replace(pair.key, pair.valeu)
-    // }
-
-    return line.split('<|||>')
+    return line.split(replaceMarke)
 }
 
 // build
@@ -179,4 +164,8 @@ function entityify(string) {
 
 function regEscape(str) {
     return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+}
+
+function lining(string) {
+   return string.replace(/[\n\r]/g, '')
 }
