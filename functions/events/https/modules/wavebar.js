@@ -15,10 +15,21 @@ module.exports.render = (thing, add = null) => {
     // try {
     let params = {
         name: thing.name || '',
-        items: [
-            { name: '<h1>kohei</h1>', age: 40, gender: 'male' },
-            { name: 'kohei', age: 40, gender: 'male' },
-            { name: 'kohei', age: 40, gender: 'male' }
+        items: [{
+                name: '<h1>kohei</h1>',
+                age: 40,
+                gender: 'male'
+            },
+            {
+                name: 'kohei',
+                age: 40,
+                gender: 'male'
+            },
+            {
+                name: 'kohei',
+                age: 40,
+                gender: 'male'
+            }
         ],
         user: {
             uid: 'uil', // claims.uid,
@@ -52,7 +63,10 @@ function getMatch(string) {
     let pairs = []
     for (let prop in matches) {
         const match = matches[prop]
-        const pair = { key: match, valeu: `|||||${match}|||||` }
+        const pair = {
+            key: match,
+            valeu: `|||||${match}|||||`
+        }
         pairs.push(pair)
     }
 
@@ -65,7 +79,7 @@ function getMatch(string) {
         const value = tests[key]
         console.log('key', key)
         console.log('value', value)
-        line = line.replace(new RegExp(key), value)
+        line = line.replace(new RegExp(regEscape(key), 'g'), value)
     }
 
     // for (let prop in pairs) {
@@ -139,7 +153,11 @@ function build(matches, params) {
 // compile
 function compile(builded, params) {
     const values = Object.keys(params).map(prop => params[prop])
-    const context = { compiled: '', values: values, entityify: entityify };
+    const context = {
+        compiled: '',
+        values: values,
+        entityify: entityify
+    };
     vm.runInNewContext(builded, context)
     return context.compiled
 }
@@ -157,4 +175,8 @@ function entityify(string) {
     return String(string).replace(/[<>'&"]/g, char => {
         return chars[char]
     })
+}
+
+function regEscape(str) {
+    return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 }
