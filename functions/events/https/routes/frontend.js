@@ -4,6 +4,7 @@ const functions = parent.functions
 const admin = parent.admin
 
 const wavebar = require('../modules/wavebar')
+const serverSign = require('../modules/serverSign')
 
 const express = require('express')
 const router = express.Router()
@@ -14,6 +15,8 @@ router.get('/*',
         // パスを分解
         let pathString = req.baseUrl.trims('/')
         req.vessel.paths = pathString.split('/')
+
+        console.log(pathString)
 
         // IDをチェッしてあれば取得
         const numberReg = /^\d*$/
@@ -59,7 +62,9 @@ router.get('/*',
         else next()
     },
     (req, res, next) => {
-        console.log(req.vessel.role)
+       if(req.vessel.role !== 'none'){
+           serverSign.check(req)
+       }
         next()
         // serverSign.check(req)
         //     .then(claims => {
@@ -72,11 +77,13 @@ router.get('/*',
         //     })
     },
     (req, res, next) => {
-        if(req.vessel.thingUnique == req.vessel.signinUnique){
-            const csrfToken = serverSign.csrf(res)
-            console.log(csrfToken)
+        let add = null
+        if (req.vessel.thingUnique === req.vessel.signinUnique) {
+            csrfToken = serverSign.csrf(res)
         }
-        const renderd = wavebar.render(req.vessel.thing)
+        const renderd = wavebar.render(req.vessel.thing, {
+            csrfToken
+        })
         res.status(200)
             .send(renderd)
     }

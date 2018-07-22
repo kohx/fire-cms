@@ -17,9 +17,9 @@ const cors = require('cors')({
 /* module */
 const cipher = require('../../modules/cipher')
 const wavebar = require('./modules/wavebar')
+const serverSign = require('./modules/serverSign')
 
 /* middleware */
-const serverSign = require('./middleWare/serverSign')
 const allRoute = require('./middleWare/allRoute')
 
 /* routes */
@@ -43,6 +43,30 @@ app.use(allRoute.getInfo)
 /* route */
 app.use(`/*`, frontendRouter)
 app.use(`/*`, backendRouter)
+
+// endpoint
+app.post('/serverSignIn', (req, res) => {
+
+    serverSign.in(res, req)
+        .then(result => {
+            res.json(result)
+        })
+        .catch(err => {
+            res.json(err)
+        })
+})
+
+// endpoint
+app.post('/serverSignOut', (req, res) => {
+
+    serverSign.out(req, res)
+        .then(result => {
+            res.json(result)
+        })
+        .catch(err => {
+            res.json(err)
+        })
+})
 
 // 404
 app.use((req, res, next) => {
@@ -91,45 +115,6 @@ app.use((err, req, res, next) => {
                             </html>`)
         })
 })
-
-// app.get('/signin', (req, res, next) => {
-//     const csrfToken = serverSign.csrf(res)
-//     wavebar.render('signin', { csrfToken })
-//         .then(renderd => {
-//             res.set({
-//                 'Cache-Control': 'private',
-//             })
-//                 .status(200)
-//                 .send(renderd)
-//         })
-//         .catch(err => {
-//             next(err)
-//         })
-// })
-
-// // endpoint
-// app.post('/serverSignIn', (req, res) => {
-
-//     serverSign.in(res, req)
-//         .then(result => {
-//             res.json(result)
-//         })
-//         .catch(err => {
-//             res.json(err)
-//         })
-// })
-
-// // endpoint
-// app.post('/serverSignOut', (req, res) => {
-
-//     serverSign.out(req, res)
-//         .then(result => {
-//             res.json(result)
-//         })
-//         .catch(err => {
-//             res.json(err)
-//         })
-// })
 
 /* export function */
 exports.app = functions.https.onRequest(app)
