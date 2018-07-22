@@ -42,7 +42,7 @@ app.use(allRoute.getInfo)
 
 /* route */
 app.use(`/*`, frontendRouter)
-app.use(`/backend`, backendRouter)
+app.use(`/*`, backendRouter)
 
 // 404
 app.use((req, res, next) => {

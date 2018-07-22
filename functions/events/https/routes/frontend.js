@@ -12,8 +12,7 @@ router.get('/*',
     (req, res, next) => {
 
         // パスを分解
-        let pathString = req.baseUrl
-        pathString = pathString.endsWith('/') ? pathString.substr(0, pathString.length - 1) : pathString
+        let pathString = req.baseUrl.trims('/')
         req.vessel.paths = pathString.split('/')
 
         // IDをチェッしてあれば取得
@@ -22,6 +21,9 @@ router.get('/*',
 
         // pathsを退避
         let paths = req.vessel.paths.slice(0)
+
+        // firstpathをチェック
+        req.vessel.firstPath = paths[0]
 
         // 最後を取得
         let pathUnique = paths.pop() || req.vessel.frontendUnique
@@ -34,9 +36,6 @@ router.get('/*',
 
         req.vessel.pathUnique = pathUnique
         req.vessel.pathNumber = pathNumber
-
-        // firstpathをチェック
-        req.vessel.firstPath = paths[0]
 
         // パスの組み立て
         req.vessel.thingUnique = pathNumber ? `${pathUnique}/${pathNumber}` : pathUnique
@@ -73,10 +72,10 @@ router.get('/*',
         //     })
     },
     (req, res, next) => {
-        // if(req.vessel.thingUnique == req.vessel.signinUnique){
-        //     const csrfToken = serverSign.csrf(res)
-        //     console.log(csrfToken)
-        // }
+        if(req.vessel.thingUnique == req.vessel.signinUnique){
+            const csrfToken = serverSign.csrf(res)
+            console.log(csrfToken)
+        }
         const renderd = wavebar.render(req.vessel.thing)
         res.status(200)
             .send(renderd)
