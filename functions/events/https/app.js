@@ -20,7 +20,8 @@ const wavebar = require('./modules/wavebar')
 const serverSign = require('./modules/serverSign')
 
 /* middleware */
-const allRoute = require('./middleWare/allRoute')
+const getWare = require('./middleWare/getWare')
+const errWare = require('./middleWare/errWare')
 
 /* routes */
 var backendRouter = require('./routes/backend')
@@ -35,10 +36,8 @@ app.use(bodyParser.urlencoded({
 }))
 app.use(bodyParser.json())
 
-/* app modules */
-
-/* app middleware */
-app.use(allRoute.getInfo)
+/* getWare getInfo */
+app.use(getWare.getInfo)
 
 /* route */
 app.use(`/*`, frontendRouter)
@@ -68,53 +67,11 @@ app.post('/serverSignOut', (req, res) => {
         })
 })
 
-// 404
-app.use((req, res, next) => {
-    let err = new Error('Not Found!')
-    err.status = 404
-    next(err)
-})
+/* errWare notFound */
+app.use(errWare.notFound)
 
-// error
-app.use((err, req, res, next) => {
-
-    console.log('last: ', err)
-
-    const status = err.status || 500
-    res.status(status)
-    admin.firestore().collection('things').doc(String(status)).get()
-        .then(doc => {
-            const thing = doc.data()
-            if (thing.content) {
-                const renderd = wavebar.render(thing, {
-                    errStatus: err.status,
-                    errMessage: err.message,
-                })
-                res.send(renderd)
-            } else {
-                res.send(`<!doctype html>
-                                <head>
-                                <title>${err.status || 500}</title>
-                                </head>
-                                <body>
-                                <h1>${err.status || 500}</h1>
-                                <p>${err.message}</p>
-                                </body>
-                            </html>`)
-            }
-        })
-        .catch(err => {
-            res.send(`<!doctype html>
-                                <head>
-                                <title>500</title>
-                                </head>
-                                <body>
-                                <h1>500</h1>
-                                <p>${err.message}</p>
-                                </body>
-                            </html>`)
-        })
-})
+/* errWare internalServerError */
+app.use(errWare.internalServerError)
 
 /* export function */
 exports.app = functions.https.onRequest(app)

@@ -28,21 +28,21 @@ module.exports.in = (res, req) => {
     const idToken = req.body.idToken
     const bodyCsrfToken = req.body.csrfToken
 
-    // headerのbrarerに入れたidToken
-    const bearer = req.headers.authorization && req.headers.authorization.startsWith('Bearer ') ? req.headers.authorization.split('Bearer ')[1] : false
-
-    // bearerのチェック
-    if (bearer !== idToken) {
-      reject({ signin: false, message: `bearer is not true.` })
-    }
-
     // __sessionからcsrfTOkenを取得
     const sessionCookieJsonString = req.cookies.__session || '{}'
     const cookieCsrfToken = JSON.parse(sessionCookieJsonString)['csrfToken'] || null
 
     // Guard against CSRF attacks.
     if (bodyCsrfToken !== cookieCsrfToken) {
-      reject({ signin: false, message: `there is not csrfToken.` })
+      reject({ signin: false, redirect: true, message: `there is not csrfToken.` })
+    }
+
+    // headerのbrarerに入れたidToken
+    const bearer = req.headers.authorization && req.headers.authorization.startsWith('Bearer ') ? req.headers.authorization.split('Bearer ')[1] : false
+
+    // bearerのチェック
+    if (bearer !== idToken) {
+      reject({ signin: false, redirect: false, message: `bearer is not true.` })
     }
 
     const expiresIn = 60 * 60 * 24 * 5 * 1000;
@@ -59,13 +59,13 @@ module.exports.in = (res, req) => {
           secure: true
         };
 
-        // 
+        // サインイン成功
         const data = { sessionCookie }
         res.cookie('__session', JSON.stringify(data), options);
-        resolve({ signin: true, message: `sign in success.` })
+        resolve({ signin: true, redirect: false, message: `sign in success.` })
       })
       .catch(err => {
-        reject({ signin: false, message: err.message })
+        reject({ signin: false, redirect: false, message: err.message })
       })
   })
 }
@@ -76,7 +76,6 @@ module.exports.out = (req, res) => {
   return new Promise((resolve, reject) => {
 
     // セッション Cookie を取得
-    console.log(req.cookies)
     const sessionCookieJsonString = req.cookies.__session || '{}'
     const sessionCookie = JSON.parse(sessionCookieJsonString)['sessionCookie'] || null
 
@@ -103,7 +102,7 @@ module.exports.out = (req, res) => {
   })
 }
 
-/* check */
+/* check middle ware */
 module.exports.check = (req) => {
   console.log('-> sign check')
   return new Promise((resolve, reject) => {
@@ -132,7 +131,7 @@ module.exports.check = (req) => {
         resolve({ signin: false, message: err.message, claims: decodedClaims })
       })
       .catch(err => {
-        reject({ signin: false, code: err.code, message: err.message, file: __line, file: __line })
+        reject({ signin: false, code: err.code, message: err.message, file: __file, file: __line })
       })
   })
 }

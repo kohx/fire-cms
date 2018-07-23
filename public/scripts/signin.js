@@ -3,8 +3,10 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
 
 /* サインイン */
 const signin = event => {
+    const email = document.querySelector('#email').value
+    const passwoard = document.querySelector('#password').value
     firebase.auth()
-        .signInWithEmailAndPassword('kohei0728@gmail.com', '1072551')
+        .signInWithEmailAndPassword(email, passwoard)
         .then(result => {
             const user = result.user
             // セッションCookieを交換するために必要なユーザーのIDトークンを取得
@@ -21,22 +23,30 @@ const signin = event => {
             firebase.auth().signOut()
             return result
         })
-        .then(result => {
 
+        .then(result => {
             if (result.signin) {
                 // ui
                 document.querySelector('#signin').disabled = true
                 document.querySelector('#signout').disabled = false
-                alert(result.message)
-                alert(result.referrer)
-                console.log(document.location.origin)
-                // window.location.assign(result.referrer)
+                document.querySelector('#signin_message').textContent = result.message
+
+                // リファラーにリダイレクト
+                window.location.assign(document.referrer)
             } else {
-                alert(result.message)
+
+                // リダイレクトが必要ならリダイレクト
+                if (result.redirect) {
+                    window.location.assign('/signin')
+                }
+
+                // サインインメッセージ
+                document.querySelector('#signin_message').textContent = result.message
             }
         })
         .catch(err => {
-           alert(err.message)
+            // エラーメッセージ
+            document.querySelector('#signin_message').textContent = err.message
         })
 }
 
@@ -44,7 +54,6 @@ const signin = event => {
 function fetchServerSignin(idToken, csrfToken) {
 
     const url = `${window.location.origin}/serverSignIn`
-    const referrer = document.referrer == '' ? '/' : document.referrer
 
     const headers = {
         'Authorization': 'Bearer ' + idToken,
@@ -60,18 +69,17 @@ function fetchServerSignin(idToken, csrfToken) {
 
     return new Promise((resolve, reject) => {
         fetch(url, {
-                method: 'post',
-                mode: 'cors',
-                credentials: 'include',
-                cache: 'no-cache',
-                headers: headers,
-                body: JSON.stringify(body)
-            })
+            method: 'post',
+            mode: 'cors',
+            credentials: 'include',
+            cache: 'no-cache',
+            headers: headers,
+            body: JSON.stringify(body)
+        })
             .then(data => {
                 return data.json()
             })
             .then(json => {
-                json.referrer = referrer
                 resolve(json)
             })
             .catch(err => {
@@ -79,7 +87,6 @@ function fetchServerSignin(idToken, csrfToken) {
                 reject({
                     signin: false,
                     message: "network err.",
-                    referrer
                 })
             })
     })
@@ -114,13 +121,13 @@ function fetchServerSignout() {
 
     return new Promise((resolve, reject) => {
         fetch(url, {
-                method: 'post',
-                mode: 'cors',
-                credentials: 'include',
-                cache: 'no-cache',
-                headers: headers,
-                body: JSON.stringify(body)
-            })
+            method: 'post',
+            mode: 'cors',
+            credentials: 'include',
+            cache: 'no-cache',
+            headers: headers,
+            body: JSON.stringify(body)
+        })
             .then(data => {
                 return data.json()
             })
@@ -148,5 +155,11 @@ firebase.auth().onAuthStateChanged(user => {
 })
 
 /* イベント */
-document.querySelector('#signin').addEventListener('click', signin)
-document.querySelector('#signout').addEventListener('click', signout)
+const signinBtn = document.querySelector('#signin')
+if(signinBtn){
+    signinBtn.addEventListener('click', signin)
+}
+const signoutBtn = document.querySelector('#signout')
+if(signoutBtn){
+    signoutBtn.addEventListener('click', signout)
+}

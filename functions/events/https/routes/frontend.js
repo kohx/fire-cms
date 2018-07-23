@@ -16,8 +16,6 @@ router.get('/*',
         let pathString = req.baseUrl.trims('/')
         req.vessel.paths = pathString.split('/')
 
-        console.log(pathString)
-
         // IDをチェッしてあれば取得
         const numberReg = /^\d*$/
         let pathNumber = ''
@@ -62,22 +60,23 @@ router.get('/*',
         else next()
     },
     (req, res, next) => {
-       if(req.vessel.role !== 'none'){
-           serverSign.check(req)
-       }
-        next()
-        // serverSign.check(req)
-        //     .then(claims => {
-        //         console.log(claims)
-        //         next()
-        //     })
-        //     .catch(err => {
-        //         console.log(err)
-        //         res.redirect('/signin')
-        //     })
+        // thingのロールがnoneでないときはチェック
+        if (req.vessel.role !== 'none') {
+            serverSign.check(req)
+                .then(claims => {
+                    console.log(claims)
+                    next()
+                })
+                .catch(err => {
+                    console.log(err)
+                    res.redirect('/signin')
+                })
+        } else {
+            next()
+        }
     },
     (req, res, next) => {
-        let add = null
+        let csrfToken = null
         if (req.vessel.thingUnique === req.vessel.signinUnique) {
             csrfToken = serverSign.csrf(res)
         }
