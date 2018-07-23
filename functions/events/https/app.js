@@ -16,7 +16,6 @@ const cors = require('cors')({
 
 /* module */
 const cipher = require('../../modules/cipher')
-const serverSign = require('./modules/serverSign')
 
 /* middleware */
 const getWare = require('./middleWare/getWare')
@@ -26,6 +25,7 @@ const signWare = require('./middleWare/signWare')
 /* routes */
 var backendRouter = require('./routes/backend')
 var frontendRouter = require('./routes/frontend')
+var endPointRouter = require('./routes/endPoint')
 
 // app
 const app = express()
@@ -45,30 +45,7 @@ app.use(signWare.check)
 /* route */
 app.use(`/*`, frontendRouter)
 app.use(`/*`, backendRouter)
-
-// endpoint
-app.post('/serverSignIn', (req, res) => {
-
-    serverSign.in(res, req)
-        .then(result => {
-            res.json(result)
-        })
-        .catch(err => {
-            res.json(err)
-        })
-})
-
-// endpoint
-app.post('/serverSignOut', (req, res) => {
-
-    serverSign.out(req, res)
-        .then(result => {
-            res.json(result)
-        })
-        .catch(err => {
-            res.json(err)
-        })
-})
+app.use('/endPoint', endPointRouter)
 
 /* errWare notFound */
 app.use(errWare.notFound)

@@ -70,9 +70,6 @@ module.exports.check = (req, res, next) => {
 
         // ユーザーが過去5分間にサインインしていない場合はリサインイン
         const now = new Date().getTime() / 1000 - decodedClaims.auth_time
-        console.log('now->', now)
-        console.log('limit->', limit)
-        console.log('>', now >= limit)
         if (now >= limit) {
 
           sign.status = false
@@ -85,6 +82,7 @@ module.exports.check = (req, res, next) => {
           sign.message = `sign in success.`
           sign.claims = decodedClaims
           req.vessel.sign = sign
+
           next()
         }
       })

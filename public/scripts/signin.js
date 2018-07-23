@@ -53,7 +53,7 @@ const signin = event => {
 // 非同期通信でサーバ側をログイン
 function fetchServerSignin(idToken, csrfToken) {
 
-    const url = `${window.location.origin}/serverSignIn`
+    const url = `${window.location.origin}/endPoint/in`
 
     const headers = {
         'Authorization': 'Bearer ' + idToken,
@@ -109,7 +109,7 @@ const signout = event => {
 
 /* 非同期通信でサーバ側をサインアウト */
 function fetchServerSignout() {
-    const url = `${window.location.origin}/serverSignOut`
+    const url = `${window.location.origin}/endPoint/out`
 
     const headers = {
         // 'Access-Control-Allow-Credentials': 'true',
