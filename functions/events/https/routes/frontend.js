@@ -4,7 +4,7 @@ const functions = parent.functions
 const admin = parent.admin
 
 const wavebar = require('../modules/wavebar')
-const serverSign = require('../modules/serverSign')
+const signWare = require('../middleWare/signWare')
 
 const express = require('express')
 const router = express.Router()
@@ -60,25 +60,15 @@ router.get('/*',
         else next()
     },
     (req, res, next) => {
-        // thingのロールがnoneでないときはチェック
-        if (req.vessel.role !== 'none') {
-            serverSign.check(req)
-                .then(claims => {
-                    console.log(claims)
-                    next()
-                })
-                .catch(err => {
-                    console.log(err)
-                    res.redirect('/signin')
-                })
-        } else {
-            next()
-        }
+        console.log('@sign', req.vessel.sign)
+        console.log('@role', req.vessel.role)
+        
+        next()
     },
     (req, res, next) => {
         let csrfToken = null
         if (req.vessel.thingUnique === req.vessel.signinUnique) {
-            csrfToken = serverSign.csrf(res)
+            csrfToken = signWare.csrf(res)
         }
         const renderd = wavebar.render(req.vessel.thing, {
             csrfToken

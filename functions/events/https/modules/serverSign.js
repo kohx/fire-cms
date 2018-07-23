@@ -3,23 +3,6 @@ const parent = require('../../parent')
 const functions = parent.functions
 const admin = parent.admin
 
-/* csrf */
-module.exports.csrf = (res) => {
-
-  // csrfToken
-  const csrfToken = Math.random().toString(36).slice(-8)
-
-  const options = {
-    httpOnly: true, // HTTPリクエストを行う際以外に使用できないものであるかを真偽値として指定
-    secure: true, // 安全に送信されなければならないものであるかを真偽値として指定
-  }
-
-  const data = { csrfToken }
-  res.cookie('__session', JSON.stringify(data), options)
-
-  return csrfToken
-}
-
 /* in */
 module.exports.in = (res, req) => {
   console.log('-> sign in')
@@ -98,40 +81,6 @@ module.exports.out = (req, res) => {
       })
       .catch(err => {
         reject({ signin: false, message: `there is not claims.` })
-      })
-  })
-}
-
-/* check middle ware */
-module.exports.check = (req) => {
-  console.log('-> sign check')
-  return new Promise((resolve, reject) => {
-    // セッション Cookie を確認して権限をチェック
-    const sessionCookieJsonString = req.cookies.__session || '{}'
-    const sessionCookie = JSON.parse(sessionCookieJsonString)['sessionCookie'] || null
-
-    if (!sessionCookie) {
-      reject({ signin: false, message: `there is not sessionCookie.` })
-    }
-
-    // セッションCookieを確認、 この場合、追加のチェックが追加され
-    // この場合、追加のチェックが追加され、ユーザのFirebaseセッションが取り消されたか、ユーザの削除/無効化されたかなどを検出
-    admin.auth().verifySessionCookie(sessionCookie, true)
-      .then(decodedClaims => {
-
-        // ユーザーが過去5分間にサインインした場合はリサインイン
-        console.log('decodedClaims', decodedClaims)
-        const limit = 5 * 60
-        const now = new Date().getTime() / 1000 - decodedClaims.auth_time
-        console.log(now)
-        if (new Date().getTime() / 1000 - decodedClaims.auth_time >= limit) {
-          reject({ signin: false, message: `recent sign in required.` })
-        }
-
-        resolve({ signin: false, message: err.message, claims: decodedClaims })
-      })
-      .catch(err => {
-        reject({ signin: false, code: err.code, message: err.message, file: __file, file: __line })
       })
   })
 }

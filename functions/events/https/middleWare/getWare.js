@@ -9,23 +9,24 @@ const path = require('path')
 module.exports.getInfo =
   (req, res, next) => {
 
-    const parse = {
-      'headers.hosts': [
-        req.headers['host'],              // us-central1-newfunctions-a8a25.cloudfunctions.net
-        req.headers['x-forwarded-host'],  // newfunctions-a8a25.firebaseapp.com
-        req.headers['x-forwarded-proto'], // https
-        req.headers['x-original-url'],    // /profile/5
-      ],
-      url: req.url,
-      params: req.params.id,
-      path: req.path,
-      url_basename: path.basename(req.url),
-      path_basename: path.basename(req.path),
-      protocol: req.protocol,
-      host: req.get('host'),
-      originalUrl: req.originalUrl,
-      fullUrl: url.format({ protocol: req.protocol, host: req.get('host'), pathname: req.originalUrl })
-    }
+    // const parse = {
+    //   'headers.hosts': [
+    //     req.headers['host'],              // us-central1-newfunctions-a8a25.cloudfunctions.net
+    //     req.headers['x-forwarded-host'],  // newfunctions-a8a25.firebaseapp.com
+    //     req.headers['x-forwarded-proto'], // https
+    //     req.headers['x-original-url'],    // /profile/5
+    //   ],
+    //   url: req.url,
+    //   params: req.params.id,
+    //   path: req.path,
+    //   url_basename: path.basename(req.url),
+    //   path_basename: path.basename(req.path),
+    //   protocol: req.protocol,
+    //   host: req.get('host'),
+    //   originalUrl: req.originalUrl,
+    //   fullUrl: url.format({ protocol: req.protocol, host: req.get('host'), pathname: req.originalUrl })
+    // }
+    // console.log('@parse', parse)
 
     // config 関係
     const getConfigs = new Promise((resolve, reject) => {

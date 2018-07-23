@@ -16,12 +16,12 @@ const cors = require('cors')({
 
 /* module */
 const cipher = require('../../modules/cipher')
-const wavebar = require('./modules/wavebar')
 const serverSign = require('./modules/serverSign')
 
 /* middleware */
 const getWare = require('./middleWare/getWare')
 const errWare = require('./middleWare/errWare')
+const signWare = require('./middleWare/signWare')
 
 /* routes */
 var backendRouter = require('./routes/backend')
@@ -38,6 +38,9 @@ app.use(bodyParser.json())
 
 /* getWare getInfo */
 app.use(getWare.getInfo)
+
+/* signWare check */
+app.use(signWare.check)
 
 /* route */
 app.use(`/*`, frontendRouter)
