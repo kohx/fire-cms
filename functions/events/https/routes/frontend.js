@@ -3,52 +3,18 @@ const parent = require('../../parent')
 const functions = parent.functions
 const admin = parent.admin
 
+const url = require('url')
 const wavebar = require('../modules/wavebar')
 const signWare = require('../middleWare/signWare')
 
 const express = require('express')
 const router = express.Router()
 
+/* signWare csrf */
+router.use(signWare.csrf)
+
+/* route */
 router.get('/*',
-    (req, res, next) => {
-
-        // パスを分解
-        let pathString = req.baseUrl.trims('/')
-        req.vessel.paths = pathString.split('/')
-
-        // IDをチェッしてあれば取得
-        const numberReg = /^\d*$/
-        let pathNumber = ''
-
-        // pathsを退避
-        let paths = req.vessel.paths.slice(0)
-
-        // firstpathをチェック
-        req.vessel.firstPath = paths[0]
-
-        // 最後を取得
-        let pathUnique = paths.pop() || req.vessel.frontendUnique
-
-        // 最後のパスが数字の場合
-        if (numberReg.test(pathUnique)) {
-            pathNumber = pathUnique
-            pathUnique = paths.pop() || frontendUnique
-        }
-
-        req.vessel.pathUnique = pathUnique
-        req.vessel.pathNumber = pathNumber
-
-        // パスの組み立て
-        req.vessel.thingUnique = pathNumber ? `${pathUnique}/${pathNumber}` : pathUnique
-
-        // thingsからターゲットを取得
-        req.vessel.thing = req.vessel.things[req.vessel.thingUnique] || {}
-
-        // ロールを取得
-        req.vessel.role = req.vessel.thing.role
-
-        next()
-    },
     (req, res, next) => {
         // ファーストパスがバックエンドの場合
         if (req.vessel.firstPath === req.vessel.backendUnique) next('route')
@@ -60,19 +26,38 @@ router.get('/*',
         else next()
     },
     (req, res, next) => {
-        console.log('@sign', req.vessel.sign)
-        console.log('@role', req.vessel.role)
-        
+        // サインインページかチェック
+        const isSignInPage = req.vessel.thingUnique === req.vessel.signinUnique
+        // サインインしているかチェック
+        const isSignInStatus = req.vessel.sign.status
+        // サインインページでサインインしている場合
+        if (isSignInPage && isSignInStatus) {
+            const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
+            let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
+            if (referer === '' || referer === req.vessel.signinUnique) {
+                referer = '/'
+            }
+            res.redirect(referer)
+        }
         next()
     },
     (req, res, next) => {
-        let csrfToken = null
-        if (req.vessel.thingUnique === req.vessel.signinUnique) {
-            csrfToken = signWare.csrf(res)
+        // console.log('role', req.vessel.role)
+        next()
+    },
+    (req, res, next) => {
+
+        console.log('<----------------', req.vessel.thingUnique)
+        const params = {
+            unique: req.vessel.thingUnique,
+            sign: req.vessel.sign,
         }
-        const renderd = wavebar.render(req.vessel.thing, {
-            csrfToken
-        })
+
+        if (req.vessel.csrfToken != null) {
+            params.csrfToken = req.vessel.csrfToken
+        }
+
+        const renderd = wavebar.render(req.vessel.thing, params)
         res.status(200)
             .send(renderd)
     }

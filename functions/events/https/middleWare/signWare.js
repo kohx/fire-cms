@@ -7,29 +7,40 @@ const url = require('url')
 const path = require('path')
 
 // サインインしてからのリミット
-const limit = 5 * 60
+const limit = 60 * 60
 
 /* csrf function */
-module.exports.csrf = (res) => {
+module.exports.csrf = (req, res, next) => {
 
-  // csrfToken
-  const csrfToken = Math.random().toString(36).slice(-8)
-
-  const options = {
-    httpOnly: true, // HTTPリクエストを行う際以外に使用できないものであるかを真偽値として指定
-    secure: true, // 安全に送信されなければならないものであるかを真偽値として指定
+  // vessalがない場合
+  if (!req.vessel) {
+    req.vessel = {}
   }
+  
+  // サインインページの場合
+  if (req.vessel.thingUnique === req.vessel.signinUnique) {
 
-  const data = { csrfToken }
-  res.cookie('__session', JSON.stringify(data), options)
+    // セッションクッキーを取得
+    const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : {}
+    
+    // csrfToken
+    const csrfToken = Math.random().toString(36).slice(-8)
+    const options = {
+      httpOnly: true, // HTTPリクエストを行う際以外に使用できないものであるかを真偽値として指定
+      secure: true, // 安全に送信されなければならないものであるかを真偽値として指定
+    }
 
-  return csrfToken
+    // セッションクッキーにcsrfTokenをセット
+    session.csrfToken = csrfToken
+    res.cookie('__session', JSON.stringify(session), options)
+
+    req.vessel.csrfToken = csrfToken
+  }
+  next()
 }
 
 /* check middle ware */
 module.exports.check = (req, res, next) => {
-
-  console.log('-> sign check')
 
   // vesselがない場合
   if (req.vessel == null) {
@@ -89,7 +100,7 @@ module.exports.check = (req, res, next) => {
 }
 
 /* in function */
-module.exports.in = (req, res) => {
+module.exports.in = (req, res, next) => {
 
   // poatされたIDトークンとCSRFトークンを取得
   const idToken = (req.body.idToken != null) ? req.body.idToken : false
@@ -101,7 +112,7 @@ module.exports.in = (req, res) => {
 
   // Guard against CSRF attacks.
   if (!bodyCsrfToken || !cookieCsrfToken || bodyCsrfToken !== cookieCsrfToken) {
-    console.log('★！', 'in err')
+
     res.json({ status: false, redirect: true, message: `there is not csrfToken.` })
     return
   }
@@ -130,8 +141,8 @@ module.exports.in = (req, res) => {
       };
 
       // サインイン成功
-      const data = { sessionCookie }
-      res.cookie('__session', JSON.stringify(data), options);
+      session.sessionCookie = sessionCookie
+      res.cookie('__session', JSON.stringify(session), options);
       res.json({ status: true, redirect: false, message: `sign in success.` })
     })
     .catch(err => {
@@ -156,6 +167,7 @@ module.exports.out = (req, res) => {
 
   admin.auth().verifySessionCookie(sessionCookie)
     .then(decodedClaims => {
+
       return admin.auth().revokeRefreshTokens(decodedClaims.sub)
         .then(() => {
           res.json({ status: false, message: `sign out.` })

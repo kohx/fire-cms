@@ -31,14 +31,11 @@ const signin = event => {
                 document.querySelector('#signin').disabled = true
                 document.querySelector('#signout').disabled = false
                 document.querySelector('#signin_message').textContent = result.message
-
-                // リファラーにリダイレクト
-                window.location.assign(document.referrer)
             } else {
 
                 // リダイレクトが必要ならリダイレクト
                 if (result.redirect) {
-                    window.location.assign('/signin')
+                    // window.location.assign('/signin')
                 }
 
                 // サインインメッセージ
@@ -54,11 +51,11 @@ const signin = event => {
 // 非同期通信でサーバ側をログイン
 function fetchServerSignin(idToken, csrfToken) {
 
-    const url = `${window.location.origin}/endPoint/in`
+    const url = `${window.location.origin}/signEndPoint/in`
 
     const headers = {
         'Authorization': 'Bearer ' + idToken,
-        // 'Access-Control-Allow-Credentials': 'true',
+        // 'Access-Control-Allow-Credentials': 'true',xc 
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     }
@@ -110,7 +107,7 @@ const signout = event => {
 
 /* 非同期通信でサーバ側をサインアウト */
 function fetchServerSignout() {
-    const url = `${window.location.origin}/endPoint/out`
+    const url = `${window.location.origin}/signEndPoint/out`
 
     const headers = {
         // 'Access-Control-Allow-Credentials': 'true',

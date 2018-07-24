@@ -23,6 +23,7 @@ const errWare = require('./middleWare/errWare')
 const signWare = require('./middleWare/signWare')
 
 /* routes */
+var allRouter = require('./routes/allRoute')
 var backendRouter = require('./routes/backend')
 var frontendRouter = require('./routes/frontend')
 var signEndPointRouter = require('./routes/signEndPoint')
@@ -43,9 +44,10 @@ app.use(getWare.getInfo)
 app.use(signWare.check)
 
 /* route */
+app.use(`/*`, allRouter)
 app.use(`/*`, frontendRouter)
 app.use(`/*`, backendRouter)
-app.use('/endPoint', signEndPointRouter)
+app.use('/signEndPoint', signEndPointRouter)
 
 /* errWare notFound */
 app.use(errWare.notFound)

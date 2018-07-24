@@ -13,35 +13,27 @@ const replaceMarke = '<|||>'
 // parts {|> header|}
 // wrapper {|@ html|} 
 
-module.exports.render = (thing, add = null) => {
-
+module.exports.render = (thing, params = {}) => {
     // try {
-    let params = {
-        name: thing.name || '',
-        items: [{
-                name: '<h1>kohei</h1>',
-                age: 40,
-                gender: 'male'
-            },
-            {
-                name: 'kohei',
-                age: 40,
-                gender: 'male'
-            },
-            {
-                name: 'kohei',
-                age: 40,
-                gender: 'male'
-            }
-        ],
-        user: {
-            uid: 'uil', // claims.uid,
-            email: 'email', // claims.email,
-        }
-    }
-
-    if (add) {
-        params = Object.assign(params, add)
+    params.name = thing.name || ''
+    params.items = [{
+        name: '<h1>kohei</h1>',
+        age: 40,
+        gender: 'male'
+    },
+    {
+        name: 'kohei',
+        age: 40,
+        gender: 'male'
+    },
+    {
+        name: 'kohei',
+        age: 40,
+        gender: 'male'
+    }]
+    params.user = {
+        uid: 'uil', // claims.uid,
+        email: 'email', // claims.email,
     }
 
     const separated = separateString(thing.content)
@@ -167,5 +159,5 @@ function regEscape(str) {
 }
 
 function lining(string) {
-   return string.replace(/[\n\r]/g, '')
+    return string.replace(/[\n\r]/g, '')
 }
