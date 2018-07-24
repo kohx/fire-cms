@@ -64,7 +64,7 @@ function userRecordByDecodedToken(decodedToken) {
     })
 }
 
-module.exports.getUser = function (idToken) {
+module.exports.getUser = (idToken) => {
     return Promise.resolve()
         .then(() => {
             return decodedTokenFromIdToken(idToken)
