@@ -25,7 +25,7 @@ const signWare = require('./middleWare/signWare')
 /* routes */
 var backendRouter = require('./routes/backend')
 var frontendRouter = require('./routes/frontend')
-var endPointRouter = require('./routes/endPoint')
+var signEndPointRouter = require('./routes/signEndPoint')
 
 // app
 const app = express()
@@ -45,7 +45,7 @@ app.use(signWare.check)
 /* route */
 app.use(`/*`, frontendRouter)
 app.use(`/*`, backendRouter)
-app.use('/endPoint', endPointRouter)
+app.use('/endPoint', signEndPointRouter)
 
 /* errWare notFound */
 app.use(errWare.notFound)

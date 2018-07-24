@@ -9,7 +9,7 @@ const path = require('path')
 // サインインしてからのリミット
 const limit = 5 * 60
 
-/* csrf */
+/* csrf function */
 module.exports.csrf = (res) => {
 
   // csrfToken
@@ -44,15 +44,8 @@ module.exports.check = (req, res, next) => {
   }
 
   // セッション Cookie を確認して権限をチェック
-  let sessionCookie = false
-  if (req.cookies.__session != null) {
-
-    const session = JSON.parse(req.cookies.__session)
-    if (session['sessionCookie'] != null) {
-
-      sessionCookie = session['sessionCookie']
-    }
-  }
+  const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
+  const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
 
   // sessionCookieがない場合
   if (!sessionCookie) {
@@ -93,4 +86,85 @@ module.exports.check = (req, res, next) => {
         next()
       })
   }
+}
+
+/* in function */
+module.exports.in = (req, res) => {
+
+  // poatされたIDトークンとCSRFトークンを取得
+  const idToken = (req.body.idToken != null) ? req.body.idToken : false
+  const bodyCsrfToken = (req.body.csrfToken != null) ? req.body.csrfToken : false
+
+  // __sessionからcsrfTOkenを取得
+  const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
+  const cookieCsrfToken = (session['csrfToken'] != null) ? session['csrfToken'] : false
+
+  // Guard against CSRF attacks.
+  if (!bodyCsrfToken || !cookieCsrfToken || bodyCsrfToken !== cookieCsrfToken) {
+    console.log('★！', 'in err')
+    res.json({ signin: false, redirect: true, message: `there is not csrfToken.` })
+    return
+  }
+
+  // headerのbrarerに入れたidToken
+  const bearer = req.headers.authorization && req.headers.authorization.startsWith('Bearer ') ? req.headers.authorization.split('Bearer ')[1] : false
+
+  // bearerのチェック
+  if (!bearer || !idToken || bearer !== idToken) {
+    res.json({ signin: false, redirect: false, message: `bearer is not true.` })
+    return
+  }
+
+  const expiresIn = 60 * 60 * 24 * 5 * 1000;
+  // セッションCookieを作成、これにより、プロセス内のIDトークンも検証
+  // セッションクッキーは、IDトークンと同じ要求を持つ
+
+  admin.auth().createSessionCookie(idToken, { expiresIn })
+    .then(sessionCookie => {
+      // セッションCookieのCookieポリシーを設定
+      const options = {
+        // 有効期限を5日に設定
+        maxAge: 60 * 60 * 24 * 5 * 1000,
+        httpOnly: true,
+        secure: true
+      };
+
+      // サインイン成功
+      const data = { sessionCookie }
+      res.cookie('__session', JSON.stringify(data), options);
+      res.json({ signin: true, redirect: false, message: `sign in success.` })
+    })
+    .catch(err => {
+      res.json({ signin: false, redirect: false, message: err.message })
+    })
+}
+
+/* out function */
+module.exports.out = (req, res) => {
+
+  // セッション Cookie を取得
+  const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
+  const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
+
+  if (!sessionCookie) {
+    res.json({ signin: false, message: `there is not sessionCookie.` })
+    return
+  }
+
+  // セッションをクリア
+  res.clearCookie('__session')
+
+  admin.auth().verifySessionCookie(sessionCookie)
+    .then(decodedClaims => {
+      return admin.auth().revokeRefreshTokens(decodedClaims.sub)
+        .then(() => {
+          res.json({ signin: false, message: `sign out.` })
+        })
+        .catch(err => {
+          res.json({ signin: true, message: `sign out failed.` })
+        })
+    })
+    .catch(err => {
+      res.json({ signin: false, message: `there is not claims.` })
+    })
 }

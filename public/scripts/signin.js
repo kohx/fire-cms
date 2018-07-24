@@ -25,6 +25,7 @@ const signin = event => {
         })
 
         .then(result => {
+            console.log(result)
             if (result.signin) {
                 // ui
                 document.querySelector('#signin').disabled = true
@@ -32,12 +33,12 @@ const signin = event => {
                 document.querySelector('#signin_message').textContent = result.message
 
                 // リファラーにリダイレクト
-                window.location.assign(document.referrer)
+                // window.location.assign(document.referrer)
             } else {
 
                 // リダイレクトが必要ならリダイレクト
                 if (result.redirect) {
-                    window.location.assign('/signin')
+                    // window.location.assign('/signin')
                 }
 
                 // サインインメッセージ
