@@ -102,7 +102,7 @@ module.exports.in = (req, res) => {
   // Guard against CSRF attacks.
   if (!bodyCsrfToken || !cookieCsrfToken || bodyCsrfToken !== cookieCsrfToken) {
     console.log('★！', 'in err')
-    res.json({ signin: false, redirect: true, message: `there is not csrfToken.` })
+    res.json({ status: false, redirect: true, message: `there is not csrfToken.` })
     return
   }
 
@@ -111,7 +111,7 @@ module.exports.in = (req, res) => {
 
   // bearerのチェック
   if (!bearer || !idToken || bearer !== idToken) {
-    res.json({ signin: false, redirect: false, message: `bearer is not true.` })
+    res.json({ status: false, redirect: false, message: `bearer is not true.` })
     return
   }
 
@@ -132,10 +132,10 @@ module.exports.in = (req, res) => {
       // サインイン成功
       const data = { sessionCookie }
       res.cookie('__session', JSON.stringify(data), options);
-      res.json({ signin: true, redirect: false, message: `sign in success.` })
+      res.json({ status: true, redirect: false, message: `sign in success.` })
     })
     .catch(err => {
-      res.json({ signin: false, redirect: false, message: err.message })
+      res.json({ status: false, redirect: false, message: err.message })
     })
 }
 
@@ -147,7 +147,7 @@ module.exports.out = (req, res) => {
   const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
 
   if (!sessionCookie) {
-    res.json({ signin: false, message: `there is not sessionCookie.` })
+    res.json({ status: false, message: `there is not sessionCookie.` })
     return
   }
 
@@ -158,13 +158,13 @@ module.exports.out = (req, res) => {
     .then(decodedClaims => {
       return admin.auth().revokeRefreshTokens(decodedClaims.sub)
         .then(() => {
-          res.json({ signin: false, message: `sign out.` })
+          res.json({ status: false, message: `sign out.` })
         })
         .catch(err => {
-          res.json({ signin: true, message: `sign out failed.` })
+          res.json({ status: true, message: `sign out failed.` })
         })
     })
     .catch(err => {
-      res.json({ signin: false, message: `there is not claims.` })
+      res.json({ status: false, message: `there is not claims.` })
     })
 }

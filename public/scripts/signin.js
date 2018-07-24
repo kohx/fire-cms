@@ -26,7 +26,7 @@ const signin = event => {
 
         .then(result => {
             console.log(result)
-            if (result.signin) {
+            if (result.status) {
                 // ui
                 document.querySelector('#signin').disabled = true
                 document.querySelector('#signout').disabled = false
@@ -86,7 +86,7 @@ function fetchServerSignin(idToken, csrfToken) {
             .catch(err => {
                 console.log(err)
                 reject({
-                    signin: false,
+                    status: false,
                     message: "network err.",
                 })
             })
@@ -137,7 +137,7 @@ function fetchServerSignout() {
             })
             .catch(err => {
                 reject({
-                    signin: true,
+                    status: true,
                     message: "network err."
                 })
             })
