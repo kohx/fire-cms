@@ -4,7 +4,9 @@ const admin = parent.admin
 const vm = require('vm')
 
 const templateTagReg = /\{\|.*?\|\}/g
+const clearTagReg = /\{\||\|\}|\s/g
 const replaceMarke = '<|||>'
+
 
 // TODO::
 // error checker
@@ -13,46 +15,80 @@ const replaceMarke = '<|||>'
 // parts {|> header|}
 // wrapper {|@ html|} 
 
-module.exports.render = (thing, params = {}) => {
-    // try {
-    params.name = thing.name || ''
-    params.items = [{
-        name: '<h1>kohei</h1>',
-        age: 40,
-        gender: 'male'
-    },
-    {
-        name: 'kohei',
-        age: 40,
-        gender: 'male'
-    },
-    {
-        name: 'kohei',
-        age: 40,
-        gender: 'male'
-    }]
-    params.user = {
-        uid: 'uil', // claims.uid,
-        email: 'email', // claims.email,
-    }
 
-    const separated = separateString(thing.content)
+
+module.exports.init = (req, res, next) => {
+    res.wbRender = (params = null) => {
+        return render(req, res, next, params)
+    }
+    next()
+}
+
+function render(req, res, next, addParams) {
+    // try {
+    let thing = req.vessel.thing
+    const content = thing.content
+
+    const params = getParams(thing, addParams)
+    // console.log('params--->', params)
+    const separated = separateString(content)
     // console.log('separated--->', separated)
-    const builded = build(separated, params)
-    // console.log('builded--->', builded)
-    const compiled = compile(builded, params)
-    // console.log('compiled--->', compiled)
-    return compiled
 
     // } catch (error) {
     //     throw error
     // }
+
+    admin.firestore().collection('parts').get()
+        .then(docs => {
+            let parts = {}
+            docs.forEach(doc => {
+                console.log(doc.id)
+                const data = doc.data()
+                parts[doc.id] = data.content
+            })
+            console.log(parts)
+            return parts
+        })
+        .then((parts) => {
+            const builded = build(separated, params, parts)
+            // console.log('builded--->', builded)
+            const compiled = compile(builded, params)
+            // console.log('compiled--->', compiled)
+            // return compiled        
+            res.send(compiled)
+        })
+        .catch(err => {
+            console.log(err)
+            res.send(err)
+        })
+}
+
+/* get params */
+function getParams(thing, addParams) {
+    delete thing.content
+    let params = thing
+
+    if (Object.keys(addParams).length) {
+        for (const key in addParams) {
+            params[key] = addParams[key]
+        }
+    }
+    return params
 }
 
 // get match
 function separateString(string) {
     let line = lining(string)
     const matches = line.match(templateTagReg)
+
+    let parts = []
+    matches.forEach(matche => {
+        const cleared = matche.replace(clearTagReg, '')
+        if (cleared.startsWith('>')) {
+            let part = cleared.substr(1)
+            parts.push(part)
+        }
+    })
 
     let replaces = []
     for (let key in matches) {
@@ -68,17 +104,21 @@ function separateString(string) {
 }
 
 // build
-function build(matches, params) {
-    const clearCond = /\{\||\|\}|\s/g
+function build(matches, params, parts) {
     const keys = '[' + Object.keys(params).join(',') + ']'
     let builded = `const ${keys} = values\n`
     builded += `compiled = ''\n`
 
     matches.forEach((matche, key) => {
         if (matche.startsWith('{|')) {
-            const cleared = matche.replace(clearCond, '')
+            const cleared = matche.replace(clearTagReg, '')
             let type = cleared.substr(0, 1)
             switch (type) {
+                case '>':
+                    body = cleared.substr(1)
+                    builded += `compiled += '${parts[body]}';\n`
+                    break
+
                 case '*':
                     body = cleared.substr(1)
                     var [array, variable] = body.split(':')

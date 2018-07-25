@@ -20,10 +20,11 @@ module.exports.internalServerError = (err, req, res, next) => {
     .then(doc => {
       const thing = doc.data()
       if (thing.content) {
-        const renderd = wavebar.render(thing, {
+        const params = {
           errStatus: err.status,
           errMessage: err.message,
-        })
+        }
+        res.wbRender(params)
         res.send(renderd)
       } else {
         res.send(`<!doctype html>

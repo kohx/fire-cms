@@ -10,8 +10,12 @@ const signWare = require('../middleWare/signWare')
 const express = require('express')
 const router = express.Router()
 
+router.use(signWare.csrf)
+
 /* signWare csrf */
 router.use(signWare.csrf)
+
+router.use(wavebar.init)
 
 /* route */
 router.get('/*',
@@ -47,20 +51,36 @@ router.get('/*',
     },
     (req, res, next) => {
 
-        console.log('<----------------', req.vessel.thingUnique)
-        const params = {
-            unique: req.vessel.thingUnique,
-            sign: req.vessel.sign,
-        }
-
-        if (req.vessel.csrfToken != null) {
-            params.csrfToken = req.vessel.csrfToken
-        }
-
-        const renderd = wavebar.render(req.vessel.thing, params)
-        res.status(200)
-            .send(renderd)
+        next()
     }
 )
+
+router.get('/*', (req, res) => {
+
+    const params = {
+        sign: req.vessel.sign,
+        csrfToken: (req.vessel.csrfToken != null) ? req.vessel.csrfToken : null,
+        user: req.vessel.sign.status ? req.vessel.sign.claims : {},
+        items: [{
+            name: '<h1>kohei</h1>',
+            age: 40,
+            gender: 'male'
+        },
+        {
+            name: 'kohei',
+            age: 40,
+            gender: 'male'
+        },
+        {
+            name: 'kohei',
+            age: 40,
+            gender: 'male'
+        }]
+    }
+
+    res.status(200)
+        .wbRender(params)
+    console.log('<----', req.vessel.thingUnique)
+})
 
 module.exports = router

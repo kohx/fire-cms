@@ -50,7 +50,7 @@ module.exports.check = (req, res, next) => {
   // sign object
   const sign = {
     status: false,
-    messae: '',
+    message: '',
     claims: {},
   }
 
