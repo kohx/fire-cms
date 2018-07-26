@@ -9,9 +9,6 @@ const firestoreSettings = {
 }
 admin.firestore().settings(firestoreSettings)
 
-module.exports.functions = functions
-module.exports.admin = admin
-
 /* create stack */
 Object.defineProperty(global, '__stack', {
     get: function () {
@@ -41,6 +38,15 @@ String.prototype.trims = function (char) {
     str = str.startsWith(char) ? str.substr(char.length) : str
     return str;
 }
+
+/* exports */
+module.exports.functions = functions
+module.exports.admin = admin
+module.exports.system = (() => {
+    return {
+        cache: true
+    }
+})()
 
 function decodedTokenFromIdToken(idToken) {
     return new Promise((resolve, reject) => {

@@ -1,6 +1,8 @@
 const parent = require('../../parent')
 const functions = parent.functions
 const admin = parent.admin
+const system = parent.system
+
 const vm = require('vm')
 
 const templateTagReg = /\{\|.*?\|\}/g
@@ -16,51 +18,33 @@ const replaceMarke = '<|||>'
 // wrapper {|@ html|} 
 
 
-
 module.exports.init = (req, res, next) => {
     res.wbRender = (params = null) => {
-        return render(req, res, next, params)
+        return render(req, res, params)
     }
     next()
 }
 
-function render(req, res, next, addParams) {
+function render(req, res, addParams) {
     // try {
     let thing = req.vessel.thing
-    const content = thing.content
+    const content = (thing.content != null) ? thing.content : ''
+    const parts = req.vessel.parts
 
     const params = getParams(thing, addParams)
     // console.log('params--->', params)
     const separated = separateString(content)
     // console.log('separated--->', separated)
-
+    const builded = build(separated, params, parts)
+    // console.log('builded--->', builded)
+    const compiled = compile(builded, params)
+    // console.log('compiled--->', compiled)
+    // return compiled        
+    res.send(compiled)
+    
     // } catch (error) {
     //     throw error
     // }
-
-    admin.firestore().collection('parts').get()
-        .then(docs => {
-            let parts = {}
-            docs.forEach(doc => {
-                console.log(doc.id)
-                const data = doc.data()
-                parts[doc.id] = data.content
-            })
-            console.log(parts)
-            return parts
-        })
-        .then((parts) => {
-            const builded = build(separated, params, parts)
-            // console.log('builded--->', builded)
-            const compiled = compile(builded, params)
-            // console.log('compiled--->', compiled)
-            // return compiled        
-            res.send(compiled)
-        })
-        .catch(err => {
-            console.log(err)
-            res.send(err)
-        })
 }
 
 /* get params */

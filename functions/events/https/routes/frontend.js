@@ -2,8 +2,8 @@
 const parent = require('../../parent')
 const functions = parent.functions
 const admin = parent.admin
+const system = parent.system
 
-const url = require('url')
 const wavebar = require('../modules/wavebar')
 const signWare = require('../middleWare/signWare')
 
@@ -25,9 +25,19 @@ router.get('/*',
         else next()
     },
     (req, res, next) => {
-        // thingsに含まれているかチェック
-        if (!req.vessel.thingUniques.includes(req.vessel.pathUnique)) next('route')
-        else next()
+        // thingを取得
+        admin.firestore().collection('things').doc(req.vessel.thingUnique)
+            .get()
+            .then(doc => {
+                if (doc.exists) {
+                    req.vessel.thing = doc.data()
+                    next()
+                } else {
+                    // ない場合は404へ
+                    next('route')
+                }
+            })
+            .catch(err => next(err))
     },
     (req, res, next) => {
         // サインインページかチェック
@@ -50,37 +60,31 @@ router.get('/*',
         next()
     },
     (req, res, next) => {
+        const params = {
+            sign: req.vessel.sign,
+            csrfToken: (req.vessel.csrfToken != null) ? req.vessel.csrfToken : null,
+            user: req.vessel.sign.status ? req.vessel.sign.claims : {},
+            items: [{
+                name: '<h1>kohei</h1>',
+                age: 40,
+                gender: 'male'
+            },
+            {
+                name: 'kohei',
+                age: 40,
+                gender: 'male'
+            },
+            {
+                name: 'kohei',
+                age: 40,
+                gender: 'male'
+            }]
+        }
 
-        next()
+        res.status(200)
+            .wbRender(params)
+        console.log('<-----------------------------', req.vessel.thingUnique)
     }
 )
-
-router.get('/*', (req, res) => {
-
-    const params = {
-        sign: req.vessel.sign,
-        csrfToken: (req.vessel.csrfToken != null) ? req.vessel.csrfToken : null,
-        user: req.vessel.sign.status ? req.vessel.sign.claims : {},
-        items: [{
-            name: '<h1>kohei</h1>',
-            age: 40,
-            gender: 'male'
-        },
-        {
-            name: 'kohei',
-            age: 40,
-            gender: 'male'
-        },
-        {
-            name: 'kohei',
-            age: 40,
-            gender: 'male'
-        }]
-    }
-
-    res.status(200)
-        .wbRender(params)
-    console.log('<----', req.vessel.thingUnique)
-})
 
 module.exports = router

@@ -1,6 +1,7 @@
 const parent = require('../../parent')
 const functions = parent.functions
 const admin = parent.admin
+const system = parent.system
 
 const wavebar = require('../modules/wavebar')
 
@@ -23,6 +24,7 @@ module.exports.internalServerError = (err, req, res, next) => {
         const params = {
           errStatus: err.status,
           errMessage: err.message,
+          errStack: err.stack,
         }
         res.wbRender(params)
         res.send(renderd)
@@ -32,8 +34,9 @@ module.exports.internalServerError = (err, req, res, next) => {
                               <title>${err.status || 500}</title>
                               </head>
                               <body>
-                              <h1>${err.status || 500}</h1>
+                              <h1>${err.status || 500} not template!</h1>
                               <p>${err.message}</p>
+                              <p>${err.stack}</p>
                               </body>
                           </html>`)
       }
@@ -41,11 +44,12 @@ module.exports.internalServerError = (err, req, res, next) => {
     .catch(err => {
       res.send(`<!doctype html>
                               <head>
-                              <title>500</title>
+                              <title>500 from error!</title>
                               </head>
                               <body>
                               <h1>500</h1>
                               <p>${err.message}</p>
+                              <p>${err.stack}</p>
                               </body>
                           </html>`)
     })

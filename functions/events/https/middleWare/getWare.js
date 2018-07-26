@@ -2,9 +2,11 @@
 const parent = require('../../parent')
 const functions = parent.functions
 const admin = parent.admin
+const system = parent.system
 
 const url = require('url')
 const path = require('path')
+const cache = require('memory-cache')
 
 module.exports.getInfo =
   (req, res, next) => {
@@ -30,6 +32,7 @@ module.exports.getInfo =
 
     // config 関係
     const getConfigs = new Promise((resolve, reject) => {
+
       admin.firestore().collection('configs')
         .get()
         .then(docs => {
@@ -42,33 +45,77 @@ module.exports.getInfo =
         .catch(err => reject(err))
     })
 
-    const getThings = new Promise((resolve, reject) => {
-      admin.firestore().collection('things')
-        .get()
+    // get parts
+    const getParts = new Promise((resolve, reject) => {
+
+      // get post from cache
+      const parts = getCache('parts', 'kohei')
+      console.log('<cache>', parts)
+
+      // if (parts != null) {
+      //   parts.cache = true
+      //   console.log('cached parts', parts)
+      //   resolve(parts)
+      // }
+
+      admin.firestore().collection('parts').get()
         .then(docs => {
-          let things = {}
-          docs.forEach((doc, key) => {
-            things[doc.id] = doc.data()
+          let parts = {}
+          docs.forEach(doc => {
+            const data = doc.data()
+            parts[doc.id] = data.content
           })
-          resolve(things)
+          setCache('parts', 'kohei')
+          resolve(parts)
         })
         .catch(err => reject(err))
     })
 
-    Promise.all([getConfigs, getThings])
-      .then(function (results) {
-        const [configs, things] = results
+    // get wraps
+    const getWraps = new Promise((resolve, reject) => {
+      admin.firestore().collection('wraps').get()
+        .then(docs => {
+          let wraps = {}
+          docs.forEach(doc => {
+            const data = doc.data()
+            wraps[doc.id] = data.content
+          })
+          resolve(wraps)
+        })
+        .catch(err => reject(err))
+    })
 
+    var start_ms = new Date().getTime()
+    Promise.all([getConfigs, getParts])
+      .then(function (results) {
+        const [configs, parts, wraps] = results
+        // console.log('parts', parts)
         let vessel = {
           frontBaseUrl: req.headers['x-forwarded-host'] || null,
           frontendUnique: configs.settings.frontendUnique,
           backendUnique: configs.settings.backendUnique,
           signinUnique: configs.settings.signinUnique,
-          things: things,
-          thingUniques: Object.keys(things)
+          parts: parts,
+          wraps: wraps,
         }
         req.vessel = vessel
+        var elapsed_ms = new Date().getTime() - start_ms
+        console.log('time -> ', elapsed_ms)
         next()
       })
       .catch(err => next(err))
   }
+
+function getCache(value) {
+  if (!parent.system.cache) {
+    return null
+  }
+  return cache.get(value)
+}
+
+function setCache(key, value) {
+  if (!parent.system.cache) {
+    return null
+  }
+  return cache.put(value)
+}

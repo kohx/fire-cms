@@ -2,6 +2,7 @@
 const parent = require('../../parent')
 const functions = parent.functions
 const admin = parent.admin
+const system = parent.system
 
 const wavebar = require('../modules/wavebar')
 const signWare = require('../middleWare/signWare')
@@ -32,18 +33,12 @@ router.get('/*', (req, res, next) => {
             pathNumber = pathUnique
             pathUnique = paths.pop() || frontendUnique
         }
-
+        
         req.vessel.pathUnique = pathUnique
         req.vessel.pathNumber = pathNumber
 
         // パスの組み立て
         req.vessel.thingUnique = pathNumber ? `${pathUnique}/${pathNumber}` : pathUnique
-
-        // thingsからターゲットを取得
-        req.vessel.thing = req.vessel.things[req.vessel.thingUnique] || {}
-
-        // ロールを取得
-        req.vessel.role = req.vessel.thing.role
         next()
     }
 )
