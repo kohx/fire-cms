@@ -6,7 +6,9 @@ const system = parent.system
 
 const url = require('url')
 const path = require('path')
-const cache = require('memory-cache')
+// const cache = require('memory-cache')
+const jsonCache = require('../../../modules/jsonCache')
+
 
 module.exports.getInfo =
   (req, res, next) => {
@@ -47,18 +49,13 @@ module.exports.getInfo =
 
     // get parts
     const getParts = new Promise((resolve, reject) => {
-
       // キャッシュを取得
-      let parts = cache.get('parts')
-      parts = (parts != null) ? JSON.parse(parts) : null
-
+      const parts = jsonCache.get('parts')
+      // キャッシュから取得できればそれを返す
       if (parts != null) {
-        
-        parts.cache = true
-        console.log('cached parts', parts)
         resolve(parts)
       }
-
+      // パーツを取得
       admin.firestore().collection('parts').get()
         .then(docs => {
           let parts = {}
@@ -67,7 +64,8 @@ module.exports.getInfo =
             parts[doc.id] = data.content
           })
           // キャッシュに入れる 
-          cache.put('parts', JSON.stringify(parts))
+          jsonCache.set('parts', parts)
+          // 結果を返す
           resolve(parts)
         })
         .catch(err => reject(err))
@@ -75,6 +73,13 @@ module.exports.getInfo =
 
     // get wraps
     const getWraps = new Promise((resolve, reject) => {
+      // キャッシュを取得
+      const wraps = jsonCache.get('wraps')
+      // キャッシュから取得できればそれを返す
+      if (wraps != null) {
+        resolve(wraps)
+      }
+      // ラップを取得
       admin.firestore().collection('wraps').get()
         .then(docs => {
           let wraps = {}
@@ -82,6 +87,9 @@ module.exports.getInfo =
             const data = doc.data()
             wraps[doc.id] = data.content
           })
+          // キャッシュに入れる 
+          jsonCache.set('wraps', wraps)
+          // 結果を返す
           resolve(wraps)
         })
         .catch(err => reject(err))

@@ -20,21 +20,21 @@ module.exports.internalServerError = (err, req, res, next) => {
   admin.firestore().collection('things').doc(String(status)).get()
     .then(doc => {
       const thing = doc.data()
-      if (thing.content) {
+      if (doc.exists && thing.content) {
+        req.vessel.thing = thing
         const params = {
           errStatus: err.status,
           errMessage: err.message,
           errStack: err.stack,
         }
         res.wbRender(params)
-        res.send(renderd)
       } else {
         res.send(`<!doctype html>
                               <head>
                               <title>${err.status || 500}</title>
                               </head>
                               <body>
-                              <h1>${err.status || 500} not template!</h1>
+                              <h1>${err.status || 500} not from template!</h1>
                               <p>${err.message}</p>
                               <p>${err.stack}</p>
                               </body>
@@ -44,10 +44,10 @@ module.exports.internalServerError = (err, req, res, next) => {
     .catch(err => {
       res.send(`<!doctype html>
                               <head>
-                              <title>500 from error!</title>
+                              <title>500</title>
                               </head>
                               <body>
-                              <h1>500</h1>
+                              <h1>500 from error!</h1>
                               <p>${err.message}</p>
                               <p>${err.stack}</p>
                               </body>
