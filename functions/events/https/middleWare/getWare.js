@@ -48,15 +48,16 @@ module.exports.getInfo =
     // get parts
     const getParts = new Promise((resolve, reject) => {
 
-      // get post from cache
-      const parts = getCache('parts', 'kohei')
-      console.log('<cache>', parts)
+      // キャッシュを取得
+      let parts = cache.get('parts')
+      parts = (parts != null) ? JSON.parse(parts) : null
 
-      // if (parts != null) {
-      //   parts.cache = true
-      //   console.log('cached parts', parts)
-      //   resolve(parts)
-      // }
+      if (parts != null) {
+        
+        parts.cache = true
+        console.log('cached parts', parts)
+        resolve(parts)
+      }
 
       admin.firestore().collection('parts').get()
         .then(docs => {
@@ -65,7 +66,8 @@ module.exports.getInfo =
             const data = doc.data()
             parts[doc.id] = data.content
           })
-          setCache('parts', 'kohei')
+          // キャッシュに入れる 
+          cache.put('parts', JSON.stringify(parts))
           resolve(parts)
         })
         .catch(err => reject(err))
@@ -117,5 +119,5 @@ function setCache(key, value) {
   if (!parent.system.cache) {
     return null
   }
-  return cache.put(value)
+  return cache.put(key, value)
 }

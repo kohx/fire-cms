@@ -4,28 +4,28 @@ const cache = require('memory-cache')
 const active = true
 
 exports.set = (key, value) => {
-    if(!active){
+    if (!active) {
         return
     }
     return cache.put(key, value)
 }
 
 exports.get = (key) => {
-    if(!active){
+    if (!active) {
         return
     }
     return cache.get(key)
 }
 
 exports.delete = (key) => {
-    if(!active){
+    if (!active) {
         return
     }
     return cache.del(key)
 }
 
 exports.clear = () => {
-    if(!active){
+    if (!active) {
         return
     }
     cache.clear(key)
