@@ -31,6 +31,8 @@ function render(req, res, addParams) {
     const content = (thing.content != null) ? thing.content : ''
     const parts = req.vessel.parts
 
+    const template = getTemplate(thing, parts)
+
     const params = getParams(thing, addParams)
     // console.log('params--->', params)
     const separated = separateString(content)
@@ -41,10 +43,26 @@ function render(req, res, addParams) {
     // console.log('compiled--->', compiled)
     // return compiled        
     res.send(compiled)
-    
+
     // } catch (error) {
     //     throw error
     // }
+}
+
+function getTemplate(thing, parts) {
+    // let line = lining(thing.content)
+    // console.log('line', line)
+    const matches = thing.content.match(/\{\|\>.*?\|\}/g)
+    console.log(matches)
+    let keys = []
+    matches.forEach(matche => {
+        const cleared = matche.replace(clearTagReg, '')
+        if (cleared.startsWith('>')) {
+            key = cleared.substr(1)
+            keys.push(key)
+        }
+    })
+    console.log(keys)
 }
 
 /* get params */

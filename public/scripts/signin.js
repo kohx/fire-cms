@@ -1,3 +1,5 @@
+
+
 // httpOnly Cookieを使用するため、クライアントの状態を保持しない
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
 
@@ -23,8 +25,8 @@ const signin = event => {
             firebase.auth().signOut()
             return result
         })
-
         .then(result => {
+
             console.log(result)
             if (result.status) {
                 // ui

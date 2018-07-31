@@ -115,17 +115,3 @@ module.exports.getInfo =
       })
       .catch(err => next(err))
   }
-
-function getCache(value) {
-  if (!parent.system.cache) {
-    return null
-  }
-  return cache.get(value)
-}
-
-function setCache(key, value) {
-  if (!parent.system.cache) {
-    return null
-  }
-  return cache.put(key, value)
-}
