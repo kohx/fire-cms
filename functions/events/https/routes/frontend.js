@@ -10,8 +10,6 @@ const signWare = require('../middleWare/signWare')
 const express = require('express')
 const router = express.Router()
 
-router.use(signWare.csrf)
-
 /* signWare csrf */
 router.use(signWare.csrf)
 
@@ -60,29 +58,35 @@ router.get('/*',
         next()
     },
     (req, res, next) => {
-        const params = {
+        const thing = req.vessel.thing
+        const content = (thing.content != null) ? thing.content : ''
+        delete thing.content
+        const data = {
+            content: content,
+            params: thing,
+            parts: req.vessel.parts,
+            wraps: req.vessel.wraps,
             sign: req.vessel.sign,
-            csrfToken: (req.vessel.csrfToken != null) ? req.vessel.csrfToken : null,
-            user: req.vessel.sign.status ? req.vessel.sign.claims : {},
-            items: [{
-                name: '<h1>kohei</h1>',
-                age: 40,
-                gender: 'male'
-            },
-            {
-                name: 'kohei',
-                age: 40,
-                gender: 'male'
-            },
-            {
-                name: 'kohei',
-                age: 40,
-                gender: 'male'
-            }]
         }
-
+        data.params.csrfToken = (req.vessel.csrfToken != null) ? req.vessel.csrfToken : null
+        data.params.user = req.vessel.sign.status ? req.vessel.sign.claims : {}
+        data.params.items = [{
+            name: '<h1>kohei</h1>',
+            age: 40,
+            gender: 'male'
+        },
+        {
+            name: 'kohei',
+            age: 40,
+            gender: 'male'
+        },
+        {
+            name: 'kohei',
+            age: 40,
+            gender: 'male'
+        }]
         res.status(200)
-            .wbRender(params)
+        res.wbRender(data)
         console.log('<-----------------------------', req.vessel.thingUnique)
     }
 )

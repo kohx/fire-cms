@@ -21,13 +21,20 @@ module.exports.internalServerError = (err, req, res, next) => {
     .then(doc => {
       const thing = doc.data()
       if (doc.exists && thing.content) {
-        req.vessel.thing = thing
-        const params = {
-          errStatus: err.status,
-          errMessage: err.message,
-          errStack: err.stack,
+        const content = (thing.content != null) ? thing.content : ''
+        delete thing.content
+        const data = {
+          content: content,
+          params: thing,
+          parts: req.vessel.parts,
+          wraps: req.vessel.wraps,
+          sign: req.vessel.sign,
         }
-        res.wbRender(params)
+        data.params.errStatus = err.status
+        data.params.errMessage = err.message
+        data.params.errStack = err.stack
+        res.wbRender(data)
+        console.log('<-----------------------------', 'error from things!')
       } else {
         res.send(`<!doctype html>
                               <head>
@@ -39,6 +46,7 @@ module.exports.internalServerError = (err, req, res, next) => {
                               <p>${err.stack}</p>
                               </body>
                           </html>`)
+        console.log('<-----------------------------', 'error from err!')
       }
     })
     .catch(err => {
@@ -52,5 +60,6 @@ module.exports.internalServerError = (err, req, res, next) => {
                               <p>${err.stack}</p>
                               </body>
                           </html>`)
+      console.log('<-----------------------------', 'error from chatch err!')
     })
 }
