@@ -26,7 +26,6 @@ function render(res, data) {
     const wraps = (data.wraps != null) ? data.wraps : {}
     const parts = (data.parts != null) ? data.parts : {}
     const params = (data.params != null) ? data.params : {}
-    console.log('@', params)
 
     const merged = merge(content, wraps, parts)
     const segments = segment(merged)
@@ -35,7 +34,9 @@ function render(res, data) {
     // console.log('builded--->', builded)
     const compiled = compile(builded, params)
     // console.log('compiled--->', compiled)
+
     res.send(enLining(compiled))
+    // res.send(builded)
 }
 
 // get merge
@@ -106,7 +107,6 @@ function segment(string) {
 
 // build
 function build(segments, params) {
-    console.log('params', params)
     const keys = '[' + Object.keys(params).join(',') + ']'
     let builded = `const ${keys} = values\n`
     builded += `compiled = ''\n`
@@ -137,7 +137,7 @@ function build(segments, params) {
                     counter.if.open++
                     body = bodyTag(baredTag)
                     var [variable, alias] = body.split(':')
-                    builded += `if(typeof ${variable} !== 'undefined' && checValue(${variable})){\n`
+                    builded += `if(typeof ${variable} !== 'undefined' && checkValue(${variable})){\n`
                     if (alias) {
                         builded += `const ${alias} = ${variable}\n`
                     }
@@ -147,7 +147,7 @@ function build(segments, params) {
                     counter.not.open++
                     body = bodyTag(baredTag)
                     var [variable, alias] = body.split(':')
-                    builded += `if(typeof ${variable} === 'undefined' || !checValue(${variable})){\n`
+                    builded += `if(typeof ${variable} === 'undefined' || !checkValue(${variable})){\n`
                     if (alias) {
                         builded += `const ${alias} = ${variable}\n`
                     }
@@ -169,12 +169,18 @@ function build(segments, params) {
 
                 case '&':
                     body = bodyTag(baredTag)
+                    builded += `if(typeof ${body} !== 'undefined' && checkValue(${body})){\n`
                     builded += `compiled += ${body};\n`
+                    builded += `}\n`
                     break
 
                 default:
                     body = baredTag
+                    builded += `if(typeof ${body} !== 'undefined' && checkValue(${body})){\n`
                     builded += `compiled += entityify(${body});\n`
+                    builded += `} else {\n`
+                    builded += `compiled += '[ "${body}" is not defined! ]'\n`
+                    builded += `}\n`
             }
         } else {
             builded += `compiled += '${segment}'\n`
@@ -231,7 +237,8 @@ function compile(builded, params) {
         compiled: '',
         values: values,
         entityify: entityify,
-        checValue: checValue,
+        textBuild: textBuild,
+        checkValue: checkValue,
     }
     // assign functions 
     for (const key in wbFunctions.funcs) {
@@ -244,26 +251,7 @@ function compile(builded, params) {
 /* funcitons */
 // ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓
 function textBuild(value, name) {
-    const sub = isDebug ? `[ "${name}" is not found ]` : ''
-    return value ? entityify(value) : sub
-}
 
-function rowBuild(value, name) {
-    const sub = isDebug ? `[ "${name}" not found ]` : ''
-    return value ? value : sub
-}
-
-function searchParam(body, params, doEntityify = true) {
-    param = body.split('.').reduce((o, i) => o[i], params)
-    result = ''
-    if (param == null) {
-        result = isDebug ? `compiled += [ "${body}" is not found ]\n` : `\n`
-    } else {
-        body = entityify(param)
-        result = doEntityify ? `compiled += '${body}'\n` : `compiled += '${entityify(param)}'\n`
-    }
-
-    return result
 }
 
 // ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑
@@ -282,7 +270,7 @@ function entityify(string) {
     })
 }
 
-function checValue(value) {
+function checkValue(value) {
     if (value === null || value === false) {
         return false
     }
