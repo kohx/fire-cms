@@ -66,7 +66,6 @@ router.get('/*',
             params: thing,
             parts: req.vessel.parts,
             wraps: req.vessel.wraps,
-            sign: req.vessel.sign,
         }
         data.params.csrfToken = (req.vessel.csrfToken != null) ? req.vessel.csrfToken : null
         data.params.user = req.vessel.sign.status ? req.vessel.sign.claims : {}
@@ -85,6 +84,8 @@ router.get('/*',
             age: 40,
             gender: 'male'
         }]
+        data.params.sign = req.vessel.sign
+
         res.status(200)
         res.wbRender(data)
         console.log('<-----------------------------', req.vessel.thingUnique)

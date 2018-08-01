@@ -26,6 +26,7 @@ function render(res, data) {
     const wraps = (data.wraps != null) ? data.wraps : {}
     const parts = (data.parts != null) ? data.parts : {}
     const params = (data.params != null) ? data.params : {}
+    console.log('@', params)
 
     const merged = merge(content, wraps, parts)
     const segments = segment(merged)
@@ -167,7 +168,7 @@ function build(segments, params) {
                     break
 
                 case '&':
-                    body = cleared.substr(1)
+                    body = bodyTag(baredTag)
                     builded += `compiled += ${body};\n`
                     break
 
@@ -240,13 +241,8 @@ function compile(builded, params) {
     return context.compiled
 }
 
-
-
-
-
-
-
 /* funcitons */
+// ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓
 function textBuild(value, name) {
     const sub = isDebug ? `[ "${name}" is not found ]` : ''
     return value ? entityify(value) : sub
@@ -258,7 +254,7 @@ function rowBuild(value, name) {
 }
 
 function searchParam(body, params, doEntityify = true) {
-    param = body.split('.').reduce((o,i)=>o[i], params)
+    param = body.split('.').reduce((o, i) => o[i], params)
     result = ''
     if (param == null) {
         result = isDebug ? `compiled += [ "${body}" is not found ]\n` : `\n`
@@ -270,17 +266,7 @@ function searchParam(body, params, doEntityify = true) {
     return result
 }
 
-
-
-
-
-
-
-
-
-
-
-
+// ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑
 
 function entityify(string) {
     var chars = {
