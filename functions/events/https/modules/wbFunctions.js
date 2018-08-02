@@ -12,6 +12,6 @@ module.exports.funcs = {
         }
     },
     is: value => {
-        console.log('aaa')
+        console.log('is function')
     }
 }

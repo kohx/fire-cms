@@ -1,38 +1,38 @@
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <title>{|name|}</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-
-    <script src="/__/firebase/5.3.0/firebase.js"></script>
-    <script src="/__/firebase/init.js"></script> </head>
-</head>
-
-<body>
-    {|> header |}
-
-    <div>{| aaa |}</div>
-
-    <a href="/signin">signin</a>
-    <button id="signout">sign out</button>
-    <h1>{|&name|}</h1>
-    <ul>
-        <li>{| unique|}</li>
-        <li>{| sign.status|}</li>
-        <li>{| sign.message|}</li>
+<html>\n
+\n
+<head>\n
+    <meta charset="utf-8">\n
+    <title>{|name|}</title>\n
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">\n
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">\n
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">\n
+\n
+    <script src="/__/firebase/5.3.0/firebase.js"></script>\n
+    <script src="/__/firebase/init.js"></script> </head>\n
+</head>\n
+\n
+<body>\n
+    {|> header |}\n
+\n
+    <div>{| aaa |}</div>\n
+\n
+    <a href="/signin">signin</a>\n
+    <button id="signout">sign out</button>\n
+    <h1>{|&name|}</h1>\n
+    <ul>\n
+        <li>{| unique|}</li>\n
+        <li>{| sign.status|}</li>\n
+        <li>{| sign.message|}</li>\n
     </ul>
-    <p>{|user.uid|}</p>
-    <p>{|user.email|}</p>
-    <ul>
+    <p>{|user.uid|}</p>\n
+    <p>{|user.email|}</p>\n
+    <ul>\n
         {|* items : item |}
-        <li> {|# item.name: name |}{| item.name |}:{| name |}{| /# |} {|# item.gender: gender |}{| gender |}{| /# |} </li>
-        {|/*|}
-    </ul>
-    <script type="module" src="./scripts/signin.js"></script> </body>
-    {|> footer |}
-</body>
-
-</html>
+        <li> {|# item.name: name |}{| item.name |}:{| name |}{| /# |} {|# item.gender: gender |}{| gender |}{| /# |} </li>\n
+        {|/*|}\n
+    </ul>\n
+    <script type="module" src="./scripts/signin.js"></script> </body>\n
+    {|> footer |}\n
+</body>\n
+\n
+</html>\n

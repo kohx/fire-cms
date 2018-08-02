@@ -50,6 +50,9 @@ app.use(`/*`, frontendRouter)
 app.use(`/*`, backendRouter)
 app.use('/signEndPoint', signEndPointRouter)
 
+// TODO:: メールはnodeでしかできないで作成
+// app.use('/mailEndPoint', signEndPointRouter)
+
 /* errWare notFound */
 app.use(errWare.notFound)
 

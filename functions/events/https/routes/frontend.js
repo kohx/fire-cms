@@ -4,6 +4,8 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
+const url = require('url')
+
 const wavebar = require('../modules/wavebar')
 const signWare = require('../middleWare/signWare')
 
@@ -50,10 +52,13 @@ router.get('/*',
                 referer = '/'
             }
             res.redirect(referer)
+        } else {
+            next()
         }
-        next()
     },
     (req, res, next) => {
+        // TODO:: ロール制限のある場合
+        // サインインに移動？ OR Not found
         // console.log('role', req.vessel.role)
         next()
     },
@@ -69,6 +74,7 @@ router.get('/*',
         }
         data.params.csrfToken = (req.vessel.csrfToken != null) ? req.vessel.csrfToken : null
         data.params.user = req.vessel.sign.status ? req.vessel.sign.claims : {}
+        // ココらへんはthingに入る
         data.params.items = [{
             name: '<h1>kohei</h1>',
             age: 40,

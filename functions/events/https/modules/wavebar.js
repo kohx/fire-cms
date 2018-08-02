@@ -1,7 +1,7 @@
 const vm = require('vm')
 const wbFunctions = require('./wbFunctions')
 
-const isDebug = true
+const isDebug = false
 
 const templateTagReg = /\{\|.*?\|\}/g
 const bareReg = /\{\||\|\}|\s/g
@@ -21,6 +21,7 @@ module.exports.init = (req, res, next) => {
     next()
 }
 
+/* render */
 function render(res, data) {
     let content = (data.content != null) ? data.content : ''
     const wraps = (data.wraps != null) ? data.wraps : {}
@@ -36,7 +37,6 @@ function render(res, data) {
     // console.log('compiled--->', compiled)
 
     res.send(enLining(compiled))
-    // res.send(builded)
 }
 
 // get merge
@@ -89,19 +89,15 @@ function merge(content, wraps, parts) {
 // get segment
 function segment(string) {
     let line = lining(string)
-
     const matches = line.match(templateTagReg)
-
     let replaces = []
     for (let key in matches) {
         replaces[matches[key]] = `${replaceMarke}${matches[key]}${replaceMarke}`
     }
-
     for (let key in replaces) {
         const value = replaces[key]
         line = line.replace(regEscape(key, 'g'), value)
     }
-
     return line.split(replaceMarke)
 }
 
@@ -116,7 +112,6 @@ function build(segments, params) {
         not: { open: 0, close: 0 },
     }
     segments.forEach((segment, key) => {
-        // const matchLine = match.replace(/\r/g, '')
         if (segment.startsWith('{|')) {
             const baredTag = bareTag(segment)
             let type = baredTag.charAt(0)
@@ -124,33 +119,19 @@ function build(segments, params) {
                 case '*':
                     counter.for.open++
                     body = bodyTag(baredTag)
-                    var [array, variable] = body.split(':')
-                    builded += `for(let key in ${array}) {\n`
-                    if (variable) {
-                        builded += `${variable} = ${array}[key]\n`
-                    } else {
-                        builded += `value = ${array}[key]\n`
-                    }
+                    builded += BuildFor(body)
                     break
 
                 case '#':
                     counter.if.open++
                     body = bodyTag(baredTag)
-                    var [variable, alias] = body.split(':')
-                    builded += `if(typeof ${variable} !== 'undefined' && checkValue(${variable})){\n`
-                    if (alias) {
-                        builded += `const ${alias} = ${variable}\n`
-                    }
+                    builded += BuildIf(body)
                     break
 
                 case '^':
                     counter.not.open++
                     body = bodyTag(baredTag)
-                    var [variable, alias] = body.split(':')
-                    builded += `if(typeof ${variable} === 'undefined' || !checkValue(${variable})){\n`
-                    if (alias) {
-                        builded += `const ${alias} = ${variable}\n`
-                    }
+                    builded += BuildElse(body)
                     break
 
                 case '/':
@@ -168,19 +149,12 @@ function build(segments, params) {
                     break
 
                 case '&':
-                    body = bodyTag(baredTag)
-                    builded += `if(typeof ${body} !== 'undefined' && checkValue(${body})){\n`
-                    builded += `compiled += ${body};\n`
-                    builded += `}\n`
+                    body = buildText(body, false)
                     break
 
                 default:
                     body = baredTag
-                    builded += `if(typeof ${body} !== 'undefined' && checkValue(${body})){\n`
-                    builded += `compiled += entityify(${body});\n`
-                    builded += `} else {\n`
-                    builded += `compiled += '[ "${body}" is not defined! ]'\n`
-                    builded += `}\n`
+                    builded += buildText(body)
             }
         } else {
             builded += `compiled += '${segment}'\n`
@@ -232,30 +206,82 @@ function checkTag(counter, segments) {
 
 // compile
 function compile(builded, params) {
+    // expand params
     const values = Object.keys(params).map(prop => params[prop])
+    // create context for vm then set values and functions
     const context = {
         compiled: '',
         values: values,
         entityify: entityify,
-        textBuild: textBuild,
+        buildText: buildText,
         checkValue: checkValue,
     }
-    // assign functions 
+    // assign function of wbfunctions file
     for (const key in wbFunctions.funcs) {
         context[`${key}`] = wbFunctions.funcs[key]
     }
-    vm.runInNewContext(builded, context)
-    return context.compiled
+    // compile builded code
+    try {
+        const compiled = vm.runInNewContext(builded, context)
+        // vm contextの中身
+        // console.log('vm context', context)
+        return compiled
+    } catch (err) {
+        // TODO:: スタック変更できるかな？
+        console.log('vm error!')
+        throw err
+    }
 }
 
-/* funcitons */
-// ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓
-function textBuild(value, name) {
-
+/* build funcitons */
+// for
+function BuildFor(body) {
+    var [array, variable] = body.split(':')
+    let text = `for(let key in ${array}) {\n`
+    if (variable) {
+        text += `${variable} = ${array}[key]\n`
+    } else {
+        text += `value = ${array}[key]\n`
+    }
+    return text
+}
+// if
+function BuildIf(body) {
+    var [variable, alias] = body.split(':')
+    let text = `if(typeof ${variable} !== 'undefined' && checkValue(${variable})){\n`
+    if (alias) {
+        text += `const ${alias} = ${variable}\n`
+    }
+    return text
+}
+// else
+function BuildElse(body) {
+    var [variable, alias] = body.split(':')
+    let text = `if(typeof ${variable} === 'undefined' || !checkValue(${variable})){\n`
+    if (alias) {
+        text += `const ${alias} = ${variable}\n`
+    }
+    return text
+}
+// text
+function buildText(body, doEntityify = true) {
+    let text = `if(typeof ${body} !== 'undefined' && checkValue(${body})){\n`
+    if (doEntityify) {
+        text += `compiled += entityify(${body});\n`
+    } else {
+        text += `compiled += ${body}\n`
+    }
+    text += `} else {\n`
+    if (isDebug) {
+        text += `compiled += '[ "${body}" is not defined! ]'\n`
+    } else {
+        text += `compiled += ''\n`
+    }
+    text += `}\n`
+    return text
 }
 
-// ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑
-
+/* in vm functions */
 function entityify(string) {
     var chars = {
         '<': '&lt',
@@ -286,6 +312,7 @@ function checkValue(value) {
     return true
 }
 
+/* tag control functions */
 function bareTag(str) {
     return str.replace(bareReg, '')
 }
@@ -306,15 +333,7 @@ function regEscape(str, option = null) {
     return new RegExp(escaped)
 }
 
-function lining(string) {
-    string = string.replace(/\r/g, '')
-    return string.replace(/\n/g, nlMarke)
-}
-
-function enLining(string) {
-    return string.replace(regEscape(nlMarke, 'g'), '\n')
-}
-
+/* Wavebar Error */
 function WavebarError(message, segments = null) {
     this.name = 'wavebar tamplate error'
     this.message = message;
@@ -324,4 +343,17 @@ function WavebarError(message, segments = null) {
     } else {
         this.stack = new Error().stack
     }
+}
+
+function lining(string) {
+    // TODO:: いらんのかな？
+    // string = string.replace(/\r/g, '')
+    // return string.replace(/\n/g, nlMarke)
+    return string
+}
+
+function enLining(string) {
+    // TODO:: いらんのかな？
+    // return string.replace(regEscape(nlMarke, 'g'), '\n')
+    return string
 }
