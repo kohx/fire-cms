@@ -1,7 +1,7 @@
 const vm = require('vm')
 const wbFunctions = require('./wbFunctions')
 
-const isDebug = false
+const isDebug = 0
 
 const templateTagReg = /\{\|.*?\|\}/g
 const bareReg = /\{\||\|\}|\s/g
@@ -29,11 +29,20 @@ function render(res, data) {
     // console.log('separated--->', segmented)
     const builded = build(segmented, params)
     // console.log('builded--->', builded)
-    const compiled = compile(builded, params)
+    let compiled = ''
+    if (!isDebug) {
+        compiled = compile(builded, params)
+    }
     // console.log('compiled--->', compiled)
 
-    // res.send(builded)
-    res.send(compiled)
+    let soce = compiled
+    if (isDebug === 1) {
+        soce = builded
+    }
+    if (isDebug === 2) {
+        soce = compiled
+    }
+    res.send(soce)
 }
 
 // get merge
@@ -201,6 +210,15 @@ function checkTag(counter, segmented) {
 
 // compile
 function compile(builded, params) {
+    // saves the script tags
+    let scripts ={}
+    let count = 1
+    builded = builded.replace(/<script(?: .+?)?>.*?<\/script>/g, match => {
+        const key = `{| script${count++}|}`
+        scripts[key] = match.replace(/\\n/g, '\n')
+        return key
+    })
+
     // create context for vm then set values and functions
     const context = {
         compiled: '',
@@ -217,16 +235,20 @@ function compile(builded, params) {
         context[key] = wbFunctions.funcs[key]
     }
     // compile builded code
-    // try {
-        const compiled = vm.runInNewContext(builded, context)
+    try {
+        let compiled = vm.runInNewContext(builded, context)
+        // return the script tag
+        for(const key in scripts){
+            compiled = compiled.replace(key, scripts[key])
+        }
         // vm contextの中身
         // console.log('vm context', context)
         return compiled
-    // } catch (err) {
-    //     // TODO:: スタック変更できるかな？
-    //     console.log('vm error!')
-    //     throw err
-    // }
+    } catch (err) {
+        // TODO:: スタック変更できるかな？
+        console.log('vm error!')
+        throw err
+    }
 }
 
 /* build funcitons */

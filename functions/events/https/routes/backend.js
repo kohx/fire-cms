@@ -48,7 +48,6 @@ const backendRoutes = {
                 html: fs.readFileSync(path.join(__dirname, '../', 'templates/wraps/html.html'), 'utf8'),
             },
         }
-        console.log(data.parts.header)
         console.log('<----------------------------- root')
         res.wbRender(data)
     },

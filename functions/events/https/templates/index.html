@@ -7,5 +7,17 @@
 {|> footer |}
 
 <script>
+    document.querySelector('#upload').addEventListener('click', event => {
+        const files = document.querySelector('files').files
+        const image = files.pop()
 
+        const ref = firebase.storage().ref().child('images/sample.jpg')
+        ref.put(image)
+        .then(snap => {
+            console.log(snap)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    })
 </script>
