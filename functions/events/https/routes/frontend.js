@@ -5,17 +5,12 @@ const admin = parent.admin
 const system = parent.system
 
 const url = require('url')
-
-const wavebar = require('../modules/wavebar')
 const signWare = require('../middleWare/signWare')
-
 const express = require('express')
 const router = express.Router()
 
 /* signWare csrf */
 router.use(signWare.csrf)
-
-router.use(wavebar.init)
 
 /* route */
 router.get('/*',

@@ -1,5 +1,3 @@
-
-
 // httpOnly Cookieを使用するため、クライアントの状態を保持しない
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
 
@@ -22,25 +20,21 @@ const signin = event => {
         })
         .then(result => {
             // 永続性がNONEに設定されているため、ページのリダイレクトで十分
-            firebase.auth().signOut()
+            // firebase.auth().signOut()
             return result
         })
         .then(result => {
 
-            console.log(result)
             if (result.status) {
+                window.location.assign('/')
                 // ui
-                document.querySelector('#signin').disabled = true
-                document.querySelector('#signout').disabled = false
-                document.querySelector('#signin_message').textContent = result.message
+                // console.log(result)
+                // document.querySelector('#signin').disabled = true
+                // document.querySelector('#signout').disabled = false
+                // document.querySelector('#signin_message').textContent = result.message
             } else {
-
-                // リダイレクトが必要ならリダイレクト
-                if (result.redirect) {
-                    // window.location.assign('/signin')
-                }
-
                 // サインインメッセージ
+                console.log(result)
                 document.querySelector('#signin_message').textContent = result.message
             }
         })

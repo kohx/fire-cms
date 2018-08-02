@@ -9,10 +9,6 @@ const wrapReg = /\{\|\@.*?\|\}/g
 const partReg = /\{\|\>.*?\|\}/g
 const bodyReg = /^[>&#^*@~]*/
 const replaceMarke = '<|||>'
-const nlMarke = '<|/|>'
-
-// TODO::
-// error checker
 
 module.exports.init = (req, res, next) => {
     res.wbRender = (data) => {
@@ -29,14 +25,15 @@ function render(res, data) {
     const params = (data.params != null) ? data.params : {}
 
     const merged = merge(content, wraps, parts)
-    const segments = segment(merged)
-    // console.log('separated--->', segments)
-    const builded = build(segments, params)
+    const segmented = segmentate(merged)
+    // console.log('separated--->', segmented)
+    const builded = build(segmented, params)
     // console.log('builded--->', builded)
     const compiled = compile(builded, params)
     // console.log('compiled--->', compiled)
 
-    res.send(enLining(compiled))
+    // res.send(builded)
+    res.send(compiled)
 }
 
 // get merge
@@ -87,7 +84,7 @@ function merge(content, wraps, parts) {
 }
 
 // get segment
-function segment(string) {
+function segmentate(string) {
     let line = lining(string)
     const matches = line.match(templateTagReg)
     let replaces = []
@@ -102,16 +99,14 @@ function segment(string) {
 }
 
 // build
-function build(segments, params) {
-    const keys = '[' + Object.keys(params).join(',') + ']'
-    let builded = `const ${keys} = values\n`
-    builded += `compiled = ''\n`
+function build(segmented, params) {
+    let builded = `builded = ''\n`
     const counter = {
         for: { open: 0, close: 0 },
         if: { open: 0, close: 0 },
         not: { open: 0, close: 0 },
     }
-    segments.forEach((segment, key) => {
+    segmented.forEach((segment, key) => {
         if (segment.startsWith('{|')) {
             const baredTag = bareTag(segment)
             let type = baredTag.charAt(0)
@@ -145,7 +140,7 @@ function build(segments, params) {
 
                 case '~':
                     body = bodyTag(baredTag)
-                    builded += `compiled += ${body}\n`
+                    builded += `builded += ${body}\n`
                     break
 
                 case '&':
@@ -157,19 +152,19 @@ function build(segments, params) {
                     builded += buildText(body)
             }
         } else {
-            builded += `compiled += '${segment}'\n`
+            builded += `builded += '${segment}'\n`
         }
     })
 
     // check the number of template tag
-    checkTag(counter, segments)
+    checkTag(counter, segmented)
 
     // console.log(builded)
     return builded
 }
 
 // tag not match error
-function checkTag(counter, segments) {
+function checkTag(counter, segmented) {
     let targetType = null
     let name = null
     if (counter.for.open !== counter.for.close) {
@@ -185,52 +180,53 @@ function checkTag(counter, segments) {
         targetType = '^'
     }
     if (targetType) {
-        segments.forEach((segment, key) => {
+        segmented.forEach((segment, key) => {
             if (segment.startsWith('{|')) {
                 const baredTag = bareTag(segment)
                 const type = baredTag.charAt(0)
                 const second = baredTag.substr(0, 2)
                 if (type === targetType) {
-                    segments[key] = `<span style="color:red;">${segment}</span>`
+                    segmented[key] = `<span style="color:red;">${segment}</span>`
                 }
                 if (second === `/${targetType}`) {
-                    segments[key] = `<span style="color:red;">${segment}</span>`
+                    segmented[key] = `<span style="color:red;">${segment}</span>`
                 }
             } else {
-                segments[key] = entityify(segment)
+                segmented[key] = entityify(segment)
             }
         })
-        throw new WavebarError(`"${name}" tag not match!`, segments)
+        throw new WavebarError(`"${name}" tag not match!`, segmented)
     }
 }
 
 // compile
 function compile(builded, params) {
-    // expand params
-    const values = Object.keys(params).map(prop => params[prop])
     // create context for vm then set values and functions
     const context = {
         compiled: '',
-        values: values,
         entityify: entityify,
         buildText: buildText,
         checkValue: checkValue,
     }
+    // expand params then assign to context
+    for (const key in params) {
+        context[key] = params[key];
+    }
     // assign function of wbfunctions file
     for (const key in wbFunctions.funcs) {
-        context[`${key}`] = wbFunctions.funcs[key]
+        context[key] = wbFunctions.funcs[key]
     }
     // compile builded code
-    try {
+    // try {
         const compiled = vm.runInNewContext(builded, context)
         // vm contextの中身
         // console.log('vm context', context)
         return compiled
-    } catch (err) {
-        // TODO:: スタック変更できるかな？
-        console.log('vm error!')
-        throw err
-    }
+    // } catch (err) {
+    //     // TODO:: スタック変更できるかな？
+    //     console.log('vm error!')
+    //     throw err
+    // }
 }
 
 /* build funcitons */
@@ -267,15 +263,15 @@ function BuildElse(body) {
 function buildText(body, doEntityify = true) {
     let text = `if(typeof ${body} !== 'undefined' && checkValue(${body})){\n`
     if (doEntityify) {
-        text += `compiled += entityify(${body});\n`
+        text += `builded += entityify(${body});\n`
     } else {
-        text += `compiled += ${body}\n`
+        text += `builded += ${body}\n`
     }
     text += `} else {\n`
     if (isDebug) {
-        text += `compiled += '[ "${body}" is not defined! ]'\n`
+        text += `builded += '[ "${body}" is not defined! ]'\n`
     } else {
-        text += `compiled += ''\n`
+        text += `builded += ''\n`
     }
     text += `}\n`
     return text
@@ -334,11 +330,11 @@ function regEscape(str, option = null) {
 }
 
 /* Wavebar Error */
-function WavebarError(message, segments = null) {
+function WavebarError(message, segmented = null) {
     this.name = 'wavebar tamplate error'
     this.message = message;
-    if (segments) {
-        const template = segments.join('').replace(regEscape('&lt|/|&gt', 'g'), '\n')
+    if (segmented) {
+        const template = segmented.join('').replace(regEscape('&lt|/|&gt', 'g'), '\n')
         this.stack = `${this.name} at \n <pre> ${enLining(template)} </pre>`;
     } else {
         this.stack = new Error().stack
@@ -346,14 +342,7 @@ function WavebarError(message, segments = null) {
 }
 
 function lining(string) {
-    // TODO:: いらんのかな？
-    // string = string.replace(/\r/g, '')
-    // return string.replace(/\n/g, nlMarke)
-    return string
-}
-
-function enLining(string) {
-    // TODO:: いらんのかな？
-    // return string.replace(regEscape(nlMarke, 'g'), '\n')
+    string = string.replace(/\r/g, '')
+    string = string.replace(/\n/g, '\\n')
     return string
 }

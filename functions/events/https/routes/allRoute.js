@@ -4,9 +4,6 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-const wavebar = require('../modules/wavebar')
-const signWare = require('../middleWare/signWare')
-
 const express = require('express')
 const router = express.Router()
 

@@ -113,8 +113,7 @@ module.exports.in = (req, res, next) => {
 
   // Guard against CSRF attacks.
   if (!bodyCsrfToken || !cookieCsrfToken || bodyCsrfToken !== cookieCsrfToken) {
-
-    res.json({ status: false, redirect: true, message: `there is not csrfToken.` })
+    res.json({ status: false, message: `there is not csrfToken.` })
     return
   }
 
@@ -123,7 +122,7 @@ module.exports.in = (req, res, next) => {
 
   // bearerのチェック
   if (!bearer || !idToken || bearer !== idToken) {
-    res.json({ status: false, redirect: false, message: `bearer is not true.` })
+    res.json({ status: false, message: `bearer is not true.` })
     return
   }
 
@@ -144,10 +143,10 @@ module.exports.in = (req, res, next) => {
       // サインイン成功
       session.sessionCookie = sessionCookie
       res.cookie('__session', JSON.stringify(session), options);
-      res.json({ status: true, redirect: false, message: `sign in success.` })
+      res.json({ status: true, message: `sign in success.` })
     })
     .catch(err => {
-      res.json({ status: false, redirect: false, message: err.message })
+      res.json({ status: false, message: err.message })
     })
 }
 

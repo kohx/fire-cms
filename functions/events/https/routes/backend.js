@@ -5,12 +5,19 @@ const admin = parent.admin
 const system = parent.system
 
 const cache = require('memory-cache')
+var fs = require('fs')
+const path = require('path')
 
 const express = require('express')
-
 const router = express.Router()
 
 router.get('/*',
+    (req, res, next) => {
+        // console.log(req.vessel)
+        // if (req.vessel.sign.status === false) res.redirect(`/${req.vessel.signinUnique}`)
+        // else next()
+        next()
+    },
     (req, res, next) => {
         // ファーストパスがバックエンドユニークでない場合
         if (req.vessel.firstPath !== req.vessel.backendUnique) next('route')
@@ -31,8 +38,19 @@ router.get('/*',
 
 const backendRoutes = {
     root: (req, res) => {
+        const data = {
+            content: fs.readFileSync(path.join(__dirname, '../', 'templates/index.html'), 'utf8'),
+            parts: {
+                header: fs.readFileSync(path.join(__dirname, '../', 'templates/parts/header.html'), 'utf8'),
+                footer: fs.readFileSync(path.join(__dirname, '../', 'templates/parts/footer.html'), 'utf8'),
+            },
+            wraps: {
+                html: fs.readFileSync(path.join(__dirname, '../', 'templates/wraps/html.html'), 'utf8'),
+            },
+        }
+        console.log(data.parts.header)
         console.log('<----------------------------- root')
-        res.send('root!')
+        res.wbRender(data)
     },
     configs: (req, res) => {
         console.log('<----------------------------- configs')

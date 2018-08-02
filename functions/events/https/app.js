@@ -17,6 +17,7 @@ const cors = require('cors')({
 
 /* module */
 const cipher = require('../../modules/cipher')
+const wavebar = require('../../modules/wavebar')
 
 /* middleware */
 const getWare = require('./middleWare/getWare')
@@ -43,6 +44,9 @@ app.use(getWare.getInfo)
 
 /* signWare check */
 app.use(signWare.check)
+
+/* wavebar */
+app.use(wavebar.init)
 
 /* route */
 app.use(`/*`, allRouter)
