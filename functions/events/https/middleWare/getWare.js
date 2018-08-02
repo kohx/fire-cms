@@ -34,7 +34,6 @@ module.exports.getInfo =
 
     // config 関係
     const getConfigs = new Promise((resolve, reject) => {
-
       admin.firestore().collection('configs')
         .get()
         .then(docs => {
@@ -43,30 +42,6 @@ module.exports.getInfo =
             configs[doc.id] = doc.data()
           })
           resolve(configs)
-        })
-        .catch(err => reject(err))
-    })
-
-    // get parts
-    const getParts = new Promise((resolve, reject) => {
-      // キャッシュを取得
-      const parts = jsonCache.get('parts')
-      // キャッシュから取得できればそれを返す
-      if (parts != null) {
-        resolve(parts)
-      }
-      // パーツを取得
-      admin.firestore().collection('parts').get()
-        .then(docs => {
-          let parts = {}
-          docs.forEach(doc => {
-            const data = doc.data()
-            parts[doc.id] = data.content
-          })
-          // キャッシュに入れる 
-          jsonCache.set('parts', parts)
-          // 結果を返す
-          resolve(parts)
         })
         .catch(err => reject(err))
     })
@@ -95,18 +70,42 @@ module.exports.getInfo =
         .catch(err => reject(err))
     })
 
+    // get parts
+    const getParts = new Promise((resolve, reject) => {
+      // キャッシュを取得
+      const parts = jsonCache.get('parts')
+      // キャッシュから取得できればそれを返す
+      if (parts != null) {
+        resolve(parts)
+      }
+      // パーツを取得
+      admin.firestore().collection('parts').get()
+        .then(docs => {
+          let parts = {}
+          docs.forEach(doc => {
+            const data = doc.data()
+            parts[doc.id] = data.content
+          })
+          // キャッシュに入れる 
+          jsonCache.set('parts', parts)
+          // 結果を返す
+          resolve(parts)
+        })
+        .catch(err => reject(err))
+    })
+
     var start_ms = new Date().getTime()
-    Promise.all([getConfigs, getParts])
+    Promise.all([getConfigs, getWraps, getParts])
       .then(function (results) {
-        const [configs, parts, wraps] = results
+        const [configs, wraps, parts] = results
         // console.log('parts', parts)
         let vessel = {
           frontBaseUrl: req.headers['x-forwarded-host'] || null,
           frontendUnique: configs.settings.frontendUnique,
           backendUnique: configs.settings.backendUnique,
           signinUnique: configs.settings.signinUnique,
-          parts: parts,
           wraps: wraps,
+          parts: parts,
         }
         req.vessel = vessel
         var elapsed_ms = new Date().getTime() - start_ms

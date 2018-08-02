@@ -1,28 +1,11 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{| name |}</title>
-    <link rel="apple-touch-icon" href="./images/favicon.png">
-    <script src="/__/firebase/5.3.0/firebase-app.js"></script>
-    <script src="/__/firebase/5.3.0/firebase-auth.js"></script>
-    <script src="/__/firebase/5.3.0/firebase-firestore.js"></script>
-    <script src="/__/firebase/5.3.0/firebase-storage.js"></script>
-    <script src="/__/firebase/5.3.0/firebase-messaging.js"></script>
-    <script src="/__/firebase/5.3.0/firebase-functions.js"></script>
-    <script src="/__/firebase/init.js"></script>
-</head>
-
-<body>
-    <h1>sign in</h1>
-    <input type="email" id="email" placeholder="email" value="kohei0728@gmail.com">
-    <input type="password" id="password" placeholder="password" value="1072551">
-    <button id="signin">sign in</button>
-    <button id="signout">sign out</button>
-    <div id="csrfToken">{|csrfToken|}</div>
-    <p id="signin_message"></p>
-    <script type="module" src="./scripts/signin.js"></script> </body>
-
-</html>
+{|@ html |}
+{|> header |}\n
+ \n
+<h1>sign in</h1>\n
+<input type="email" id="email" placeholder="email" value="kohei0728@gmail.com">\n
+<input type="password" id="password" placeholder="password" value="1072551">\n
+<button id="signin">sign in</button>\n
+<button id="signout">sign out</button>\n
+<div id="csrfToken">{|csrfToken|}</div>\n
+<p id="signin_message"></p>\n
+{|> footer |}\n
