@@ -7,7 +7,7 @@
 <button id="signout">sign out</button>\n
 <h1>{|&name|}</h1>\n
 <ul>\n
-    <li>{| unique|}</li>\n
+    <li>{| unique |}</li>\n
     <li>{| sign.status|}</li>\n
     <li>{| sign.message|}</li>\n
 </ul>
@@ -16,4 +16,7 @@
 <ul>\n {|* items : item |}
     <li> {|# item.name: name |}{| item.name |}:{| name |}{| /# |} {|# item.gender: gender |}{| gender |}{| /# |} </li>\n {|/*|}\n
 </ul>\n
+{|* images:image |}
+<div><img src="{| image.downloadUrl |}" alt=""></div>
+{| /* |}
 {|> footer |}\n

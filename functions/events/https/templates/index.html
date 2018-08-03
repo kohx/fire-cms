@@ -1,23 +1,134 @@
-{|@ html |}
+{|@ html |} 
 {|> header |}
-<div>
-    <input type="file" id="files" />
-    <button id="upload" type="button">アップロード</button>
-</div>
-{|> footer |}
-
+<input type="file" id="files" />
+<button id="upload" type="button">アップロード</button>
+<img src="" alt="" id="image" width="5"> {|> footer |}
+<a id="link" href="">url</a>
+<a id="dl" href="" download="">dl</a>
 <script>
-    document.querySelector('#upload').addEventListener('click', event => {
-        const files = document.querySelector('files').files
-        const image = files.pop()
 
-        const ref = firebase.storage().ref().child('images/sample.jpg')
-        ref.put(image)
-        .then(snap => {
-            console.log(snap)
+    firebase.firestore().collection('things').doc(req.vessel.thingUnique)
+    
+
+
+    document.querySelector('#upload').addEventListener('click', updateImage)
+
+    // https://norm-nois.com/blog/archives/4080
+
+    // get backet
+    var storage = firebase.storage();
+    var ref = storage.ref('images/sample1.jpg')
+    console.log('ref->', ref.fullPath)
+    var storageRef = storage.ref();
+    console.log('storageRef->', storageRef)
+
+    var imagesRef = storageRef.child('images');
+    console.log('imagesRef->', imagesRef.fullPath)
+    var spaceRef = imagesRef.child('sample.jpg');
+    console.log('spaceRef->', spaceRef.fullPath)
+    var parentRef = spaceRef.parent;
+    console.log('parentRef->', parentRef.fullPath)
+    var rootRef = spaceRef.root;
+    console.log('rootRef->', rootRef)
+
+
+    var gsReference = storage.refFromURL('gs://fire-cms-86681.appspot.com/images/sample.jpg')
+    console.log('gsReference->', gsReference.fullPath)
+    var httpsReference = storage.refFromURL('https://firebasestorage.googleapis.com/v0/b/fire-cms-86681.appspot.com/o/images%2Fsample.jpg?alt=media&token=1d2558cf-7e10-48dd-a9f6-72aa4aad43c9');
+    console.log('httpsReference->', httpsReference.fullPath)
+
+    storageRef.child('images/sample.jpg')
+        .getDownloadURL()
+        .then(url => {
+            console.log(url)
+            document.querySelector('#image').src = url;
+            document.querySelector('#link').href = url;
+            document.querySelector('#dl').href = 'data:application/octet-stream,' + url;
+            document.querySelector('#dl').download = 'data:application/octet-stream,' + url;
         })
-        .catch(err => {
-            console.log(err)
+        .catch(err => console.log(err))
+
+    storageRef.child('images/sample.jpg')
+        .getMetadata()
+        .then(metadata => {
+            console.log('metadata-->', metadata)
         })
-    })
+        .catch(err => console.log(err))
+
+    function updateImage(event) {
+        const files = document.querySelector('#files').files
+        const image = files[0]
+        console.log(image)
+
+        var uploadTask = storageRef.child('images/sample.jpg').put(image, {
+            'cacheControl': 'public,max-age=300',
+            'contentDisposition': 'kohei okuda',
+            'customMetadata': { uid: 123412341234, "okok": "okok" },
+            'contentType': 'image/jpeg',
+            // 'contentType': 'application/octet-stream',
+        })
+
+        // .then(snap => {
+        //     console.log(snap)
+        //     snap.ref.getDownloadURL()
+        //         .then(url => {
+        //             document.querySelector('#image').src = url;
+        //         })
+        // })
+        // .catch(err => {
+        //     console.log(err)
+        // })
+
+        // or
+
+        // Register three observers:
+        // 1. 'state_changed' observer, called any time the state changes
+        // 2. Error observer, called on failure
+        // 3. Completion observer, called on successful completion
+        uploadTask.on('state_changed',
+            snap => {
+                // Observe state change events such as progress, pause, and resume
+                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                var progress = (snap.bytesTransferred / snap.totalBytes) * 100;
+
+                console.log('Upload is ' + progress + '% done');
+                switch (snap.state) {
+                    case firebase.storage.TaskState.PAUSED: // or 'paused'
+                        console.log('Upload is paused');
+                        break;
+                    case firebase.storage.TaskState.RUNNING: // or 'running'
+                        console.log('Upload is running');
+                        break;
+                }
+            },
+            (err) => {
+                // Handle unsuccessful uploads
+                // A full list of error codes is available at
+                // https://firebase.google.com/docs/storage/web/handle-errors
+                switch (error.code) {
+                    case 'storage/unauthorized':
+                        // User doesn't have permission to access the object
+                        break;
+
+                    case 'storage/canceled':
+                        // User canceled the upload
+                        break;
+
+                    // ...
+
+                    case 'storage/unknown':
+                        // Unknown error occurred, inspect error.serverResponse
+                        break;
+                }
+            },
+            () => {
+                // Handle successful uploads on complete
+                // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                uploadTask.snapshot.ref.getDownloadURL()
+                    .then(url => {
+                        document.querySelector('#image').src = url;
+                        console.log('File available at', url);
+                    });
+            });
+    }
 </script>

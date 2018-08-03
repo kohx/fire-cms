@@ -58,6 +58,30 @@ router.get('/*',
         next()
     },
     (req, res, next) => {
+
+
+        // const bucket = admin.storage().bucket()
+        // const file = bucket.file('images/sample.jpg')
+        console.log('==============================================')   
+        // console.log(file)
+        console.log('==============================================')                                                       
+
+
+        // images
+        admin.firestore().collection('images')
+            .get()
+            .then(docs => {
+                let images = {}
+                docs.forEach(doc => {
+                    const data = doc.data()
+                    images[doc.id] = data
+                })
+                req.vessel.thing.images = images
+                next()
+            })
+            .catch(err => next(err))
+    },
+    (req, res, next) => {
         const thing = req.vessel.thing
         const content = (thing.content != null) ? thing.content : ''
         delete thing.content
