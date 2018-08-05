@@ -20,17 +20,45 @@ router.get('/*',
         else next()
     },
     (req, res, next) => {
+
+        let thing = {}
+
         // thingを取得
         admin.firestore().collection('things').doc(req.vessel.thingUnique)
             .get()
-            .then(doc => {
-                if (doc.exists) {
-                    req.vessel.thing = doc.data()
-                    next()
+            .then(snap => {
+                if (snap.exists) {
+                    thing = snap.data()
+                    return snap.ref
                 } else {
                     // ない場合は404へ
                     next('route')
                 }
+            })
+            .then(ref => {
+                console.log('↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓')
+                ref.collection('groups').get()
+                    .then(snaps => {
+                        snaps.forEach(snap => {
+                            
+                            thing.groups = {}
+
+                            snap.ref.collection('fields')
+                                .get()
+                                .then(snaps => {
+
+                                    snaps.forEach(snap => {
+                                        const field = snap.data()
+                                        console.log(field.path)
+                                    })
+                                })
+                                .catch(err => next(err))
+                        })
+                    })
+            })
+            .then(spans => {
+                req.vessel.thing = thing
+                next()
             })
             .catch(err => next(err))
     },
@@ -58,28 +86,7 @@ router.get('/*',
         next()
     },
     (req, res, next) => {
-
-
-        // const bucket = admin.storage().bucket()
-        // const file = bucket.file('images/sample.jpg')
-        console.log('==============================================')   
-        // console.log(file)
-        console.log('==============================================')                                                       
-
-
-        // images
-        admin.firestore().collection('images')
-            .get()
-            .then(docs => {
-                let images = {}
-                docs.forEach(doc => {
-                    const data = doc.data()
-                    images[doc.id] = data
-                })
-                req.vessel.thing.images = images
-                next()
-            })
-            .catch(err => next(err))
+        next()
     },
     (req, res, next) => {
         const thing = req.vessel.thing
@@ -95,20 +102,21 @@ router.get('/*',
         data.params.user = req.vessel.sign.status ? req.vessel.sign.claims : {}
         // ココらへんはthingに入る
         data.params.items = [{
-            name: '<h1>kohei</h1>',
-            age: 40,
-            gender: 'male'
-        },
-        {
-            name: 'kohei',
-            age: 40,
-            gender: 'male'
-        },
-        {
-            name: 'kohei',
-            age: 40,
-            gender: 'male'
-        }]
+                name: '<h1>kohei</h1>',
+                age: 40,
+                gender: 'male'
+            },
+            {
+                name: 'kohei',
+                age: 40,
+                gender: 'male'
+            },
+            {
+                name: 'kohei',
+                age: 40,
+                gender: 'male'
+            }
+        ]
         data.params.sign = req.vessel.sign
 
         res.status(200)

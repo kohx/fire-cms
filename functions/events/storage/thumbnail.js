@@ -46,7 +46,7 @@ exports.generateThumbnail = functions.storage.object()
 
 
     // firestoreに保存
-    admin.firestore().collection('images')
+    admin.firestore().collection('assets')
       .add({
         extName,
         filePath,

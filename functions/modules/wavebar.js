@@ -111,9 +111,18 @@ function segmentate(string) {
 function build(segmented, params) {
     let builded = `builded = ''\n`
     const counter = {
-        for: { open: 0, close: 0 },
-        if: { open: 0, close: 0 },
-        not: { open: 0, close: 0 },
+        for: {
+            open: 0,
+            close: 0
+        },
+        if: {
+            open: 0,
+            close: 0
+        },
+        not: {
+            open: 0,
+            close: 0
+        },
     }
     segmented.forEach((segment, key) => {
         if (segment.startsWith('{|')) {
@@ -122,19 +131,19 @@ function build(segmented, params) {
             switch (type) {
                 case '*':
                     counter.for.open++
-                    body = bodyTag(baredTag)
+                        body = bodyTag(baredTag)
                     builded += BuildFor(body)
                     break
 
                 case '#':
                     counter.if.open++
-                    body = bodyTag(baredTag)
+                        body = bodyTag(baredTag)
                     builded += BuildIf(body)
                     break
 
                 case '^':
                     counter.not.open++
-                    body = bodyTag(baredTag)
+                        body = bodyTag(baredTag)
                     builded += BuildElse(body)
                     break
 
@@ -142,9 +151,9 @@ function build(segmented, params) {
                     body = bodyTag(baredTag)
                     const second = baredTag.charAt(1)
                     if (second === '*') counter.for.close++
-                    if (second === '#') counter.if.close++
-                    if (second === '^') counter.not.close++
-                    builded += `}\n`
+                        if (second === '#') counter.if.close++
+                            if (second === '^') counter.not.close++
+                                builded += `}\n`
                     break
 
                 case '~':
@@ -211,7 +220,7 @@ function checkTag(counter, segmented) {
 // compile
 function compile(builded, params) {
     // saves the script tags
-    let scripts ={}
+    let scripts = {}
     let count = 1
     builded = builded.replace(/<script(?: .+?)?>.*?<\/script>/g, match => {
         const key = `{| script${count++}|}`
@@ -238,7 +247,7 @@ function compile(builded, params) {
     try {
         let compiled = vm.runInNewContext(builded, context)
         // return the script tag
-        for(const key in scripts){
+        for (const key in scripts) {
             compiled = compiled.replace(key, scripts[key])
         }
         // vm contextの中身
@@ -255,12 +264,14 @@ function compile(builded, params) {
 // for
 function BuildFor(body) {
     var [array, variable] = body.split(':')
-    let text = `for(let key in ${array}) {\n`
+    let text = `if(typeof ${variable} !== 'undefined' && checkValue(${variable}, true)){\n`
+    text += `for(let key in ${array}) {\n`
     if (variable) {
         text += `${variable} = ${array}[key]\n`
     } else {
         text += `value = ${array}[key]\n`
     }
+    text += `}\n`
     return text
 }
 // if
@@ -314,7 +325,7 @@ function entityify(string) {
     })
 }
 
-function checkValue(value) {
+function checkValue(value, isObject = false) {
     if (value === null || value === false) {
         return false
     }
@@ -326,6 +337,11 @@ function checkValue(value) {
     }
     if (typeof value === 'object' && Object.keys(value).length === 0) {
         return false
+    }
+    if (isObject) {
+        if (typeof value !== 'object'){
+            return false
+        }
     }
     return true
 }

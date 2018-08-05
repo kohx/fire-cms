@@ -1,7 +1,7 @@
 // https://www.npmjs.com/package/memory-cache
 const cache = require('memory-cache')
 
-const isActive = true
+const isActive = false
 
 exports.set = (key, value, active = false) => {
     active = active ? active : isActive

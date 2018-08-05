@@ -1,15 +1,15 @@
-{|@ html |} 
-{|> header |}
+{|@ html |} {|> header |}
 <input type="file" id="files" />
 <button id="upload" type="button">アップロード</button>
 <img src="" alt="" id="image" width="5"> {|> footer |}
 <a id="link" href="">url</a>
 <a id="dl" href="" download="">dl</a>
 <script>
-
-    firebase.firestore().collection('things').doc(req.vessel.thingUnique)
-    
-
+    const firestore = firebase.firestore();
+    const settings = {
+        timestampsInSnapshots: true
+    };
+    firestore.settings(settings);
 
     document.querySelector('#upload').addEventListener('click', updateImage)
 
@@ -34,7 +34,9 @@
 
     var gsReference = storage.refFromURL('gs://fire-cms-86681.appspot.com/images/sample.jpg')
     console.log('gsReference->', gsReference.fullPath)
-    var httpsReference = storage.refFromURL('https://firebasestorage.googleapis.com/v0/b/fire-cms-86681.appspot.com/o/images%2Fsample.jpg?alt=media&token=1d2558cf-7e10-48dd-a9f6-72aa4aad43c9');
+    var httpsReference = storage.refFromURL(
+        'https://firebasestorage.googleapis.com/v0/b/fire-cms-86681.appspot.com/o/images%2Fsample.jpg?alt=media&token=1d2558cf-7e10-48dd-a9f6-72aa4aad43c9'
+    );
     console.log('httpsReference->', httpsReference.fullPath)
 
     storageRef.child('images/sample.jpg')
@@ -60,11 +62,14 @@
         const image = files[0]
         console.log(image)
 
-        var uploadTask = storageRef.child('images/sample.jpg').put(image, {
+        var uploadTask = storageRef.child('assets/sample.jpg').put(image, {
             'cacheControl': 'public,max-age=300',
             'contentDisposition': 'kohei okuda',
-            'customMetadata': { uid: 123412341234, "okok": "okok" },
-            'contentType': 'image/jpeg',
+            'customMetadata': {
+                uid: 123412341234,
+                "okok": "okok"
+            },
+            // 'contentType': 'image/jpeg',
             // 'contentType': 'application/octet-stream',
         })
 
@@ -114,7 +119,7 @@
                         // User canceled the upload
                         break;
 
-                    // ...
+                        // ...
 
                     case 'storage/unknown':
                         // Unknown error occurred, inspect error.serverResponse
