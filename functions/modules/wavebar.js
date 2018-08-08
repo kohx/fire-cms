@@ -380,7 +380,13 @@ function WavebarError(message, segmented = null) {
 }
 
 function lining(string) {
+    
     string = string.replace(/\r/g, '')
     string = string.replace(/\n/g, '\\n')
     return string
+
+        // TODO:: これを使うとscriptもうまくいくかも？
+        // encodeURIComponent
+        // decodeURIComponent
+
 }

@@ -5,9 +5,10 @@
 
 <button id="upload" type="button">upload</button>
 <button id="delete" type="button">delete</button>
-<img src="" alt="" id="image" width="5">
-<a id="link" href="">url</a>
-<a id="dl" href="" download="">dl</a>
+<hr>
+<div id="asset-list">
+
+</div>
 {|> footer |}
 
 <script>
@@ -15,13 +16,23 @@
     const defaultFileImage = '/images/favicon.png'
     const listElemant = document.querySelector('#list')
     const select = document.querySelector('#select')
+    const assetList = document.querySelector('#asset-list')
     select.addEventListener('change', selectFile)
     document.querySelector('#delete').addEventListener('click', deleteFile)
     document.querySelector('#upload').addEventListener('click', updateItems)
 
+    const assetsRef = firebase.firestore().collection('assets')
+
+    assetsRef.get()
+        .then(docs => {
+            docs.forEach(doc => {
+                const data = doc.data()
+                let src = (data.fileType === 'image') ? data.checkUrl : '/images/file.png'
+                assetList.insertAdjacentHTML('beforeend', `<img src="${src}" height="20">`)
+            })
+        })
 
     function selectFile(event) {
-
         // FileList object
         const files = event.target.files
         // files is a FileList of File objects. List some properties.
@@ -81,57 +92,62 @@
 
     // update items
     function updateItems() {
-        const fileFrames = Array.from(document.querySelectorAll('.file_frame'))
-
-        fileFrames.forEach(element => {
-            const name = element.querySelector('[type="text"]').value
-            firebase.firestore().collection('assets').doc(name).get()
-                .then(doc => {
-                    console.log(doc)
+        console.log('in')
+        const getAlreadyAssets = assetsRef.get()
+            .then(docs => {
+                let alreadyAssets = []
+                docs.forEach(doc => {
+                    alreadyAssets.push(doc.id)
                 })
-        })
+                return alreadyAssets
+            })
+            .then(alreadyAssets => {
+                Array.from(document.querySelectorAll('.file_frame')).forEach(element => {
+                    const uid = element.dataset.uid
+                    const name = element.querySelector('[type="text"]').value
+                    const file = selectedFiles[uid]
+                    file.name = name
+                    const option = {
+                        cacheControl: 'public,max-age=300',
+                        contentDisposition: 'kohei okuda',
+                        customMetadata: {
+                            name
+                        }
+                    }
 
+                    if (alreadyAssets.includes(name)) {
+                        const target = document.querySelector(`.file_frame[data-uid="${uid}"] [type="text"]`)
+                        target.style.border = "1px solid red"
+                        return
+                    }
 
-        fileFrames.forEach(element => {
-            const uid = element.dataset.uid
-            const name = element.querySelector('[type="text"]').value
-            const file = selectedFiles[uid]
-            file.name = name
-            const option = {
-                cacheControl: 'public,max-age=300',
-                contentDisposition: 'kohei okuda',
-                customMetadata: {
-                    name
-                }
-            }
+                    var uploadTask = firebase.storage().ref('assets').child(name).put(file, option)
+                    uploadTask.on('state_changed',
+                        snap => {
+                            var progress = (snap.bytesTransferred / snap.totalBytes) * 100
 
-            // var uploadTask = firebase.storage().ref('assets').child(name).put(file, option)
-            
-            // uploadTask.on('state_changed',
-            //     snap => {
-            //         var progress = (snap.bytesTransferred / snap.totalBytes) * 100
-
-            //         console.log('Upload is ' + progress + '% done')
-            //         switch (snap.state) {
-            //             case firebase.storage.TaskState.PAUSED: // or 'paused'
-            //                 console.log('Upload is paused')
-            //                 break
-            //             case firebase.storage.TaskState.RUNNING: // or 'running'
-            //                 console.log('Upload is running')
-            //                 break
-            //         }
-            //     },
-            //     err => {
-            //         console.log(err)
-            //     },
-            //     success => {
-            //         element.parentNode.removeChild(element)
-            //         uploadTask.snapshot.ref.getDownloadURL()
-            //             .then(url => {
-            //                 console.log('File available at', url)
-            //             })
-            //     })
-        })
+                            console.log('Upload is ' + progress + '% done')
+                            switch (snap.state) {
+                                case firebase.storage.TaskState.PAUSED: // or 'paused'
+                                    console.log('Upload is paused')
+                                    break
+                                case firebase.storage.TaskState.RUNNING: // or 'running'
+                                    console.log('Upload is running')
+                                    break
+                            }
+                        },
+                        err => {
+                            console.log(err)
+                        },
+                        success => {
+                            element.parentNode.removeChild(element)
+                            uploadTask.snapshot.ref.getDownloadURL()
+                                .then(url => {
+                                    console.log('File available at', url)
+                                })
+                        })
+                })
+            })
     }
 
     function generateUuid() {

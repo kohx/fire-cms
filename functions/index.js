@@ -2,7 +2,7 @@
 const modules = {
     // test: require('./events/store/test'),
     // auth: require('./events/auth'),
-    storageThumbnail: require('./events/storage/thumbnail'),
+    updateAsset: require('./events/storage/updateAsset'),
     app: require('./events/https/app'),
 }
 

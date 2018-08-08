@@ -63,9 +63,19 @@ const backendRoutes = {
         console.log('<----------------------------- parts')
         res.send('parts!')
     },
-    images: (req, res) => {
-        console.log('<----------------------------- images')
-        res.send('images!')
+    assets: (req, res) => {
+        const data = {
+            content: fs.readFileSync(path.join(__dirname, '../', 'templates/assets.html'), 'utf8'),
+            parts: {
+                header: fs.readFileSync(path.join(__dirname, '../', 'templates/parts/header.html'), 'utf8'),
+                footer: fs.readFileSync(path.join(__dirname, '../', 'templates/parts/footer.html'), 'utf8'),
+            },
+            wraps: {
+                html: fs.readFileSync(path.join(__dirname, '../', 'templates/wraps/html.html'), 'utf8'),
+            },
+        }
+        console.log('<----------------------------- assets')
+        res.wbRender(data)
     },
 }
 
