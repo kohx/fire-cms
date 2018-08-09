@@ -1,0 +1,23 @@
+{ "frontBaseUrl": 'localhost: 5000',
+  "frontendUnique": 'home',
+  "backendUnique": 'backend',
+  "signinUnique": 'signin',
+  "wraps": { "html": ''},
+  "parts": { footer: '<footer>     <hr>     &copy; fire cms </footer>',
+     header: '<header>\\n     fire cms</h1>\\n </header>',
+     part1: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+     part2: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+     part3: 'cccccccccccccccccccccccccccccccccccc',
+     part4: 'ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
+     part5: 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+  },
+  sign: { status: false,
+     message: 'sign in failed. there is not sessionCookie.',
+     claims: {}
+  },
+  paths: [],
+  firstPath: 'backend',
+  pathUnique: 'backend',
+  pathNumber: '',
+  thingUnique: 'backend'
+}

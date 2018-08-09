@@ -31,6 +31,7 @@ var frontendRouter = require('./routes/frontend')
 var signEndPointRouter = require('./routes/signEndPoint')
 
 // app
+console.log('app---------->')
 const app = express()
 app.use(cors)
 app.use(cookieParser())

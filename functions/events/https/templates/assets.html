@@ -10,10 +10,10 @@
 
 </div>
 {|> footer |}
-
 <script>
+
     const selectedFiles = {}
-    const defaultFileImage = '/images/favicon.png'
+    const defaultFileImage = '/images/file.png'
     const listElemant = document.querySelector('#list')
     const select = document.querySelector('#select')
     const assetList = document.querySelector('#asset-list')
@@ -21,16 +21,50 @@
     document.querySelector('#delete').addEventListener('click', deleteFile)
     document.querySelector('#upload').addEventListener('click', updateItems)
 
-    const assetsRef = firebase.firestore().collection('assets')
+    const assetsSroreRef = firebase.firestore().collection('assets')
+    const assetsStrageRef = firebase.storage().ref('assets')
 
-    assetsRef.get()
-        .then(docs => {
-            docs.forEach(doc => {
-                const data = doc.data()
-                let src = (data.fileType === 'image') ? data.checkUrl : '/images/file.png'
-                assetList.insertAdjacentHTML('beforeend', `<img src="${src}" height="20">`)
-            })
+    // assetsSroreRef.orderBy('created', 'asc').limit(this.messageLimit)
+    assetsSroreRef.onSnapshot(docs => {
+        docs.forEach(doc => {
+            getAssetFromDoc(doc)
+                .then(data => {
+                    let assetFrame = document.getElementById(`#id_${data.id}`)
+                    console.log(assetFrame)
+                    if (!assetFrame) {
+                        const html = `<div id="id_${data.id}">
+                                    <a href="${data.url}">
+                                        <img src="${data.thumbUrl}" height="20">
+                                        <div>${data.unique}</div>
+                                    </a>
+                                </div>`
+                        assetList.insertAdjacentHTML('beforeend', html)
+                    }
+                })
         })
+    })
+
+    function getAssetFromDoc(doc) {
+        const data = doc.data()
+        const getUrl = assetsStrageRef.child(data.unique).getDownloadURL()
+        const getThumb = new Promise((resolve, reject) => {
+            if (data.fileType !== 'image') {
+                resolve(defaultFileImage)
+            } else {
+                assetsStrageRef.child(`thumb_${data.unique}`).getDownloadURL()
+                    .then(thumb => resolve(thumb))
+                    .catch(err => reject(err))
+            }
+        })
+        return Promise.all([getUrl, getThumb])
+            .then(results => {
+                const [url, thumb] = results
+                data.id = doc.id
+                data.url = url
+                data.thumbUrl = thumb
+                return data
+            })
+    }
 
     function selectFile(event) {
         // FileList object
@@ -93,7 +127,7 @@
     // update items
     function updateItems() {
         console.log('in')
-        const getAlreadyAssets = assetsRef.get()
+        const getAlreadyAssets = assetsSroreRef.get()
             .then(docs => {
                 let alreadyAssets = []
                 docs.forEach(doc => {

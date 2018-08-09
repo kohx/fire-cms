@@ -7,8 +7,6 @@ const system = parent.system
 const url = require('url')
 const path = require('path')
 // const cache = require('memory-cache')
-const jsonCache = require('../../../modules/jsonCache')
-
 
 module.exports.getInfo =
   (req, res, next) => {
@@ -46,66 +44,16 @@ module.exports.getInfo =
         .catch(err => reject(err))
     })
 
-    // get wraps
-    const getWraps = new Promise((resolve, reject) => {
-      // キャッシュを取得
-      const wraps = jsonCache.get('wraps')
-      // キャッシュから取得できればそれを返す
-      if (wraps != null) {
-        resolve(wraps)
-      }
-      // ラップを取得
-      admin.firestore().collection('wraps').get()
-        .then(docs => {
-          let wraps = {}
-          docs.forEach(doc => {
-            const data = doc.data()
-            wraps[doc.id] = data.content
-          })
-          // キャッシュに入れる 
-          jsonCache.set('wraps', wraps)
-          // 結果を返す
-          resolve(wraps)
-        })
-        .catch(err => reject(err))
-    })
-
-    // get parts
-    const getParts = new Promise((resolve, reject) => {
-      // キャッシュを取得
-      const parts = jsonCache.get('parts')
-      // キャッシュから取得できればそれを返す
-      if (parts != null) {
-        resolve(parts)
-      }
-      // パーツを取得
-      admin.firestore().collection('parts').get()
-        .then(docs => {
-          let parts = {}
-          docs.forEach(doc => {
-            const data = doc.data()
-            parts[doc.id] = data.content
-          })
-          // キャッシュに入れる 
-          jsonCache.set('parts', parts)
-          // 結果を返す
-          resolve(parts)
-        })
-        .catch(err => reject(err))
-    })
-
     var start_ms = new Date().getTime()
-    Promise.all([getConfigs, getWraps, getParts])
-      .then(function (results) {
-        const [configs, wraps, parts] = results
+    Promise.all([getConfigs])
+      .then(results => {
+        const [configs] = results
         // console.log('parts', parts)
         let vessel = {
           frontBaseUrl: req.headers['x-forwarded-host'] || null,
           frontendUnique: configs.settings.frontendUnique,
           backendUnique: configs.settings.backendUnique,
           signinUnique: configs.settings.signinUnique,
-          wraps: wraps,
-          parts: parts,
         }
         req.vessel = vessel
         var elapsed_ms = new Date().getTime() - start_ms

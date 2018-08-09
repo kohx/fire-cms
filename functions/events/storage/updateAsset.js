@@ -9,33 +9,47 @@ const gcs = require('@google-cloud/storage')()
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
-const crypto = require('crypto');
+const validator = require('validator');
+
+// validationこんなかんじ
+// console.log(validator.isAlphanumeric('foo.jpg'))
+// console.log(validator.contains('asdfas!!!dfasdf', '!!!'))
+// console.log(validator.isEmpty(''))
+// console.log(validator.equals('1234', '1234'))
+// console.log(validator.matches('12abc34', /abc/))
+// console.log(validator.isEmail('asdf@asdfsd.com'))
+// console.log(validator.isURL('http://google.com'))
+// console.log(validator.isFQDN('http://google.com'))
+// console.log(validator.isAlpha('asdf'))
+// console.log(validator.isNumeric('1234'))
+// console.log(validator.isLength('asdf', 1, 5))
+// console.log(validator.isByteLength('11111', 1000, 100000))
+// console.log(validator.isIn('aaa', ['aaa', 'bbb', 'ccc']))
+// console.log(validator.escape(`<div>'asdf',"asdf",&</div>`))
+// console.log(validator.ltrim(`/sss/`, '/'))
+// console.log(validator.rtrim(`/sss/`, '/'))
+// console.log(validator.trim(`/sss/`, '/'))
 
 let fileBucket,
   bucket,
   contentType,
   filePath,
   fileName,
-  extName,
+  ext,
+  unique,
+  name,
   tempFilePath,
-  unique
-
-let fileType = 'file'
+  fileType
 
 const thumbPrefix = 'thumb_'
 const thumbSize = '200x200'
-
-exports.deleteAsset = functions.storage.object().onDelete(object => {
-  console.log('on delete!!!')
-  return 0
-})
 
 exports.updateAsset = functions.storage.object()
   .onFinalize(object => {
     console.log('-----> storage')
 
     /* returnの分解 */
-    // console.log('object@ ', object)
+    console.log('object@ ', object)
 
     // ファイルを含むStorage bucket
     fileBucket = object.bucket
@@ -47,20 +61,10 @@ exports.updateAsset = functions.storage.object()
     // bucket = admin.storage().bucket()
     // console.log('bucket2@', bucket)
 
-    // make params
+    // コンテントタイプ
     contentType = object.contentType
-    filePath = object.name
-    fileName = path.basename(object.name)
-    extName = path.extname(object.name)
-
-    // サムネイルの場合は終了
-    if (fileName.startsWith(thumbPrefix)) {
-      console.log('<----- Already a Thumbnail.')
-      return 0
-    }
-
-    unique = filePath.replace('assets/', '')
-
+    // ファイルタイプ
+    fileType = 'file'
     if (contentType.startsWith('image/')) {
       fileType = 'image'
     }
@@ -69,6 +73,19 @@ exports.updateAsset = functions.storage.object()
     }
     if (contentType.startsWith('video/') || contentType.startsWith('vide/')) {
       fileType = 'video'
+    }
+    // アセットネーム
+    assetName = object.name           // assets/qwer
+    
+    unique = filePath.replace(`${parse.dir}/`, '') // assets/qwer
+    name = object.metadata.name               // image
+
+
+
+    // サムネイルの場合は終了
+    if (fileName.startsWith(thumbPrefix)) {
+      console.log('<----- Already a Thumbnail.')
+      return 0
     }
 
     // firestoreに保存
@@ -82,7 +99,7 @@ exports.updateAsset = functions.storage.object()
 function setStore() {
   return admin.firestore().collection('assets').doc(unique)
     .set({
-      unique: filePath.replace('assets/', ''),
+      unique: filePath,
       name: '',
       description: '',
       fileType,
@@ -95,14 +112,16 @@ function setStore() {
 }
 
 function createTumb() {
-  // イメージではないファイルは終了
-  if (!contentType.startsWith('image/')) {
-    console.log('<----- This is not an image.')
-    return 0
+  // イメージファイル
+  if (contentType.startsWith('image/')) {
+    // テンプファイルのパスを作成
+    tempFilePath = path.join(os.tmpdir(), fileName)
+
+  } else {
+
   }
 
-  // テンプファイルのパスを作成
-  tempFilePath = path.join(os.tmpdir(), fileName)
+
 
   // サムネイルを作成して保存
   // まずファイルをテンプフォルダにダウンロード
