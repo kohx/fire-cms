@@ -1,0 +1,29 @@
+{
+    "short_name": "fire-cms",
+    "name": "fire-cms",
+    "description": "CMS made with firebase.",
+    "icons": [
+        {
+            "src": "/images/fire-cms-48.png",
+            "type": "image/png",
+            "sizes": "48x48"
+        },
+        {
+            "src": "/images/fire-cms-96.png",
+            "type": "image/png",
+            "sizes": "96x96"
+        },
+        {
+            "src": "/images/fire-cms-192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        }
+    ],
+    "splash_pages": null,
+    "start_url": "/",
+    "background_color": "#2196F3",
+    "theme_color": "#2196F3",
+    "display": "standalone",
+    "orientation": "any",
+    "gcm_sender_id": "103953800507"
+}
