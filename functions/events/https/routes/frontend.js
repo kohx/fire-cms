@@ -9,10 +9,13 @@ const signWare = require('../middleWare/signWare')
 const express = require('express')
 const router = express.Router()
 const jsonCache = require('../../../modules/jsonCache')
+// activata jsoncash from system
+jsonCache.isActive(system.cache)
 
 /* signWare csrf */
 router.use(signWare.csrf)
 
+/* middle wares */
 function checkPath(req, res, next) {
     if (req.vessel.firstPath === req.vessel.backendUnique) next('route')
     else next()

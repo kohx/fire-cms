@@ -4,12 +4,13 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-var fs = require('fs')
-const path = require('path')
-
 const express = require('express')
 const router = express.Router()
+const fs = require('fs')
+const path = require('path')
 const jsonCache = require('../../../modules/jsonCache')
+// activata jsoncash from system
+jsonCache.isActive(system.cache)
 
 router.get('/*',
     (req, res, next) => {
@@ -24,6 +25,8 @@ router.get('/*',
         else next()
     },
     (req, res, next) => {
+        const backendTemplatesPath = path.join(__dirname, '../', 'templates')
+
         // バックエンドユニークを削除
         req.vessel.paths.shift()
         const backendRoute = req.vessel.paths.shift() || 'index'
@@ -33,7 +36,7 @@ router.get('/*',
         // キャッシュが空のとき
         if (wraps === null) {
             wraps = {
-                html: fs.readFileSync(path.join(__dirname, '../', 'templates/wraps/html.html'), 'utf8'),
+                html: fs.readFileSync(path.join(backendTemplatesPath, 'wraps/html.html'), 'utf8'),
             }
             // キャッシュに入れる 
             jsonCache.set('wraps', wraps)
@@ -44,8 +47,8 @@ router.get('/*',
         // キャッシュが空のとき
         if (parts === null) {
             parts = {
-                header: fs.readFileSync(path.join(__dirname, '../', 'templates/parts/header.html'), 'utf8'),
-                footer: fs.readFileSync(path.join(__dirname, '../', 'templates/parts/footer.html'), 'utf8'),
+                header: fs.readFileSync(path.join(backendTemplatesPath, 'parts/header.html'), 'utf8'),
+                footer: fs.readFileSync(path.join(backendTemplatesPath, 'parts/footer.html'), 'utf8'),
             }
             // キャッシュに入れる 
             jsonCache.set('parts', parts)
@@ -55,8 +58,9 @@ router.get('/*',
         let thing = jsonCache.get(`thing_${backendRoute}`)
         // キャッシュが空のとき
         if (thing === null) {
+            console.log(`${backendRoute}.html`)
             thing = {
-                content: fs.readFileSync(path.join(__dirname, '../', `templates/${backendRoute}.html`), 'utf8'),
+                content: fs.readFileSync(path.join(backendTemplatesPath, `${backendRoute}.html`), 'utf8'),
             }
             // キャッシュに入れる 
             jsonCache.set(`thing_${backendRoute}`, thing)
@@ -74,10 +78,6 @@ router.get('/*',
         }
     })
 
-function br(backendRoute, data) {
-    return backendRoutes
-}
-
 const backendRoutes = {
     index: (req, res) => {
         const thing = req.vessel.thing
@@ -90,7 +90,7 @@ const backendRoutes = {
         data.params = {}
         data.params.user = req.vessel.sign.status ? req.vessel.sign.claims : {}
         data.params.sign = req.vessel.sign
-        console.log('<----------------------------- root')
+        console.log('<----------------------------- index')
         res.wbRender(data)
     },
     configs: (req, res) => {

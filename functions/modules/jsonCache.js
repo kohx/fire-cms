@@ -1,31 +1,31 @@
 // https://www.npmjs.com/package/memory-cache
 const cache = require('memory-cache')
 
-const isActive = false
+let isActive = false
 
-exports.set = (key, value, active = false) => {
-    active = active ? active : isActive
-    if (!active) return null
-    
+exports.isActive = (bool) => {
+    isActive = bool
+}
+
+exports.set = (key, value) => {
+    if (!isActive) return null
+
     return cache.put(key, JSON.stringify(value))
 }
 
-exports.get = (key, active = false) => {
-    active = active ? active : isActive
-    if (!active) return null
+exports.get = (key) => {
+    if (!isActive) return null
 
     const jsonString = cache.get(key)
     return JSON.parse(jsonString)
 }
 
-exports.delete = (key, active = false) => {
-    active = active ? active : isActive
-    if (!active) return
+exports.delete = (key) => {
+    if (!isActive) return
     return cache.del(key)
 }
 
-exports.clear = (active = false) => {
-    active = active ? active : isActive
-    if (!active) return
+exports.clear = () => {
+    if (!isActive) return
     cache.clear(key)
 }

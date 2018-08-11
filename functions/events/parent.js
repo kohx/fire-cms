@@ -44,43 +44,6 @@ module.exports.functions = functions
 module.exports.admin = admin
 module.exports.system = (() => {
     return {
-        cache: true
+        cache: false
     }
 })()
-
-function decodedTokenFromIdToken(idToken) {
-    return new Promise((resolve, reject) => {
-        admin.auth().verifyIdToken(idToken)
-            .then(decodedToken => {
-                // console.log('decodedToken', decodedToken)
-                resolve(decodedToken)
-            })
-            .catch(error => reject(error))
-    })
-}
-
-function userRecordByDecodedToken(decodedToken) {
-    return new Promise((resolve, reject) => {
-        admin.auth().getUser(decodedToken.uid)
-            .then(userRecord => {
-                // console.log('userRecord', userRecord)
-                resolve(userRecord)
-            })
-            .catch(error => reject(error))
-    })
-}
-
-module.exports.getUser = (idToken) => {
-    return Promise.resolve()
-        .then(() => {
-            return decodedTokenFromIdToken(idToken)
-        })
-        .then(decodedToken => {
-            return userRecordByDecodedToken(decodedToken)
-        })
-        .then(user => {
-            // console.log(user)
-            return user
-        })
-        .catch(error => reject(error))
-}
