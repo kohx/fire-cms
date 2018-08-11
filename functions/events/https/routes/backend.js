@@ -14,7 +14,6 @@ jsonCache.isActive(system.cache)
 
 router.get('/*',
     (req, res, next) => {
-        console.log(req.vessel)
         // if (req.vessel.sign.status === false) res.redirect(`/${req.vessel.signinUnique}`)
         // else next()
         next()
@@ -55,70 +54,65 @@ router.get('/*',
         }
 
         // キャッシュを取得
-        let thing = jsonCache.get(`thing_${backendRoute}`)
+        let content = jsonCache.get(`content_${backendRoute}`)
         // キャッシュが空のとき
-        if (thing === null) {
-            console.log(`${backendRoute}.html`)
-            thing = {
-                content: fs.readFileSync(path.join(backendTemplatesPath, `${backendRoute}.html`), 'utf8'),
+        if (content === null) {
+            try {
+                content = fs.readFileSync(path.join(backendTemplatesPath, `${backendRoute}.html`), 'utf8')
+            } catch (err) {
+                // ない場合
+                content = false
             }
             // キャッシュに入れる 
-            jsonCache.set(`thing_${backendRoute}`, thing)
+            jsonCache.set(`content_${backendRoute}`, content)
         }
 
-        req.vessel.wraps = wraps
-        req.vessel.parts = parts
-        req.vessel.thing = thing
+        const data = {
+            content,
+            parts,
+            wraps,
+            params: {
+                backendName: req.vessel.backendUnique,
+                user: req.vessel.sign.status ? req.vessel.sign.claims : {},
+                sign: req.vessel.sign,
+            }
+        }
 
-        const func = backendRoutes[backendRoute] || false
+        const func = backendRoutes(backendRoute, data)
         if (func) {
-            func(req, res)
+            func(req, res, next)
         } else {
+            console.log('>>>>in')
             next('route')
         }
     })
 
-const backendRoutes = {
-    index: (req, res) => {
-        const thing = req.vessel.thing
-        const content = (thing.content != null) ? thing.content : ''
-        const data = {
-            content: content,
-            parts: req.vessel.parts,
-            wraps: req.vessel.wraps,
-        }
-        data.params = {}
-        data.params.user = req.vessel.sign.status ? req.vessel.sign.claims : {}
-        data.params.sign = req.vessel.sign
-        console.log('<----------------------------- index')
+function backendRoutes(root, data) {
+    const routes = {
+    index: (req, res, next) => {
+            console.log('<----------------------------- backend index')
         res.wbRender(data)
     },
-    configs: (req, res) => {
+    configs: (req, res, next) => {
         console.log('<----------------------------- configs')
-        res.send('configs!')
+            res.wbRender(data)
     },
-    divisions: (req, res) => {
+    divisions: (req, res, next) => {
         console.log('<----------------------------- divisions')
-        res.send('divisions!')
+            res.wbRender(data)
     },
-    parts: (req, res) => {
+    parts: (req, res, next) => {
         console.log('<----------------------------- parts')
         res.send('parts!')
     },
-    assets: (req, res) => {
-        const data = {
-            content: fs.readFileSync(path.join(__dirname, '../', 'templates/assets.html'), 'utf8'),
-            parts: {
-                header: fs.readFileSync(path.join(__dirname, '../', 'templates/parts/header.html'), 'utf8'),
-                footer: fs.readFileSync(path.join(__dirname, '../', 'templates/parts/footer.html'), 'utf8'),
-            },
-            wraps: {
-                html: fs.readFileSync(path.join(__dirname, '../', 'templates/wraps/html.html'), 'utf8'),
-            },
-        }
+    assets: (req, res, next) => {
         console.log('<----------------------------- assets')
         res.wbRender(data)
     },
 }
+    const func = (routes[root] != null) ? routes[root] : false
+    return func
+}
+
 
 module.exports = router

@@ -151,7 +151,7 @@ module.exports.in = (req, res, next) => {
 }
 
 /* out function */
-module.exports.out = (req, res) => {
+module.exports.out = (req, res, next) => {
 
   // セッション Cookie を取得
   const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []

@@ -1,23 +1,20 @@
-{ "frontBaseUrl": 'localhost: 5000',
-  "frontendUnique": 'home',
-  "backendUnique": 'backend',
-  "signinUnique": 'signin',
-  "wraps": { "html": ''},
-  "parts": { footer: '<footer>     <hr>     &copy; fire cms </footer>',
-     header: '<header>\\n     fire cms</h1>\\n </header>',
-     part1: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-     part2: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
-     part3: 'cccccccccccccccccccccccccccccccccccc',
-     part4: 'ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
-     part5: 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
-  },
-  sign: { status: false,
-     message: 'sign in failed. there is not sessionCookie.',
-     claims: {}
-  },
-  paths: [],
-  firstPath: 'backend',
-  pathUnique: 'backend',
-  pathNumber: '',
-  thingUnique: 'backend'
-}
+Error: Can 't set headers after they are sent.
+at ServerResponse.OutgoingMessage.setHeader(_http_outgoing.js: 356: 11)
+at ServerResponse.header(C: \googledrive\ Firebase\ fire - cms\ functions\ node_modules\ express\ lib\ response.js: 767: 10)
+at ServerResponse.send(C: \googledrive\ Firebase\ fire - cms\ functions\ node_modules\ express\ lib\ response.js: 170: 12)
+at app.use(C: \googledrive\ Firebase\ fire - cms\ functions\ events\ https\ app.js: 67: 9)
+at Layer.handle_error(C: \googledrive\ Firebase\ fire - cms\ functions\ node_modules\ express\ lib\ router\ layer.js: 71: 9)
+at trim_prefix(C: \googledrive\ Firebase\ fire - cms\ functions\ node_modules\ express\ lib\ router\ index.js: 315: 13)
+at C: \googledrive\ Firebase\ fire - cms\ functions\ node_modules\ express\ lib\ router\ index.js: 284: 7
+at Function.process_params(C: \googledrive\ Firebase\ fire - cms\ functions\ node_modules\ express\ lib\ router\ index.js: 335: 12)
+at next(C: \googledrive\ Firebase\ fire - cms\ functions\ node_modules\ express\ lib\ router\ index.js: 275: 10)
+at module.exports.notFound(C: \googledrive\ Firebase\ fire - cms\ functions\ events\ https\ middleWare\ errWare.js: 9: 5)
+127.0 .0 .1 - -[11 / Aug / 2018: 11: 03: 12 + 0000]
+"GET /aaa HTTP/1.1"
+200 0 "-"
+"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+(KHTML, like Gecko) Chrome / 68.0 .3440 .106 Safari / 537.36 "
+127.0 .0 .1 - -[11 / Aug / 2018: 11: 03: 12 + 0000]
+"GET /favicon.ico HTTP/1.1"
+200 1150 "http://localhost:5000/aaa"
+"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36"
