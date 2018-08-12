@@ -19,7 +19,7 @@ module.exports.csrf = (req, res, next) => {
   }
   
   // サインインページの場合
-  if (req.vessel.thingUnique === req.vessel.signinUnique) {
+  if (req.vessel.unique === req.vessel.signinUnique) {
 
     // セッションクッキーを取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : {}

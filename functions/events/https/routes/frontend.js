@@ -22,10 +22,8 @@ function checkPath(req, res, next) {
 }
 
 function getThing(req, res, next) {
-    let thing = {}
-
-    // // thingを取得
-    admin.firestore().collection('things').doc(req.vessel.thingUnique)
+    // thingを取得
+    admin.firestore().collection('things').doc(req.vessel.unique)
         .get()
         .then(snap => {
             if (snap.exists) {
@@ -40,11 +38,13 @@ function getThing(req, res, next) {
 
 function checkSingIn(req, res, next) {
     // サインインページかチェック
-    const isSignInPage = req.vessel.thingUnique === req.vessel.signinUnique
+    const isSigninPage = req.vessel.unique === req.vessel.signinUnique
+    
     // サインインしているかチェック
-    const isSignInStatus = req.vessel.sign.status
+    const isSigned = req.vessel.sign.status
+
     // サインインページでサインインしている場合
-    if (isSignInPage && isSignInStatus) {
+    if (isSigninPage && isSigned) {
         const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
         let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
         if (referer === '' || referer === req.vessel.signinUnique) {
@@ -96,16 +96,16 @@ function renderPage(req, res, next) {
 
     res.status(200)
     res.wbRender(data)
-    console.log(`>>>>>>>>>> ${req.vessel.thingUnique} <<<<<<<<<<`)
+    console.log(`>>>>>>>>>> ${req.vessel.unique} <<<<<<<<<<`)
 }
 
 /* route */
 router.get('/*',
-    (req, res, next) => checkPath(req, res, next),
-    (req, res, next) => getThing(req, res, next),
-    (req, res, next) => checkSingIn(req, res, next),
-    (req, res, next) => checkRole(req, res, next),
-    (req, res, next) => renderPage(req, res, next)
+    checkPath,
+    getThing,
+    checkSingIn,
+    checkRole,
+    renderPage
 )
 
 module.exports = router

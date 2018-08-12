@@ -12,107 +12,163 @@ const jsonCache = require('../../../modules/jsonCache')
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
-router.get('/*',
-    (req, res, next) => {
-        // if (req.vessel.sign.status === false) res.redirect(`/${req.vessel.signinUnique}`)
-        // else next()
+/* middle wares */
+function checkPath(req, res, next) {
+    console.log(req.vessel.firstPath)
+    // ファーストパスがバックエンドユニークでない場合
+    if (req.vessel.firstPath !== req.vessel.backendUnique) next('route')
+    else next()
+}
+
+function checkSingIn(req, res, next) {
+
+    // バックエンドユニークを削除
+    req.vessel.paths.shift()
+    const unique = req.vessel.paths.shift() || 'index'
+    req.vessel.back.unique = unique
+
+    // サインインしているかチェック
+    const isSigned = req.vessel.sign.status
+
+    // サインインしてない場合
+    if (!isSigned) {
+        const backendSigninPagePath = `/${req.vessel.backendUnique}/${req.vessel.back.signinUnique}`
+        console.log(`@ not sigin in. redirect to ${backendSigninPagePath}`)
+        // res.redirect(`/${req.vessel.backendUnique}/${req.vessel.back.signinUnique}`)
         next()
-    },
-    (req, res, next) => {
-        // ファーストパスがバックエンドユニークでない場合
-        if (req.vessel.firstPath !== req.vessel.backendUnique) next('route')
-        else next()
-    },
-    (req, res, next) => {
-        const backendTemplatesPath = path.join(__dirname, '../', 'templates')
+    } else {
+        next()
+    }
+}
 
-        // バックエンドユニークを削除
-        req.vessel.paths.shift()
-        const backendRoute = req.vessel.paths.shift() || 'index'
+function checkSigninPage(req, res, next) {
+    // バックエンドのサインインページかチェック
+    const isSignInPage = req.vessel.back.unique === req.vessel.back.signinUnique
 
-        // キャッシュを取得
-        let wraps = jsonCache.get('wraps')
-        // キャッシュが空のとき
-        if (wraps === null) {
-            wraps = {
-                html: fs.readFileSync(path.join(backendTemplatesPath, 'wraps/html.html'), 'utf8'),
-            }
-            // キャッシュに入れる 
-            jsonCache.set('wraps', wraps)
+    // サインインしているかチェック
+    const isSigned = req.vessel.sign.status
+
+    // サインインページでサインインしている場合
+    if (isSignInPage && isSigned) {
+        const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
+        let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
+        if (referer === '' || referer === req.vessel.signinUnique) {
+            referer = '/'
         }
+        res.redirect(referer)
+    } else {
+        next()
+    }
+}
 
-        // キャッシュを取得
-        let parts = jsonCache.get('parts')
-        // キャッシュが空のとき
-        if (parts === null) {
-            parts = {
-                header: fs.readFileSync(path.join(backendTemplatesPath, 'parts/header.html'), 'utf8'),
-                footer: fs.readFileSync(path.join(backendTemplatesPath, 'parts/footer.html'), 'utf8'),
-            }
-            // キャッシュに入れる 
-            jsonCache.set('parts', parts)
-        }
+function getBack(req, res, next) {
 
-        // キャッシュを取得
-        let content = jsonCache.get(`content_${backendRoute}`)
-        // キャッシュが空のとき
-        if (content === null) {
-            try {
-                content = fs.readFileSync(path.join(backendTemplatesPath, `${backendRoute}.html`), 'utf8')
-            } catch (err) {
-                // ない場合
-                content = false
-            }
-            // キャッシュに入れる 
-            jsonCache.set(`content_${backendRoute}`, content)
-        }
+    const unique = req.vessel.back.unique
 
-        const data = {
-            content,
-            parts,
-            wraps,
-            params: {
-                backendName: req.vessel.backendUnique,
-                user: req.vessel.sign.status ? req.vessel.sign.claims : {},
-                sign: req.vessel.sign,
-            }
-        }
+    // build backend template path
+    const templatesPath = path.join(__dirname, '../', 'templates')
 
-        const func = backendRoutes(backendRoute, data)
-        if (func) {
-            func(req, res, next)
-        } else {
-            console.log('>>>>in')
-            next('route')
+    // キャッシュを取得
+    let wraps = jsonCache.get('wraps')
+    // キャッシュが空のとき
+    if (wraps === null) {
+        wraps = {
+            html: fs.readFileSync(path.join(templatesPath, 'wraps/html.html'), 'utf8'),
         }
-    })
+        // キャッシュに入れる 
+        jsonCache.set('wraps', wraps)
+    }
+
+    // キャッシュを取得
+    let parts = jsonCache.get('parts')
+    // キャッシュが空のとき
+    if (parts === null) {
+        parts = {
+            header: fs.readFileSync(path.join(templatesPath, 'parts/header.html'), 'utf8'),
+            footer: fs.readFileSync(path.join(templatesPath, 'parts/footer.html'), 'utf8'),
+        }
+        // キャッシュに入れる 
+        jsonCache.set('parts', parts)
+    }
+
+    // キャッシュを取得
+    let content = jsonCache.get(`content_${unique}`)
+    // キャッシュが空のとき
+    if (content === null) {
+        try {
+            content = fs.readFileSync(path.join(templatesPath, `${unique}.html`), 'utf8')
+        } catch (err) {
+            // ない場合
+            content = false
+        }
+        // キャッシュに入れる 
+        jsonCache.set(`content_${unique}`, content)
+    }
+
+    // build data
+    const data = {
+        content,
+        parts,
+        wraps,
+        params: {
+            backendName: req.vessel.backendUnique,
+            user: req.vessel.sign.status ? req.vessel.sign.claims : {},
+            sign: req.vessel.sign,
+        }
+    }
+
+    // render backend page
+    const func = backendRoutes(unique, data)
+    if (func) {
+        func(req, res, next)
+    } else {
+        next('route')
+    }
+}
+
+/* route get */
+router.get('/*',
+    checkPath,
+    checkSingIn,
+    checkSigninPage,
+    getBack
+)
 
 function backendRoutes(root, data) {
     const routes = {
-    index: (req, res, next) => {
+        index: (req, res, next) => {
             console.log('<----------------------------- backend index')
-        res.wbRender(data)
-    },
-    configs: (req, res, next) => {
-        console.log('<----------------------------- configs')
             res.wbRender(data)
-    },
-    divisions: (req, res, next) => {
-        console.log('<----------------------------- divisions')
+        },
+        configs: (req, res, next) => {
+            console.log('<----------------------------- configs')
             res.wbRender(data)
-    },
-    parts: (req, res, next) => {
-        console.log('<----------------------------- parts')
-        res.send('parts!')
-    },
-    assets: (req, res, next) => {
-        console.log('<----------------------------- assets')
-        res.wbRender(data)
-    },
-}
+        },
+        divisions: (req, res, next) => {
+            console.log('<----------------------------- divisions')
+            res.wbRender(data)
+        },
+        parts: (req, res, next) => {
+            console.log('<----------------------------- parts')
+            res.send('parts!')
+        },
+        assets: (req, res, next) => {
+            console.log('<----------------------------- assets')
+            res.wbRender(data)
+        },
+    }
     const func = (routes[root] != null) ? routes[root] : false
     return func
 }
+
+/* route post */
+router.post('/*',
+    // checkPath,
+    (req, res, next) => {
+        res.json(req.vessel)
+        // if (req.vessel.firstPath !== req.vessel.backendUnique) next('route')
+        // else next()
+    })
 
 
 module.exports = router

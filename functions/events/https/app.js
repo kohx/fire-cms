@@ -20,12 +20,11 @@ const cipher = require('../../modules/cipher')
 const wavebar = require('../../modules/wavebar')
 
 /* middleware */
-const getWare = require('./middleWare/getWare')
+const initWare = require('./middleWare/initWare')
 const errWare = require('./middleWare/errWare')
 const signWare = require('./middleWare/signWare')
 
 /* routes */
-var allRouter = require('./routes/allRoute')
 var backendRouter = require('./routes/backend')
 var frontendRouter = require('./routes/frontend')
 var signEndPointRouter = require('./routes/signEndPoint')
@@ -40,8 +39,9 @@ app.use(bodyParser.urlencoded({
 }))
 app.use(bodyParser.json())
 
-/* getWare getInfo */
-app.use(getWare.getInfo)
+/* initWare getInfo */
+app.use(initWare.getInfo)
+app.use(initWare.getPath)
 
 /* signWare check */
 app.use(signWare.check)
@@ -50,7 +50,6 @@ app.use(signWare.check)
 app.use(wavebar.init)
 
 /* route */
-app.use(`/*`, allRouter)
 app.use(`/*`, frontendRouter)
 app.use(`/*`, backendRouter)
 app.use('/signEndPoint', signEndPointRouter)
