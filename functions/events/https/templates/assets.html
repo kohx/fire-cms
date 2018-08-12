@@ -11,7 +11,6 @@
 </div>
 {|> footer |}
 <script>
-
     const selectedFiles = {}
     const defaultFileImage = '/images/file.png'
     const listElemant = document.querySelector('#list')
@@ -19,20 +18,21 @@
     const assetList = document.querySelector('#asset-list')
     select.addEventListener('change', selectFile)
     document.querySelector('#delete').addEventListener('click', deleteFile)
-    document.querySelector('#upload').addEventListener('click', updateItems)
+    // document.querySelector('#upload').addEventListener('click', updateItems)
+    document.querySelector('#upload').addEventListener('click', updateRequest)
 
-    const assetsSroreRef = firebase.firestore().collection('assets')
+    const assetsStoreRef = firebase.firestore().collection('assets')
     const assetsStrageRef = firebase.storage().ref('assets')
 
     // assetsSroreRef.orderBy('created', 'asc').limit(this.messageLimit)
-    assetsSroreRef.onSnapshot(docs => {
+    assetsStoreRef.onSnapshot(docs => {
         docs.forEach(doc => {
             getAssetFromDoc(doc)
                 .then(data => {
                     let assetFrame = document.getElementById(`#id_${data.id}`)
-                    console.log(assetFrame)
                     if (!assetFrame) {
-                        const html = `<div id="id_${data.id}">
+                        const html =
+                            `<div id="id_${data.id}">
                                     <a href="${data.url}">
                                         <img src="${data.thumbUrl}" height="20">
                                         <div>${data.unique}</div>
@@ -41,6 +41,7 @@
                         assetList.insertAdjacentHTML('beforeend', html)
                     }
                 })
+                .catch(err => console.log(err))
         })
     })
 
@@ -111,7 +112,8 @@
         const frame = document.createElement('div')
         frame.classList.add('file_frame')
         frame.dataset.uid = uid
-        const html = `<img src="${imagePath}" height="20"></div>
+        const html =
+            `<img src="${imagePath}" height="20"></div>
             <div>${uid}</div>
             <div>${file.type || 'n/a'}</div>
             <div><input type="text" value="${encodeURIComponent(file.name)}"></div>
@@ -150,7 +152,8 @@
                     }
 
                     if (alreadyAssets.includes(name)) {
-                        const target = document.querySelector(`.file_frame[data-uid="${uid}"] [type="text"]`)
+                        const target = document.querySelector(
+                            `.file_frame[data-uid="${uid}"] [type="text"]`)
                         target.style.border = "1px solid red"
                         return
                     }
@@ -182,6 +185,46 @@
                         })
                 })
             })
+    }
+
+    // update items
+    function updateRequest() {
+        Array.from(document.querySelectorAll('.file_frame')).forEach(element => {
+            const uid = element.dataset.uid
+            const name = element.querySelector('[type="text"]').value
+            const file = selectedFiles[uid]
+            const option = {
+                cacheControl: 'public,max-age=300',
+                contentDisposition: 'kohei okuda',
+                customMetadata: {
+                    name
+                }
+            }
+            const headers = {
+                'Content-Type': 'image/jpg',
+            }
+            const body = {
+                file,
+                name,
+                option,
+            }
+            console.log(JSON.stringify(body))
+            const url = `${window.location.origin}/backend/updateAsset`
+            fetch(url, {
+                method: 'post',
+                mode: 'cors',
+                credentials: 'include',
+                cache: 'no-cache',
+                headers: headers,
+                body: JSON.stringify(file)
+            }).then(data => {
+                return data.json()
+            }).then(json => {
+                console.log(json)
+            }).catch(err => {
+                console.log(err)
+            })
+        })
     }
 
     function generateUuid() {

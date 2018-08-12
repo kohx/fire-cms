@@ -14,7 +14,6 @@ jsonCache.isActive(system.cache)
 
 /* middle wares */
 function checkPath(req, res, next) {
-    console.log(req.vessel.firstPath)
     // ファーストパスがバックエンドユニークでない場合
     if (req.vessel.firstPath !== req.vessel.backendUnique) next('route')
     else next()
@@ -118,7 +117,18 @@ function getBack(req, res, next) {
     }
 
     // render backend page
-    const func = backendRoutes(unique, data)
+    const func = backendGetRoutes(unique, data)
+    if (func) {
+        func(req, res, next)
+    } else {
+        next('route')
+    }
+}
+
+function postBack(req, res, next) {
+    const unique = req.vessel.back.unique
+    // render backend page
+    const func = backendPostRoutes(unique)
     if (func) {
         func(req, res, next)
     } else {
@@ -134,7 +144,7 @@ router.get('/*',
     getBack
 )
 
-function backendRoutes(root, data) {
+function backendGetRoutes(unique, data) {
     const routes = {
         index: (req, res, next) => {
             console.log('<----------------------------- backend index')
@@ -157,18 +167,31 @@ function backendRoutes(root, data) {
             res.wbRender(data)
         },
     }
-    const func = (routes[root] != null) ? routes[root] : false
+    const func = (routes[unique] != null) ? routes[unique] : false
     return func
 }
 
 /* route post */
 router.post('/*',
-    // checkPath,
-    (req, res, next) => {
-        res.json(req.vessel)
-        // if (req.vessel.firstPath !== req.vessel.backendUnique) next('route')
-        // else next()
-    })
+    checkPath,
+    checkSingIn,
+    postBack
+)
 
+function backendPostRoutes(unique) {
+    const routes = {
+        updateAsset: (req, res, next) => {
+
+            console.log(req.body)
+            console.log('<----------------------------- backend updateAsset')
+            res.json({
+                status: 'ok'
+            })
+        }
+    }
+    const func = (routes[unique] != null) ? routes[unique] : false
+    console.log(func)
+    return func
+}
 
 module.exports = router
