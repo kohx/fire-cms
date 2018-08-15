@@ -61,6 +61,9 @@ exports.updateAsset = functions.storage.object()
     // bucket = admin.storage().bucket()
     // console.log('bucket2@', bucket)
 
+    // file path
+    const filePath = object.name
+
     // コンテントタイプ
     contentType = object.contentType
     // ファイルタイプ

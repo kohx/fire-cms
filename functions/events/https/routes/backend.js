@@ -181,8 +181,13 @@ router.post('/*',
 function backendPostRoutes(unique) {
     const routes = {
         updateAsset: (req, res, next) => {
+            console.log('-----------------------------> backend updateAsset')
+            console.log(req.body.name)
+            console.log(req.body.unique)
+            console.log(req.body.content)
 
-            console.log(req.body)
+
+
             console.log('<----------------------------- backend updateAsset')
             res.json({
                 status: 'ok'

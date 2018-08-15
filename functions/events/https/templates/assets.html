@@ -1,14 +1,8 @@
 {|@ html |} {|> header |}
-
 <input type="file" id="select" name="files[]" multiple>
 <output id="list"></output>
-
 <button id="upload" type="button">upload</button>
 <button id="delete" type="button">delete</button>
-<hr>
-<div id="asset-list">
-
-</div>
 {|> footer |}
 <script>
     const selectedFiles = {}
@@ -16,10 +10,9 @@
     const listElemant = document.querySelector('#list')
     const select = document.querySelector('#select')
     const assetList = document.querySelector('#asset-list')
-    select.addEventListener('change', selectFile)
-    document.querySelector('#delete').addEventListener('click', deleteFile)
-    // document.querySelector('#upload').addEventListener('click', updateItems)
-    document.querySelector('#upload').addEventListener('click', updateRequest)
+    select.addEventListener('change', selectFiles)
+    document.querySelector('#delete').addEventListener('click', deleteFiles)
+    document.querySelector('#upload').addEventListener('click', uploadFiles)
 
     const assetsStoreRef = firebase.firestore().collection('assets')
     const assetsStrageRef = firebase.storage().ref('assets')
@@ -67,7 +60,7 @@
             })
     }
 
-    function selectFile(event) {
+    function selectFiles(event) {
         // FileList object
         const files = event.target.files
         // files is a FileList of File objects. List some properties.
@@ -81,13 +74,13 @@
                 // image render
                 var reader = new FileReader()
                 reader.onload = result => {
-                    const frame = createFileInputHtml(uid, file, result.target.result)
+                    const frame = createFileInput(uid, file, result.target.result)
                     listElemant.appendChild(frame)
                 }
                 // Read in the image file as a data URL.
                 reader.readAsDataURL(file)
             } else {
-                const frame = createFileInputHtml(uid, file, defaultFileImage)
+                const frame = createFileInput(uid, file, defaultFileImage)
                 listElemant.appendChild(frame)
             }
             // set this
@@ -97,8 +90,8 @@
         select.value = ''
     }
 
-    function deleteFile() {
-        Array.from(document.querySelectorAll('.file_frame')).forEach(element => {
+    function deleteFiles() {
+        Array.from(document.querySelectorAll('.file-frame')).forEach(element => {
             const check = element.querySelector('[type="checkbox"]')
             if (check.checked === true) {
                 delete selectedFiles[element.dataset.uid]
@@ -107,16 +100,18 @@
         })
     }
 
-    function createFileInputHtml(uid, file, imagePath = null) {
+    function createFileInput(uid, file, imagePath = null) {
         imagePath = imagePath == null ? '/images/favicon.png' : imagePath
         const frame = document.createElement('div')
-        frame.classList.add('file_frame')
+        frame.classList.add('file-frame')
         frame.dataset.uid = uid
         const html =
             `<img src="${imagePath}" height="20"></div>
             <div>${uid}</div>
             <div>${file.type || 'n/a'}</div>
-            <div><input type="text" value="${encodeURIComponent(file.name)}"></div>
+            <div><input class="file-unique" type="text" placeholder="unique"></div>
+            <div><input class="file-name" type="text" placeholder="name"></div>
+            <div><input class="file-description" type="text" placeholder="description"></div>
             <div>${file.size}</div>
             <div>${file.lastModifiedDate}</div>
             <div>${file.lastModifiedDate.toLocaleDateString()}</div>
@@ -126,104 +121,48 @@
         return frame
     }
 
-    // update items
-    function updateItems() {
-        console.log('in')
-        const getAlreadyAssets = assetsSroreRef.get()
-            .then(docs => {
-                let alreadyAssets = []
-                docs.forEach(doc => {
-                    alreadyAssets.push(doc.id)
-                })
-                return alreadyAssets
-            })
-            .then(alreadyAssets => {
-                Array.from(document.querySelectorAll('.file_frame')).forEach(element => {
-                    const uid = element.dataset.uid
-                    const name = element.querySelector('[type="text"]').value
-                    const file = selectedFiles[uid]
-                    file.name = name
-                    const option = {
-                        cacheControl: 'public,max-age=300',
-                        contentDisposition: 'kohei okuda',
-                        customMetadata: {
-                            name
-                        }
-                    }
-
-                    if (alreadyAssets.includes(name)) {
-                        const target = document.querySelector(
-                            `.file_frame[data-uid="${uid}"] [type="text"]`)
-                        target.style.border = "1px solid red"
-                        return
-                    }
-
-                    var uploadTask = firebase.storage().ref('assets').child(name).put(file, option)
-                    uploadTask.on('state_changed',
-                        snap => {
-                            var progress = (snap.bytesTransferred / snap.totalBytes) * 100
-
-                            console.log('Upload is ' + progress + '% done')
-                            switch (snap.state) {
-                                case firebase.storage.TaskState.PAUSED: // or 'paused'
-                                    console.log('Upload is paused')
-                                    break
-                                case firebase.storage.TaskState.RUNNING: // or 'running'
-                                    console.log('Upload is running')
-                                    break
-                            }
-                        },
-                        err => {
-                            console.log(err)
-                        },
-                        success => {
-                            element.parentNode.removeChild(element)
-                            uploadTask.snapshot.ref.getDownloadURL()
-                                .then(url => {
-                                    console.log('File available at', url)
-                                })
-                        })
-                })
-            })
-    }
-
-    // update items
-    function updateRequest() {
-        Array.from(document.querySelectorAll('.file_frame')).forEach(element => {
+    function uploadFiles() {
+        const url = `${window.location.origin}/backend/updateAsset`
+        Array.from(document.querySelectorAll('.file-frame')).forEach(element => {
             const uid = element.dataset.uid
-            const name = element.querySelector('[type="text"]').value
+            const name = element.querySelector('.file-name').value
+            const unique = element.querySelector('.file-unique').value
+            const description = element.querySelector('.file-description').value
             const file = selectedFiles[uid]
-            const option = {
-                cacheControl: 'public,max-age=300',
-                contentDisposition: 'kohei okuda',
-                customMetadata: {
-                    name
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onload = event => {
+                const content = event.target.result
+
+                const headers = {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                };
+
+                const body = {
+                    unique,
+                    name,
+                    description,
+                    content,
                 }
+
+                const options = {
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                    headers: headers,
+                }
+
+                fetch(url, options)
+                    .then(data => {
+                        return data.json()
+                    }).then(json => {
+                        console.log(json)
+                    }).catch(err => {
+                        console.log(err)
+                    })
             }
-            const headers = {
-                'Content-Type': 'image/jpg',
-            }
-            const body = {
-                file,
-                name,
-                option,
-            }
-            console.log(JSON.stringify(body))
-            const url = `${window.location.origin}/backend/updateAsset`
-            fetch(url, {
-                method: 'post',
-                mode: 'cors',
-                credentials: 'include',
-                cache: 'no-cache',
-                headers: headers,
-                body: JSON.stringify(file)
-            }).then(data => {
-                return data.json()
-            }).then(json => {
-                console.log(json)
-            }).catch(err => {
-                console.log(err)
-            })
         })
     }
 

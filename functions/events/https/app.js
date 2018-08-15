@@ -34,9 +34,7 @@ console.log('\n\n\n<<<<<<<<<< app start >>>>>>>>>>\n\n')
 const app = express()
 app.use(cors)
 app.use(cookieParser())
-app.use(bodyParser.urlencoded({
-    extended: false
-}))
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 /* initWare getInfo */

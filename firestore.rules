@@ -1,7 +1,31 @@
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /assets {
-      allow read, write;
+
+    match /configs {
+      allow read, write: if false;
     }
+
+    match /parts {
+      allow read, write: if false;
+    }
+
+    match /things {
+      allow read, write: if false;
+    }
+
+    match /assets/{assetsId} {
+      
+      allow create: if !exists(/databases/$(database)/documents/assets/$(assetsId))
+			&& request.resource.data.unique is string
+      && request.resource.data.unique != ""
+
+      allow update: if exists(/databases/$(database)/documents/assets/$(assetsId))
+			&& request.resource.data.unique is string
+      && request.resource.data.unique != ""
+
+      allow read : if true
+
+      allow delete : if request.auth != null
+		}
   }
 }
