@@ -1,3 +1,18 @@
 language: node_js
 node_js:
   - 6.15
+install:
+  - npm install -g firebase-tools
+after_success:
+  - firebase-ci deploy
+branches:
+  only:
+    - master
+script:
+  - echo "Deploy"
+deploy:
+  provider: firebase
+  skip_cleanup: true
+  token:
+    secure: "1/WrUs56RZ46GInNhjZO2iiDh4RCzJYAl2IBmmCd4NYOU"
+  project: "fire-cms-86681"
