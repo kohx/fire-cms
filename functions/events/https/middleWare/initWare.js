@@ -139,10 +139,16 @@ module.exports.getInfo = (req, res, next) => {
             vessel.frontendUnique = configs.settings.frontendUnique
             vessel.backendUnique = configs.settings.backendUnique
             vessel.signinUnique = configs.settings.signinUnique
+            vessel.lang = configs.settings.lang
             vessel.wraps = wraps
             vessel.parts = parts
             vessel.back.signinUnique = configs.settings.backendSigninUnique
             req.vessel = vessel
+
+            // set lang
+            if (configs.settings.lang) {
+                req.setLocale(configs.settings.lang)
+            }
 
             var elapsed_ms = new Date().getTime() - start_ms
             console.log('time -> ', elapsed_ms)

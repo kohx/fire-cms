@@ -1,0 +1,6 @@
+{
+    "Hello": "Goedemorgen",
+    "yes": "Ja",
+	"Hello %s": "Goedemorgen %s",
+	"Hello {{name}}": "Goedemorgen {{name}}"
+}

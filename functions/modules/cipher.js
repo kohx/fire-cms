@@ -28,7 +28,7 @@ exports.decrypt = (encrypted) => {
         let decipher = crypto.createDecipheriv(alg, new Buffer(key), iv)
         let decrypted = decipher.update(encryptedText)
         decrypted = Buffer.concat([decrypted, decipher.final()])
-        return decrypted.toString();
+        return decrypted.toString()
 
         // var decipher = crypto.createDecipher(alg, key)
         // decipher.update(encrypted, 'hex', 'utf8')

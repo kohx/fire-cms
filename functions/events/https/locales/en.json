@@ -1,0 +1,10 @@
+{
+	"Hello": "Hello",
+	"yes": "yes",
+	"Hello %s": "Hello %s",
+	"Hello {{name}}": "Hello {{name}}",
+	"greeting": {
+		"formal": "Hello",
+		"informal": "Hi"
+	}
+}

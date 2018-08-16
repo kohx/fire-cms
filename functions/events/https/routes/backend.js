@@ -8,12 +8,18 @@ const express = require('express')
 const router = express.Router()
 const fs = require('fs')
 const path = require('path')
+
 const jsonCache = require('../../../modules/jsonCache')
+const validation = require('../../../modules/validation')
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
 /* middle wares */
 function checkPath(req, res, next) {
+
+
+
+
     // ファーストパスがバックエンドユニークでない場合
     if (req.vessel.firstPath !== req.vessel.backendUnique) next('route')
     else next()
@@ -59,6 +65,14 @@ function checkSigninPage(req, res, next) {
         next()
     }
 }
+
+/* route get */
+router.get('/*',
+    checkPath,
+    checkSingIn,
+    checkSigninPage,
+    getBack
+)
 
 function getBack(req, res, next) {
 
@@ -125,25 +139,6 @@ function getBack(req, res, next) {
     }
 }
 
-function postBack(req, res, next) {
-    const unique = req.vessel.back.unique
-    // render backend page
-    const func = backendPostRoutes(unique)
-    if (func) {
-        func(req, res, next)
-    } else {
-        next('route')
-    }
-}
-
-/* route get */
-router.get('/*',
-    checkPath,
-    checkSingIn,
-    checkSigninPage,
-    getBack
-)
-
 function backendGetRoutes(unique, data) {
     const routes = {
         index: (req, res, next) => {
@@ -160,7 +155,7 @@ function backendGetRoutes(unique, data) {
         },
         parts: (req, res, next) => {
             console.log('<----------------------------- parts')
-            res.send('parts!')
+            res.wbRender(data)
         },
         assets: (req, res, next) => {
             console.log('<----------------------------- assets')
@@ -178,20 +173,68 @@ router.post('/*',
     postBack
 )
 
+function postBack(req, res, next) {
+    const unique = req.vessel.back.unique
+    // render backend page
+    const func = backendPostRoutes(unique)
+    if (func) {
+        func(req, res, next)
+    } else {
+        next('route')
+    }
+}
+
 function backendPostRoutes(unique) {
     const routes = {
         updateAsset: (req, res, next) => {
-            console.log('-----------------------------> backend updateAsset')
-            console.log(req.body.name)
-            console.log(req.body.unique)
-            console.log(req.body.content)
+            console.log('\n\n<<<<<<<<<< start backend updateAsset >>>>>>>>>>\n\n')
+            // console.log('@@@', res.__('Hello'))
+            // console.log('@@@', res.__('yes'))
+            // console.log('@@@', req.__('Hello {{name}}', { name: 'kohei' }))
+            // console.log('@@@', res.__({ phrase: 'Hello {{name}}', locale: 'ja' }, { name: 'こうへい' }))
+            // console.log('@@@', res.__l('Hello'))
+            // console.log('@@@', res.__h('Hello'))
+            // console.log('@@@', res.__('greeting.formal'))
+            // console.log('@@@', res.__('greeting.informal'))     
 
+            let result = null
 
+           console.log(req.getLocale())
 
-            console.log('<----------------------------- backend updateAsset')
-            res.json({
-                status: 'ok'
-            })
+            // catch error end becose endpoint
+            try {
+
+                const post = {
+                    unique: req.body.unique,
+                }
+                const validate = validation.list(post)
+                    .check('unique', 'isRequired')
+                    .check('unique', 'isEmail')
+                    .check('unique', 'isLength', 1, 5)
+
+                if (!validate.valid) {
+                    console.log(validate.errors)
+                    result = {
+                        status: false,
+                        errors: validate.errors
+                    }
+                } else {
+                    result = {
+                        status: true,
+                        errors: validate.results
+                    }
+                }
+
+                console.log('\n\n<<<<<<<<<< end backend updateAsset >>>>>>>>>>\n\n')
+                res.json(result)
+
+            } catch (err) {
+                console.log('\n\n<<<<<<<<<< error backend updateAsset >>>>>>>>>>\n\n')
+                res.json({
+                    status: false,
+                    message: err.message,
+                })
+            }
         }
     }
     const func = (routes[unique] != null) ? routes[unique] : false

@@ -1,0 +1,11 @@
+{
+	"Hello": "こんにちは",
+	"yes": "はい",
+	"Hello %s": "こんにちは %s",
+	"Hello {{name}}": "こんにちは！ {{name}}",
+	"greeting": {
+		"formal": "こんにちは",
+		"informal": "ちわ！"
+	},
+	"unique is required.": "unique is required."
+}

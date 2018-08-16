@@ -18,6 +18,7 @@
     "express": "^4.16.3",
     "firebase-admin": "^5.13.1",
     "firebase-functions": "^2.0.1",
+    "i18n": "^0.8.3",
     "memory-cache": "^0.2.0",
     "validator": "^10.5.0"
   },

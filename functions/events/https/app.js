@@ -14,6 +14,7 @@ const cookieParser = require('cookie-parser')
 const cors = require('cors')({
     origin: true
 })
+var i18n = require('i18n')
 
 /* module */
 const cipher = require('../../modules/cipher')
@@ -32,20 +33,30 @@ var signEndPointRouter = require('./routes/signEndPoint')
 // app
 console.log('\n\n\n<<<<<<<<<< app start >>>>>>>>>>\n\n')
 const app = express()
+
 app.use(cors)
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
+i18n.configure({
+    locales: system.lang.locales,
+    defaultLocale: system.lang.default,
+    directory: path.join(__dirname, system.lang.dirname),
+    // オブジェクトを利用したい場合はtrue
+    objectNotation: true
+});
+app.use(i18n.init)
+
 /* initWare getInfo */
 app.use(initWare.getInfo)
 app.use(initWare.getPath)
 
-/* signWare check */
-app.use(signWare.check)
-
 /* wavebar */
 app.use(wavebar.init)
+
+/* signWare check */
+app.use(signWare.check)
 
 /* route */
 app.use(`/*`, frontendRouter)

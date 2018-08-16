@@ -108,14 +108,13 @@
         const html =
             `<img src="${imagePath}" height="20"></div>
             <div>${uid}</div>
-            <div>${file.type || 'n/a'}</div>
+            <div>type: ${file.type || 'n/a'}</div>
+            <div>size: ${file.size}</div>
             <div><input class="file-unique" type="text" placeholder="unique"></div>
             <div><input class="file-name" type="text" placeholder="name"></div>
             <div><input class="file-description" type="text" placeholder="description"></div>
-            <div>${file.size}</div>
-            <div>${file.lastModifiedDate}</div>
-            <div>${file.lastModifiedDate.toLocaleDateString()}</div>
-            <input type="checkbox">
+            <div><input type="checkbox"></div>
+            <div class="file-message"></div>
             <hr>`
         frame.innerHTML = html
         return frame
@@ -128,6 +127,7 @@
             const name = element.querySelector('.file-name').value
             const unique = element.querySelector('.file-unique').value
             const description = element.querySelector('.file-description').value
+            const messageElement = element.querySelector('.file-message')
             const file = selectedFiles[uid]
 
             const reader = new FileReader();
@@ -158,8 +158,16 @@
                     .then(data => {
                         return data.json()
                     }).then(json => {
-                        console.log(json)
+                        if(json.status){
+                            messageElement.textContent = json.status
+                        } else {
+                            const message = ''
+                            Object.keys(json.errors).forEach(key => {
+                                console.log('@', json.errors[key])
+                            })
+                        }
                     }).catch(err => {
+                        messageElement.textContent = err.message
                         console.log(err)
                     })
             }
