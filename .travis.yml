@@ -25,6 +25,3 @@ install:
 #   token:
 #     secure: "1/WrUs56RZ46GInNhjZO2iiDh4RCzJYAl2IBmmCd4NYOU"
 #   project: "fire-cms-86681"
-addons:
-  code_climate:
-    repo_token: ef07d7699b193cf5921c6f2ca08adadb384f81896caf6f904e1b40d6b38370f8
