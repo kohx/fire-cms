@@ -20,12 +20,16 @@ after_script:
 after_success:
   firebase-ci deploy
 
+before_deploy: "before deploy!"
+
 deploy:
   provider: firebase
   skip_cleanup: true
   token:
     secure: "1/WrUs56RZ46GInNhjZO2iiDh4RCzJYAl2IBmmCd4NYOU"
   project: "fire-cms-86681"
+
+after_deploy: "after deploy!"
 
 addons:
   code_climate:
