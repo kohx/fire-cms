@@ -6,13 +6,14 @@ node_js: 6.11.5
 language: node_js
 after_script:
   npm install -g codeclimate-test-reporter
+  npm install -g firebase-tools
 addons:
   code_climate:
     repo_token: ef07d7699b193cf5921c6f2ca08adadb384f81896caf6f904e1b40d6b38370f8
 branches:
   only: master
-install:
-  npm install -g firebase-tools
+# install:
+#   npm install -g firebase-tools
 
 # after_success:
 #   - npm install -g codeclimate-test-reporter
