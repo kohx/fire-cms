@@ -4,6 +4,8 @@ node_js:
 dist: trusty
 sudo: false
 cache: yarn
+install:
+  - npm install -g firebase-tools
 script: yarn run jest --coverage
 addons:
   code_climate:
@@ -12,14 +14,6 @@ after_script:
   - npm install -g codeclimate-test-reporter
   # - codeclimate-test-reporter < ./coverage/lcov.info
 
-# language: node_js
-# node_js:
-#   - 6.11.5
-# dist: trusty
-# sudo: false
-# cache: yarn
-# install:
-#   - npm install -g firebase-tools
 # after_success:
 #   - npm install -g codeclimate-test-reporter
 #   - codeclimate-test-reporter < ./coverage/lcov.info
