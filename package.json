@@ -15,7 +15,7 @@
     "url": "git+https://github.com/kohx/fire-cms.git"
   },
   "author": "kohei okuda",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/kohx/fire-cms/issues"
   },
