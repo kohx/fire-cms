@@ -20,9 +20,9 @@ branches:
 #   - npm install -g codeclimate-test-reporter
 #   - firebase-ci deploy
 
-# deploy:
-#   provider: firebase
-#   skip_cleanup: true
-#   token:
-#     secure: "1/WrUs56RZ46GInNhjZO2iiDh4RCzJYAl2IBmmCd4NYOU"
-#   project: "fire-cms-86681"
+deploy:
+  provider: firebase
+  skip_cleanup: true
+  token:
+    secure: "1/WrUs56RZ46GInNhjZO2iiDh4RCzJYAl2IBmmCd4NYOU"
+  project: "fire-cms-86681"
