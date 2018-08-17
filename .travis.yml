@@ -18,10 +18,9 @@ after_script:
   - npm install -g codeclimate-test-reporter
 
 after_success:
-  # - npm install -g firebase-ci
-  # - firebase-ci deploy
-  - npm install --prefix ./functions
-  # - firebase-ci deploy
+  # - npm install --prefix ./functions
+  - npm install -g firebase-ci
+  - firebase-ci deploy
 
 deploy:
   provider: firebase
