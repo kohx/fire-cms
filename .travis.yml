@@ -5,11 +5,14 @@ install:
   - npm install -g firebase-tools
 after_success:
   - firebase-ci deploy
+  - coveralls
+  - codecov
 branches:
   only:
     - master
 script:
   - echo "Deploy"
+  # - npm test
 deploy:
   provider: firebase
   skip_cleanup: true
