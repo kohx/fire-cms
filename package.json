@@ -1,23 +1,18 @@
 {
   "name": "fire-cms",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
   "main": "index.js",
-  "scripts": {
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kohx/fire-cms.git"
-  },
-  "author": "kohei okuda",
+  "repository": "https://github.com/kohx/fire-cms.git",
+  "author": "kohei <kohei.0728@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kohx/fire-cms/issues"
   },
   "homepage": "https://github.com/kohx/fire-cms#readme",
+  "scripts": {
+    "test": "jest"
+  },
   "devDependencies": {
-    "jest": "^23.5.0",
-    "jest-cli": "^23.5.0"
+    "jest": "^23.5.0"
   }
 }
