@@ -13,7 +13,7 @@ branches:
 script:
   - echo "Deploy"
   # - npm test
-  - yarn run jest --coverage
+  # - yarn run jest --coverage
 deploy:
   provider: firebase
   skip_cleanup: true
