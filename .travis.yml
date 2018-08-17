@@ -18,9 +18,10 @@ after_script:
   - npm install -g codeclimate-test-reporter
 
 after_success:
-  firebase-ci deploy
-
-before_deploy: "before deploy!"
+  - npm install -g firebase-ci
+  - firebase-ci deploy
+  # - npm install --prefix ./functions
+  # - firebase-ci deploy
 
 deploy:
   provider: firebase
@@ -28,8 +29,6 @@ deploy:
   token:
     secure: "1/WrUs56RZ46GInNhjZO2iiDh4RCzJYAl2IBmmCd4NYOU"
   project: "fire-cms-86681"
-
-after_deploy: "after deploy!"
 
 addons:
   code_climate:
