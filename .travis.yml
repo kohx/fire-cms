@@ -8,13 +8,12 @@ node_js: 6.11.5
 language: node_js
 after_script:
   - npm install -g codeclimate-test-reporter
-  - codeclimate-test-reporter < ./coverage/lcov.info
+  # - codeclimate-test-reporter < ./coverage/lcov.info
 addons:
   code_climate:
     repo_token: ef07d7699b193cf5921c6f2ca08adadb384f81896caf6f904e1b40d6b38370f8
-# branches:
-#   only:
-#     - master
+branches:
+  only: master
 
 # after_success:
 #   - npm install -g codeclimate-test-reporter
@@ -28,9 +27,6 @@ addons:
 #   token:
 #     secure: "1/WrUs56RZ46GInNhjZO2iiDh4RCzJYAl2IBmmCd4NYOU"
 #   project: "fire-cms-86681"
-# cache:
-#   directories:
-#     - node_modules
-# addons:
-#   code_climate:
-#     repo_token: ef07d7699b193cf5921c6f2ca08adadb384f81896caf6f904e1b40d6b38370f8
+addons:
+  code_climate:
+    repo_token: ef07d7699b193cf5921c6f2ca08adadb384f81896caf6f904e1b40d6b38370f8
