@@ -10,7 +10,7 @@ branches:
     - master
 script:
   - echo "Deploy"
-  - npm test --coverage
+  - npm test -- --coverage
 deploy:
   provider: firebase
   skip_cleanup: true
