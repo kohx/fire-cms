@@ -8,14 +8,17 @@ sudo: false
 cache: yarn
 
 before_script:
-  npm install -g firebase-tools
-  npm install
+  - npm install -g firebase-tools
+  # - npm install
 
 script: 
-  yarn run jest --coverage
+  - yarn run jest --coverage
 
 after_script:
-  npm install -g codeclimate-test-reporter
+  - npm install -g codeclimate-test-reporter
+
+after_success:
+  firebase-ci deploy
 
 deploy:
   provider: firebase
