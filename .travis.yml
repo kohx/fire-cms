@@ -12,7 +12,7 @@ branches:
     - master
 script:
   - echo "Deploy"
-  # - npm test
+  - npm test
 deploy:
   provider: firebase
   skip_cleanup: true
