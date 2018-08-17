@@ -10,20 +10,20 @@ after_success:
   # - npm install -g codeclimate-test-reporter
   # - codeclimate-test-reporter < ./coverage/lcov.info
   - npm install -g codeclimate-test-reporter
-  - firebase-ci deploy
+  # - firebase-ci deploy
 branches:
   only:
     - master
 script: yarn run jest --coverage
-deploy:
-  provider: firebase
-  skip_cleanup: true
-  token:
-    secure: "1/WrUs56RZ46GInNhjZO2iiDh4RCzJYAl2IBmmCd4NYOU"
-  project: "fire-cms-86681"
-cache:
-  directories:
-    - node_modules
+# deploy:
+#   provider: firebase
+#   skip_cleanup: true
+#   token:
+#     secure: "1/WrUs56RZ46GInNhjZO2iiDh4RCzJYAl2IBmmCd4NYOU"
+#   project: "fire-cms-86681"
+# cache:
+#   directories:
+#     - node_modules
 addons:
   code_climate:
     repo_token: ef07d7699b193cf5921c6f2ca08adadb384f81896caf6f904e1b40d6b38370f8
