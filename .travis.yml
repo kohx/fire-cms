@@ -6,16 +6,16 @@ branches:
 dist: trusty
 sudo: false
 cache: yarn
-script: yarn run jest --coverage
 
 before_script:
   npm install -g firebase-tools
+  npm install
+
+script: 
+  yarn run jest --coverage
 
 after_script:
   npm install -g codeclimate-test-reporter
-
-# after_success:
-#   firebase-ci deploy
 
 deploy:
   provider: firebase
