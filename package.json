@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/kohx/fire-cms#readme",
   "devDependencies": {
-    "jest": "^23.5.0"
+    "jest": "^23.5.0",
+    "jest-cli": "^23.5.0"
   }
 }
