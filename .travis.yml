@@ -7,7 +7,7 @@ cache: yarn
 script: yarn run jest --coverage
 addons:
   code_climate:
-    repo_token: ab6dff69bdbbd98cc9a6d48fc2e3e308e213690eeb82cc8bdc8c4a12c72938d9
+    repo_token: ef07d7699b193cf5921c6f2ca08adadb384f81896caf6f904e1b40d6b38370f8
 after_script:
   - npm install -g codeclimate-test-reporter
   # - codeclimate-test-reporter < ./coverage/lcov.info
