@@ -16,10 +16,6 @@ jsonCache.isActive(system.cache)
 
 /* middle wares */
 function checkPath(req, res, next) {
-
-
-
-
     // ファーストパスがバックエンドユニークでない場合
     if (req.vessel.firstPath !== req.vessel.backendUnique) next('route')
     else next()
@@ -66,16 +62,7 @@ function checkSigninPage(req, res, next) {
     }
 }
 
-/* route get */
-router.get('/*',
-    checkPath,
-    checkSingIn,
-    checkSigninPage,
-    getBack
-)
-
-function getBack(req, res, next) {
-
+function getTemplate(req, res, next) {
     const unique = req.vessel.back.unique
 
     // build backend template path
@@ -104,6 +91,8 @@ function getBack(req, res, next) {
         jsonCache.set('parts', parts)
     }
 
+    
+
     // キャッシュを取得
     let content = jsonCache.get(`content_${unique}`)
     // キャッシュが空のとき
@@ -130,14 +119,31 @@ function getBack(req, res, next) {
         }
     }
 
-    // render backend page
-    const func = backendGetRoutes(unique, data)
+    req.vessel.back.data = data
+    next()
+}
+
+function getBack(req, res, next) {
+
+    const unique = req.vessel.back.unique
+    const data = req.vessel.back.data
+    func = backendGetRoutes(unique, data)
+
     if (func) {
         func(req, res, next)
     } else {
         next('route')
     }
 }
+
+/* route get */
+router.get('/*',
+    checkPath,
+    checkSingIn,
+    checkSigninPage,
+    getTemplate,
+    getBack
+)
 
 function backendGetRoutes(unique, data) {
     const routes = {

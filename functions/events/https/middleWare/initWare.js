@@ -11,7 +11,7 @@ const jsonCache = require('../../../modules/jsonCache')
 jsonCache.isActive(system.cache)
 
 module.exports.getInfo = (req, res, next) => {
-
+    
     // const parse = {
     //   'headers.hosts': [
     //     req.headers['host'],              // us-central1-newfunctions-a8a25.cloudfunctions.net
@@ -52,8 +52,7 @@ module.exports.getInfo = (req, res, next) => {
         back: {
             signinUnique: null,
             unique: null,
-            wraps: null,
-            parts: null,
+            data: null,
         },
     }
 

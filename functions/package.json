@@ -16,8 +16,8 @@
     "cors": "^2.8.4",
     "crypto": "^1.0.1",
     "express": "^4.16.3",
-    "firebase-admin": "^5.13.1",
-    "firebase-functions": "^2.0.1",
+    "firebase-admin": "^6.0.0",
+    "firebase-functions": "^2.0.5",
     "i18n": "^0.8.3",
     "memory-cache": "^0.2.0",
     "validator": "^10.5.0"
