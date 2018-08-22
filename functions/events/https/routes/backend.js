@@ -10,7 +10,9 @@ const fs = require('fs')
 const path = require('path')
 
 const jsonCache = require('../../../modules/jsonCache')
-const validation = require('../../../modules/validation')
+
+const updateAsset = require('../backendRoutes/updateAsset')
+
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
@@ -192,59 +194,9 @@ function postBack(req, res, next) {
 
 function backendPostRoutes(unique) {
     const routes = {
-        updateAsset: (req, res, next) => {
-            console.log('\n\n<<<<<<<<<< start backend updateAsset >>>>>>>>>>\n\n')
-            // console.log('@@@', res.__('Hello'))
-            // console.log('@@@', res.__('yes'))
-            // console.log('@@@', req.__('Hello {{name}}', { name: 'kohei' }))
-            // console.log('@@@', res.__({ phrase: 'Hello {{name}}', locale: 'ja' }, { name: 'こうへい' }))
-            // console.log('@@@', res.__l('Hello'))
-            // console.log('@@@', res.__h('Hello'))
-            // console.log('@@@', res.__('greeting.formal'))
-            // console.log('@@@', res.__('greeting.informal'))     
-
-            let result = null
-
-           console.log(req.getLocale())
-
-            // catch error end becose endpoint
-            try {
-
-                const post = {
-                    unique: req.body.unique,
-                }
-                const validate = validation.list(post)
-                    .check('unique', 'isRequired')
-                    .check('unique', 'isEmail')
-                    .check('unique', 'isLength', 1, 5)
-
-                if (!validate.valid) {
-                    console.log(validate.errors)
-                    result = {
-                        status: false,
-                        errors: validate.errors
-                    }
-                } else {
-                    result = {
-                        status: true,
-                        errors: validate.results
-                    }
-                }
-
-                console.log('\n\n<<<<<<<<<< end backend updateAsset >>>>>>>>>>\n\n')
-                res.json(result)
-
-            } catch (err) {
-                console.log('\n\n<<<<<<<<<< error backend updateAsset >>>>>>>>>>\n\n')
-                res.json({
-                    status: false,
-                    message: err.message,
-                })
-            }
-        }
+        updateAsset: updateAsset
     }
     const func = (routes[unique] != null) ? routes[unique] : false
-    console.log(func)
     return func
 }
 

@@ -7,5 +7,19 @@
 		"formal": "こんにちは",
 		"informal": "ちわ！"
 	},
-	"unique is required.": "unique is required."
+	"{{param1}} is required.": "{{param1}}は必須です。",
+	"{{param1}} is not alpha.": "{{param1}} is not alpha.",
+	"{{param1}} is not numric.": "{{param1}} is not numric.",
+	"{{param1}} is not alphanumeric.": "{{param1}} is not alphanumeric.",
+	"{{param1}} is not email.": "{{param1}} is not email.",
+	"{{param1}} is not contains {{param2}}.": "{{param1}} is not contains {{param2}}.",
+	"{{param1}} is not equals {{param2}}.": "{{param1}} is not equals {{param2}}.",
+	"{{param1}} is not matches {{param2}}.": "{{param1}} is not matches {{param2}}.",
+	"{{param1}} must be included in {{param2}}": "{{param1}} must be included in {{param2}}",
+	"{{param1}} length is min {{param2}}, max {{param3}}.": "{{param1}}の長さは{{param2}}文字以上{{param3}}文字以下です。",
+	"{{param1}} byte is min {{param2}}, max {{param3}}.": "{{param1}} byte is min {{param2}}, max {{param3}}.",
+	"{{param1}} is already used.": "{{param1}} is already used.",
+	"{{param1}} is not base64 encoded.": "{{param1}} is not base64 encoded.",
+	"{{param1}} is not alphanumeric and underscore.": "{{param1}} is not alphanumeric and underscore.",
+	"update success!": "update success!"
 }

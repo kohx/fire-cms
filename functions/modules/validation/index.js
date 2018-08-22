@@ -11,11 +11,11 @@ module.exports = class validation {
 
         this.list = list
 
-        this.valid = true
+        this.validity = true
         this.errors = {}
-        this.results = {}
+        this.values = {}
         Object.keys(list).forEach(key => {
-            this.results[key] = list[key]
+            this.values[key] = list[key]
         })
         this.sanitaizeTypes = [
             'blacklist',
@@ -33,17 +33,20 @@ module.exports = class validation {
             'whitelist',
         ]
         this.validationTypes = {
-            isRequired: `:key is required.`,
-            isAlpha: `:key is not alpha.`,
-            isNumeric: `:key is not numric.`,
-            isAlphanumeric: `:key is not alphanumeric.`,
-            isEmail: `:key is not email.`,
-            contains: `:key is not contains :param.`,
-            equals: `:key is not equals :param.`,
-            matches: `:key is not matches :param.`,
-            isIn: `:key must be included in :param`,
-            isLength: `:key length is min:param1, max:param2.`,
-            isByteLength: `:key byte is min:param1, max:param2.`,
+            isRequired: `{{param1}} is required.`,
+            isAlpha: `{{param1}} is not alpha.`,
+            isNumeric: `{{param1}} is not numric.`,
+            isAlphanumeric: `{{param1}} is not alphanumeric.`,
+            isEmail: `{{param1}} is not email.`,
+            contains: `{{param1}} is not contains {{param2}}.`,
+            equals: `{{param1}} is not equals {{param2}}.`,
+            notEquals: `{{param1}} is equals {{param2}}.`,
+            matches: `{{param1}} is not matches {{param2}}.`,
+            isIn: `{{param1}} must be included in {{param2}}`,
+            isLength: `{{param1}} length is min {{param2}}, max {{param3}}.`,
+            isByteLength: `{{param1}} byte is min {{param2}}, max {{param3}}.`,
+            isAlnumunder: `{{param1}} is not alphanumeric and underscore.`,
+            isBase64: `{{param1}} is not base64 encoded.`,
         }
     }
 
@@ -52,7 +55,7 @@ module.exports = class validation {
         return instance
     }
 
-    check(key, type, ...args) {
+    test(key, type, ...args) {
 
         if (!Object.keys(this.list).includes(key)) {
             throw new Error(`error at validation module: list has not key.`)
@@ -69,8 +72,16 @@ module.exports = class validation {
 
             switch (type) {
                 case 'isRequired':
-
                     flag = !validator.isEmpty(value)
+                    break
+
+                case 'notEquals':
+                    flag = !validator.equals(value)
+                    break
+
+                case 'isAlnumunder':
+                    const regexp = /^[a-zA-Z0-9-_]+$/;
+                    flag = validator.matches(value, regexp)
                     break
 
                 default:
@@ -86,14 +97,16 @@ module.exports = class validation {
 
 
         if (!flag) {
-            this.valid = false
+            this.validity = false
             if (!this.errors[key]) {
                 this.errors[key] = []
             }
 
-            const params = {}
+            const params = { param1: key }
+            let num = 2
             args.forEach((arg, key) => {
-                params[`param${key + 1}`] = arg
+                params[`param${num}`] = arg
+                num++
             })
 
             this.errors[key].push({
@@ -106,7 +119,7 @@ module.exports = class validation {
     }
 
     sanitize(key, type, ...arg) {
-        
+
         if (!Object.keys(this.list).includes(key)) {
             throw new Error(`error at validation module: list has not key.`)
         }
@@ -117,8 +130,16 @@ module.exports = class validation {
 
         const value = this.list[key]
         const snitized = validator[type](value, ...args)
-        this.results[key] = snitized
+        this.values[key] = snitized
         return this
+    }
+
+    check() {
+        return {
+            status: this.validity,
+            errors: this.errors,
+            values: this.values,
+        }
     }
 }
 

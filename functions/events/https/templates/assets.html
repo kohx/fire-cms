@@ -18,25 +18,25 @@
     const assetsStrageRef = firebase.storage().ref('assets')
 
     // assetsSroreRef.orderBy('created', 'asc').limit(this.messageLimit)
-    assetsStoreRef.onSnapshot(docs => {
-        docs.forEach(doc => {
-            getAssetFromDoc(doc)
-                .then(data => {
-                    let assetFrame = document.getElementById(`#id_${data.id}`)
-                    if (!assetFrame) {
-                        const html =
-                            `<div id="id_${data.id}">
-                                    <a href="${data.url}">
-                                        <img src="${data.thumbUrl}" height="20">
-                                        <div>${data.unique}</div>
-                                    </a>
-                                </div>`
-                        assetList.insertAdjacentHTML('beforeend', html)
-                    }
-                })
-                .catch(err => console.log(err))
-        })
-    })
+    // assetsStoreRef.onSnapshot(docs => {
+    //     docs.forEach(doc => {
+    //         getAssetFromDoc(doc)
+    //             .then(data => {
+    //                 let assetFrame = document.getElementById(`#id_${data.id}`)
+    //                 if (!assetFrame) {
+    //                     const html =
+    //                         `<div id="id_${data.id}">
+    //                                 <a href="${data.url}">
+    //                                     <img src="${data.thumbUrl}" height="20">
+    //                                     <div>${data.unique}</div>
+    //                                 </a>
+    //                             </div>`
+    //                     assetList.insertAdjacentHTML('beforeend', html)
+    //                 }
+    //             })
+    //             .catch(err => console.log(err))
+    //     })
+    // })
 
     function getAssetFromDoc(doc) {
         const data = doc.data()
@@ -66,7 +66,7 @@
         // files is a FileList of File objects. List some properties.
         Object.keys(files).forEach(key => {
             const file = files[key]
-            const uid = generateUuid()
+            const uid = assetsStoreRef.doc().id
 
             // Only process image files.
             if (file.type.match('image.*')) {
@@ -110,8 +110,8 @@
             <div>${uid}</div>
             <div>type: ${file.type || 'n/a'}</div>
             <div>size: ${file.size}</div>
-            <div><input class="file-unique" type="text" placeholder="unique"></div>
-            <div><input class="file-name" type="text" placeholder="name"></div>
+            <div><input class="file-unique" type="text" value="${uid}" placeholder="unique"></div>
+            <div><input class="file-name" type="text" value="${file.name}" placeholder="name"></div>
             <div><input class="file-description" type="text" placeholder="description"></div>
             <div><input type="checkbox"></div>
             <div class="file-message"></div>
@@ -135,19 +135,18 @@
 
             reader.onload = event => {
                 const content = event.target.result
-
+                const type = file.type
                 const headers = {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 };
-
                 const body = {
                     unique,
                     name,
                     description,
                     content,
+                    type,
                 }
-
                 const options = {
                     method: 'POST',
                     body: JSON.stringify(body),
@@ -158,13 +157,11 @@
                     .then(data => {
                         return data.json()
                     }).then(json => {
-                        if(json.status){
-                            messageElement.textContent = json.status
+                        console.log(json)
+                        if (json.status) {
+                            messageElement.innerHTML = json.messages[0]
                         } else {
-                            const message = ''
-                            Object.keys(json.errors).forEach(key => {
-                                console.log('@', json.errors[key])
-                            })
+                            messageElement.innerHTML = json.messages[0]
                         }
                     }).catch(err => {
                         messageElement.textContent = err.message
@@ -172,20 +169,5 @@
                     })
             }
         })
-    }
-
-    function generateUuid() {
-        let chars = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split("");
-        for (let i = 0, len = chars.length; i < len; i++) {
-            switch (chars[i]) {
-                case "x":
-                    chars[i] = Math.floor(Math.random() * 16).toString(16);
-                    break;
-                case "y":
-                    chars[i] = (Math.floor(Math.random() * 4) + 8).toString(16);
-                    break;
-            }
-        }
-        return chars.join("");
     }
 </script>
