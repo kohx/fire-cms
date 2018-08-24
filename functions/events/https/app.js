@@ -35,8 +35,10 @@ console.log('\n\n\n<<<<<<<<<< app start >>>>>>>>>>\n\n')
 const app = express()
 
 app.use(cors)
+// Parse cookie
 app.use(cookieParser())
-app.use(bodyParser.urlencoded({ extended: false }))
+// Parse json data
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 i18n.configure({

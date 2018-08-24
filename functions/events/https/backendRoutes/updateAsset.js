@@ -6,6 +6,7 @@ const system = parent.system
 
 const stream = require('stream');
 const validation = require('../../../modules/validation')
+const uploadBase64 = require('../../../modules/uploadBase64')
 
 module.exports = (req, res, next) => {
     console.log('<<<<<<<<<< start backend updateAsset >>>>>>>>>>\n\n')
@@ -69,29 +70,13 @@ module.exports = (req, res, next) => {
                                 throw err
                             })
 
-
-                        const buf = new Buffer(validate.values.content, 'base64')
-                        const bufferStream = new stream.PassThrough()
-                        bufferStream.end(buf)
-
                         const bucket = admin.storage().bucket();
                         const bucketFile = bucket.file(validate.values.unique)
-
-                        bufferStream.pipe(bucketFile.createWriteStream({
-                            metadata: {
-                                contentType: validate.values.type,
-                                metadata: {
-                                    custom: 'metadata'
-                                }
-                            },
-                            public: true,
-                        }))
-                            .on('error', function (err) {
-                                console.log('!!!!!!!!!!!!!!')
-                            })
-                            .on('finish', function () {
-                                console.log('fin')
-                            });
+                        
+                        uploadBase64.fact(validate.values.content)
+                        .upload(bucketFile)
+                        .then(result => console.log(result))
+                        .catch(err => console.log(err))
                     }
                 })
                 .catch(err => {

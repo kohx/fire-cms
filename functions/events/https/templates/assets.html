@@ -130,11 +130,14 @@
             const messageElement = element.querySelector('.file-message')
             const file = selectedFiles[uid]
 
+            // 
             const reader = new FileReader();
             reader.readAsDataURL(file);
 
             reader.onload = event => {
                 const content = event.target.result
+                document.querySelector('body').insertAdjacentHTML('beforeend', `<img src="${content}" height="100">`)
+                document.querySelector('body').insertAdjacentHTML('beforeend', `<div>${content}</div>`)
                 const type = file.type
                 const headers = {
                     'Accept': 'application/json',
