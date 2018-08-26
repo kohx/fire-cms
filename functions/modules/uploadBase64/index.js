@@ -65,49 +65,49 @@ module.exports = class assets {
                 })
         })
 
-        // const uploadThumb = new Promise((resolve, reject) => {
+        const uploadThumb = new Promise((resolve, reject) => {
 
-        //     if (!this.contentType.startsWith('image/')) {
-        //         resolve()
-        //     }
+            if (!this.contentType.startsWith('image/')) {
+                resolve()
+            }
 
-        //     const tempFilePath = path.join(os.tmpdir(), this.name)
-        //     const thumbPrefix = 'thumb_'
-        //     const thumbSize = '200x200'
+            const tempFilePath = path.join(os.tmpdir(), this.name)
+            const thumbPrefix = 'thumb_'
+            const thumbSize = '200x200'
 
-        //     bucketFile.download({
-        //             destination: tempFilePath,
-        //         })
-        //         .then(() => {
-        //             console.log('-----> Image downloaded locally to', tempFilePath)
-        //             // ImageMagickを使用してサムネイルを生成
-        //             spawn('convert', [tempFilePath, '-thumbnail', `${thumbSize}>`, tempFilePath])
-        //         })
-        //         .then(() => {
-        //             console.log('-----> Thumbnail created at', tempFilePath)
-        //             // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
-        //             const thumbFileName = `${thumbPrefix}${this.name}`
-        //             const thumbFilePath = path.join(path.dirname(this.path), thumbFileName)
+            bucketFile.download({
+                    destination: tempFilePath,
+                })
+                .then(() => {
+                    console.log('-----> Image downloaded locally to', tempFilePath)
+                    // ImageMagickを使用してサムネイルを生成
+                    spawn('convert', [tempFilePath, '-thumbnail', `${thumbSize}>`, tempFilePath])
+                })
+                .then(() => {
+                    console.log('-----> Thumbnail created at', tempFilePath)
+                    // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
+                    const thumbFileName = `${thumbPrefix}${this.name}`
+                    const thumbFilePath = path.join(path.dirname(this.path), thumbFileName)
 
-        //             // Uploading the thumbnail.
-        //             storageBucket.upload(tempFilePath, {
-        //                 destination: thumbFilePath,
-        //                 metadata: {
-        //                     contentType: this.contentType,
-        //                     metadata: this.metas
-        //                 }
-        //             })
-        //         })
-        //         .then(() => {
-        //             // Once the thumbnail has been uploaded delete the local file to free up disk space.
-        //             fs.unlinkSync(tempFilePath)
-        //             resolve(true)
-        //         })
-        //         .catch(err => {
-        //             console.log(err)
-        //             reject(err)
-        //         })
-        // })
+                    // Uploading the thumbnail.
+                    storageBucket.upload(tempFilePath, {
+                        destination: thumbFilePath,
+                        metadata: {
+                            contentType: this.contentType,
+                            metadata: this.metas
+                        }
+                    })
+                })
+                .then(() => {
+                    // Once the thumbnail has been uploaded delete the local file to free up disk space.
+                    fs.unlinkSync(tempFilePath)
+                    resolve(true)
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject(err)
+                })
+        })
 
         return Promise.all([uploadFile])
     }
