@@ -84,6 +84,11 @@ module.exports = class validation {
                     flag = validator.matches(value, regexp)
                     break
 
+                case 'isBase64':
+                    const [head, body] = value.split(',');
+                    flag = validator.isBase64(body)
+                    break
+
                 default:
                     // There is no error even if there is args!
                     flag = validator[type](value, ...args)
