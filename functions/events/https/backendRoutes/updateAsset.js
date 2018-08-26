@@ -57,11 +57,11 @@ module.exports = (req, res, next) => {
                             messages,
                         })
                     } else {
-                        const assetPath = `assets/${validate.values.unique}`
+                        const assetPath = `assets`
                         uploadBase64.fact(validate.values.content)
                             .setMeta({})
-                            .upload(assetPath)
-                            .then(result => {
+                            .upload(assetPath, validate.values.unique)
+                            .then(() => {
                                 // set firestore
                                 doc.ref.set({
                                         path: assetPath,
@@ -69,9 +69,11 @@ module.exports = (req, res, next) => {
                                         name: validate.values.name,
                                         description: validate.values.description,
                                         type: validate.values.type,
+                                        createdAt: new Date(),
+                                        updatedAT: new Date(),
+                                        deletedAt: null,
                                     })
                                     .then(result => {
-                                        console.log()
                                         res.json({
                                             status: true,
                                             messages: [req.__('update success!')]
@@ -82,6 +84,7 @@ module.exports = (req, res, next) => {
                                     })
                             })
                             .catch(err => {
+                                console.log(err)
                                 throw new Error('updateAsset: upload error!')
                             })
                     }

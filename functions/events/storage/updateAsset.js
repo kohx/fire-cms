@@ -31,126 +31,92 @@ const validator = require('validator');
 // console.log(validator.trim(`/sss/`, '/'))
 
 let fileBucket,
-  bucket,
-  contentType,
-  filePath,
-  fileName,
-  ext,
-  unique,
-  name,
-  tempFilePath,
-  fileType
+    bucket,
+    contentType,
+    filePath,
+    fileName,
+    ext,
+    unique,
+    name,
+    tempFilePath,
+    fileType
 
 const thumbPrefix = 'thumb_'
 const thumbSize = '200x200'
 
 exports.updateAsset = functions.storage.object()
-  .onFinalize(object => {
-    console.log('-----> storage')
+    .onFinalize(object => {
+        console.log('-----> storage')
 
-    /* returnの分解 */
-    console.log('object@ ', object)
+        /* returnの分解 */
+        console.log('object@ ', object)
 
-    // ファイルを含むStorage bucket
-    fileBucket = object.bucket
-    // バケット内のファイルパス
-    bucket = gcs.bucket(fileBucket)
-    // console.log('bucket1@', bucket)
+        // ファイルを含むStorage bucket
+        fileBucket = object.bucket
+        // バケット内のファイルパス
+        bucket = gcs.bucket(fileBucket)
+        // console.log('bucket1@', bucket)
 
-    // これでもバケット名が取れる
-    // bucket = admin.storage().bucket()
-    // console.log('bucket2@', bucket)
+        // これでもバケット名が取れる
+        // bucket = admin.storage().bucket()
+        // console.log('bucket2@', bucket)
 
-    // file path
-    const filePath = object.name
+        // file path
+        const filePath = object.name
 
-    // コンテントタイプ
-    contentType = object.contentType
-    // ファイルタイプ
-    fileType = 'file'
-    if (contentType.startsWith('image/')) {
-      fileType = 'image'
-    }
-    if (contentType.startsWith('audio/')) {
-      fileType = 'audio'
-    }
-    if (contentType.startsWith('video/') || contentType.startsWith('vide/')) {
-      fileType = 'video'
-    }
-    // アセットネーム
-    assetName = object.name           // assets/qwer
-    
-    unique = filePath.replace(`${parse.dir}/`, '') // assets/qwer
-    name = object.metadata.name               // image
+        // コンテントタイプ
+        contentType = object.contentType
 
+        // サムネイルの場合は終了
+        if (fileName.startsWith(thumbPrefix)) {
+            console.log('<----- Already a Thumbnail.')
+            return 0
+        }
 
+        // イメージファイル出ない場合
+        if (!contentType.startsWith('image/')) {
+            return 0
+        }
 
-    // サムネイルの場合は終了
-    if (fileName.startsWith(thumbPrefix)) {
-      console.log('<----- Already a Thumbnail.')
-      return 0
-    }
+        console.log(fileName)
 
-    // firestoreに保存
-    const doSetStore = setStore()
-    // サムネイルを作成
-    const doCreateTumb = createTumb()
-
-    return Promise.all([doSetStore, doCreateTumb])
-  })
-
-function setStore() {
-  return admin.firestore().collection('assets').doc(unique)
-    .set({
-      unique: filePath,
-      name: '',
-      description: '',
-      fileType,
-      filePath,
-      checkUrl: `https://firebasestorage.googleapis.com/v0/b/${fileBucket}/o/${encodeURIComponent(filePath)}?alt=media`,
+        tempFilePath = path.join(os.tmpdir(), fileName)
+        // firestoreに保存
+        const doSetStore = setStore()
+        // サムネイルを作成
+        const doCreateTumb = createTumb()
     })
-    .then(result => {
-      console.log('<----- setStore done.', filePath)
-    })
-}
 
 function createTumb() {
-  // イメージファイル
-  if (contentType.startsWith('image/')) {
-    // テンプファイルのパスを作成
-    tempFilePath = path.join(os.tmpdir(), fileName)
-
-  } else {
-
-  }
 
 
 
-  // サムネイルを作成して保存
-  // まずファイルをテンプフォルダにダウンロード
-  return bucket.file(filePath)
-    .download({
-      destination: tempFilePath,
-    })
-    .then(() => {
-      console.log('-----> Image downloaded locally to', tempFilePath)
-      // ImageMagickを使用してサムネイルを生成
-      return spawn('convert', [tempFilePath, '-thumbnail', `${thumbSize}>`, tempFilePath])
-    })
-    .then(() => {
-      console.log('-----> Thumbnail created at', tempFilePath)
-      // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
-      const thumbFileName = `${thumbPrefix}${fileName}`
-      const thumbFilePath = path.join(path.dirname(filePath), thumbFileName)
 
-      // Uploading the thumbnail.
-      return bucket.upload(tempFilePath, {
-        destination: thumbFilePath,
-        metadata: {}
-      })
-    })
-    .then(() => {
-      // Once the thumbnail has been uploaded delete the local file to free up disk space.
-      fs.unlinkSync(tempFilePath)
-    })
+    // サムネイルを作成して保存
+    // まずファイルをテンプフォルダにダウンロード
+    return bucket.file(filePath)
+        .download({
+            destination: tempFilePath,
+        })
+        .then(() => {
+            console.log('-----> Image downloaded locally to', tempFilePath)
+            // ImageMagickを使用してサムネイルを生成
+            return spawn('convert', [tempFilePath, '-thumbnail', `${thumbSize}>`, tempFilePath])
+        })
+        .then(() => {
+            console.log('-----> Thumbnail created at', tempFilePath)
+            // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
+            const thumbFileName = `${thumbPrefix}${fileName}`
+            const thumbFilePath = path.join(path.dirname(filePath), thumbFileName)
+
+            // Uploading the thumbnail.
+            return bucket.upload(tempFilePath, {
+                destination: thumbFilePath,
+                metadata: {}
+            })
+        })
+        .then(() => {
+            // Once the thumbnail has been uploaded delete the local file to free up disk space.
+            fs.unlinkSync(tempFilePath)
+        })
 }

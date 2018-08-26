@@ -3,6 +3,8 @@
 <output id="list"></output>
 <button id="upload" type="button">upload</button>
 <button id="delete" type="button">delete</button>
+
+<div id="asset-list"></div>
 {|> footer |}
 <script>
     const selectedFiles = {}
@@ -17,26 +19,27 @@
     const assetsStoreRef = firebase.firestore().collection('assets')
     const assetsStrageRef = firebase.storage().ref('assets')
 
-    // assetsSroreRef.orderBy('created', 'asc').limit(this.messageLimit)
-    // assetsStoreRef.onSnapshot(docs => {
-    //     docs.forEach(doc => {
-    //         getAssetFromDoc(doc)
-    //             .then(data => {
-    //                 let assetFrame = document.getElementById(`#id_${data.id}`)
-    //                 if (!assetFrame) {
-    //                     const html =
-    //                         `<div id="id_${data.id}">
-    //                                 <a href="${data.url}">
-    //                                     <img src="${data.thumbUrl}" height="20">
-    //                                     <div>${data.unique}</div>
-    //                                 </a>
-    //                             </div>`
-    //                     assetList.insertAdjacentHTML('beforeend', html)
-    //                 }
-    //             })
-    //             .catch(err => console.log(err))
-    //     })
-    // })
+    assetsStoreRef
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(docs => {
+            docs.forEach(doc => {
+                getAssetFromDoc(doc)
+                    .then(data => {
+                        let assetFrame = document.getElementById(`#id_${data.id}`)
+                        if (!assetFrame) {
+                            const html =
+                                `<div id="id_${data.id}">
+                                    <a href="${data.url}">
+                                        <img src="${data.thumbUrl}" height="20">
+                                        <div>${data.unique}</div>
+                                    </a>
+                                </div>`
+                            assetList.insertAdjacentHTML('beforeend', html)
+                        }
+                    })
+                    .catch(err => console.log(err))
+            })
+        })
 
     function getAssetFromDoc(doc) {
         const data = doc.data()
@@ -136,7 +139,8 @@
 
             reader.onload = event => {
                 const content = event.target.result
-                document.querySelector('body').insertAdjacentHTML('beforeend', `<img src="${content}" height="100">`)
+                document.querySelector('body').insertAdjacentHTML('beforeend',
+                    `<img src="${content}" height="100">`)
                 document.querySelector('body').insertAdjacentHTML('beforeend', `<div>${content}</div>`)
                 const type = file.type
                 const headers = {

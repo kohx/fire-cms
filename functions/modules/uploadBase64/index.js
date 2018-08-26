@@ -1,8 +1,11 @@
 const parent = require('../../events/parent')
 const functions = parent.functions
 const admin = parent.admin
-const stream = require('stream');
-
+const stream = require('stream')
+const path = require('path')
+const spawn = require('child-process-promise').spawn
+const os = require('os')
+const fs = require('fs')
 module.exports = class assets {
 
     // data:image/jpeg;base64,/9j/4AAQSkZJR
@@ -18,6 +21,7 @@ module.exports = class assets {
         const sutream = new stream.PassThrough()
         sutream.end(this.buffuer)
         this.sutream = sutream
+        this.name = ''
         this.path = ''
         this.metas = {}
     }
@@ -31,15 +35,22 @@ module.exports = class assets {
         return this
     }
 
-    upload(path) {
+    upload(stragePath, name) {
         // get storage backet and set path
-        this.path = path
+        this.path = stragePath
+        this.name = name
         const storageBucket = admin.storage().bucket();
-        const bucketFile = storageBucket.file(this.path)
-        // upload to assets storage
+        const bucketFile = storageBucket.file(`${this.path}/${this.name}`)
 
-        return new Promise((resolve, reject) => {
-            return this.sutream.pipe(bucketFile.createWriteStream({
+        // TODO:: まずテンポディレクトリに入れてから
+        // ストレージにアップロード
+        // ストレージにサムネイルをアップロード
+        // テンポディレクトリをクリア
+        // に変更
+
+        // upload to assets storage
+        const uploadFile = new Promise((resolve, reject) => {
+            this.sutream.pipe(bucketFile.createWriteStream({
                     metadata: {
                         contentType: this.contentType,
                         metadata: this.metas
@@ -50,8 +61,54 @@ module.exports = class assets {
                     reject(err)
                 })
                 .on('finish', () => {
-                    resolve(this)
-                });
+                    resolve(true)
+                })
         })
+
+        // const uploadThumb = new Promise((resolve, reject) => {
+
+        //     if (!this.contentType.startsWith('image/')) {
+        //         resolve()
+        //     }
+
+        //     const tempFilePath = path.join(os.tmpdir(), this.name)
+        //     const thumbPrefix = 'thumb_'
+        //     const thumbSize = '200x200'
+
+        //     bucketFile.download({
+        //             destination: tempFilePath,
+        //         })
+        //         .then(() => {
+        //             console.log('-----> Image downloaded locally to', tempFilePath)
+        //             // ImageMagickを使用してサムネイルを生成
+        //             spawn('convert', [tempFilePath, '-thumbnail', `${thumbSize}>`, tempFilePath])
+        //         })
+        //         .then(() => {
+        //             console.log('-----> Thumbnail created at', tempFilePath)
+        //             // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
+        //             const thumbFileName = `${thumbPrefix}${this.name}`
+        //             const thumbFilePath = path.join(path.dirname(this.path), thumbFileName)
+
+        //             // Uploading the thumbnail.
+        //             storageBucket.upload(tempFilePath, {
+        //                 destination: thumbFilePath,
+        //                 metadata: {
+        //                     contentType: this.contentType,
+        //                     metadata: this.metas
+        //                 }
+        //             })
+        //         })
+        //         .then(() => {
+        //             // Once the thumbnail has been uploaded delete the local file to free up disk space.
+        //             fs.unlinkSync(tempFilePath)
+        //             resolve(true)
+        //         })
+        //         .catch(err => {
+        //             console.log(err)
+        //             reject(err)
+        //         })
+        // })
+
+        return Promise.all([uploadFile])
     }
 }
