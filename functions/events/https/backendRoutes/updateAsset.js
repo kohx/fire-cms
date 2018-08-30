@@ -90,6 +90,7 @@ module.exports = (req, res, next) => {
                     }
                 })
                 .catch(err => {
+                    console.log(err)
                     throw new Error('updateAsset: get unique error!')
                 })
         }
