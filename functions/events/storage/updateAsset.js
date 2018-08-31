@@ -10,8 +10,11 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 
-const thumbPrefix = 'thumb_'
-const thumbSize = 100
+let thumbPrefix = 'thumb_'
+let thumbSize = '100'
+let squareSize = '640'
+let landscapeSize = '800x640'
+let portraitSize = '640x800'
 
 exports.updateAsset = functions.storage.object()
     .onFinalize(object => {
@@ -28,8 +31,8 @@ exports.updateAsset = functions.storage.object()
 
         // Get the file name.
         const fileName = path.basename(filePath)
-        // Get temp file path
-        const tempFilePath = path.join(os.tmpdir(), fileName)
+        // Get tmpdir
+        const tmpdir = os.tmpdir()
 
         // Exit if this is triggered on a file that is not an image.
         if (!contentType.startsWith('image/')) {
@@ -49,13 +52,44 @@ exports.updateAsset = functions.storage.object()
         // bucket = admin.storage().bucket()
         // console.log('bucket2@', bucket)
 
-        // サムネイルを作成
-        bucket.file(filePath)
-            .download({
-                destination: tempFilePath,
+        admin.firestore().collection('configs').doc('asset').get()
+            .then(doc => {
+                console.log('-----> Get config')
+                const config = doc.data()
+                thumbPrefix = config.thumbPrefix != null ? config.thumbPrefix : thumbPrefix
+                squarePrefix = config.thumbPrefix != null ? config.thumbPrefix : thumbPrefix
+                portraitPrefix = config.thumbPrefix != null ? config.thumbPrefix : thumbPrefix
+                landscapePrefix = config.thumbPrefix != null ? config.thumbPrefix : thumbPrefix
+
+                thumbSize = config.thumbSize != null ? config.thumbSize : thumbSize
+                squareSize = config.squareSize != null ? config.squareSize : squareSize
+                landscapeSize = config.landscapeSize != null ? config.landscapeSize : landscapeSize
+                portraitSize = config.portraitSize != null ? config.portraitSize : portraitSize
+
+                // Get temp file path
+                const tempFilePath = path.join(tmpdir, thumbFileName)
+
+                const thumbFileName = `${thumbPrefix}${fileName}`
+                const tempThumbFilePath = path.join(tmpdir, fileName)
+                const tempFilePath = path.join(tmpdir, fileName)
+                const tempFilePath = path.join(tmpdir, fileName)
+                const tempFilePath = path.join(tmpdir, fileName)
+
+                return true
             })
             .then(() => {
-                console.log('-----> Image downloaded locally to', tempFilePath)
+                console.log('@@@@-> get!', thumbPrefix)
+                console.log('@@@@-> get!', thumbSize)
+                console.log('-----> Image download locally to', tempFilePath)
+                return bucket.file(filePath)
+                    .download({
+                        destination: tempFilePath,
+                    })
+            })
+            .then(() => {
+                const thumbFileName = `${thumbPrefix}${fileName}`
+                const tempThumbFilePath = path.join(tmpdir, thumbFileName)
+
                 // ImageMagickを使用してサムネイルを生成
                 const args = [
                     tempFilePath,
@@ -65,10 +99,25 @@ exports.updateAsset = functions.storage.object()
                     'center',
                     '-extent',
                     `${thumbSize}x${thumbSize}`,
-                    tempFilePath,
+                    tempThumbFilePath,
                 ]
+                console.log('-----> thumb create start')
                 return spawn('convert', args)
             })
+            // .then(() => {
+            //     // ImageMagickを使用してスクエアを生成
+            //     const args = [
+            //         tempFilePath,
+            //         '-thumbnail',
+            //         `${squareSize}x${squareSize}^`,
+            //         '-gravity',
+            //         'center',
+            //         '-extent',
+            //         `${squareSize}x${squareSize}`,
+            //         tempFilePath,
+            //     ]
+            //     return spawn('convert', args)
+            // })
             .then(() => {
                 console.log('-----> Thumbnail created at', tempFilePath)
                 // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
@@ -85,6 +134,7 @@ exports.updateAsset = functions.storage.object()
             })
             .then(() => {
                 // Once the thumbnail has been uploaded delete the local file to free up disk space.
+                fs.unlinkSync(thumbFilePath)
                 fs.unlinkSync(tempFilePath)
                 console.log('-----> deleted the local file')
             })
