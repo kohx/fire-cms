@@ -11,7 +11,7 @@ const os = require('os')
 const fs = require('fs')
 
 const thumbPrefix = 'thumb_'
-const thumbSize = '100'
+const thumbSize = 100
 
 exports.updateAsset = functions.storage.object()
     .onFinalize(object => {
@@ -67,7 +67,7 @@ exports.updateAsset = functions.storage.object()
                     `${thumbSize}x${thumbSize}`,
                     tempFilePath,
                 ]
-                spawn('convert', args)
+                return spawn('convert', args)
             })
             .then(() => {
                 console.log('-----> Thumbnail created at', tempFilePath)
@@ -76,7 +76,7 @@ exports.updateAsset = functions.storage.object()
                 const thumbFilePath = path.join(path.dirname(filePath), thumbFileName)
 
                 // Uploading the thumbnail.
-                bucket.upload(tempFilePath, {
+                return bucket.upload(tempFilePath, {
                     destination: thumbFilePath,
                     metadata: {
                         contentType: contentType,
