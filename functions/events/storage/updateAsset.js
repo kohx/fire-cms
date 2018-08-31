@@ -11,7 +11,7 @@ const os = require('os')
 const fs = require('fs')
 
 const thumbPrefix = 'thumb_'
-const thumbSize = '100x100^'
+const thumbSize = '100'
 
 exports.updateAsset = functions.storage.object()
     .onFinalize(object => {
@@ -57,20 +57,14 @@ exports.updateAsset = functions.storage.object()
             .then(() => {
                 console.log('-----> Image downloaded locally to', tempFilePath)
                 // ImageMagickを使用してサムネイルを生成
-                // convert 
-                // -define jpeg:size=200x200 hatching_orig.jpg  
-                // -thumbnail 100x100^ 
-                // -gravity center 
-                // -extent 100x100
-
                 const args = [
                     tempFilePath,
                     '-thumbnail',
-                    '100x100^',
+                    `${thumbSize}x${thumbSize}^`,
                     '-gravity',
                     'center',
                     '-extent',
-                    '100x100',
+                    `${thumbSize}x${thumbSize}`,
                     tempFilePath,
                 ]
                 spawn('convert', args)
