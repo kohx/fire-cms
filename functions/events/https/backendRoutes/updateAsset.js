@@ -80,18 +80,18 @@ module.exports = (req, res, next) => {
                                         })
                                     })
                                     .catch(err => {
-                                        throw new Error('updateAsset: insert stora error!')
+                                        throw new Error('updateAsset error: insert stora error!')
                                     })
                             })
                             .catch(err => {
                                 console.log(err)
-                                throw new Error('updateAsset: upload error!')
+                                throw new Error('updateAsset error: upload error!')
                             })
                     }
                 })
                 .catch(err => {
                     console.log(err)
-                    throw new Error('updateAsset: get unique error!')
+                    throw new Error('updateAsset error: get unique error!')
                 })
         }
 

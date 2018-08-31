@@ -11,7 +11,7 @@ const os = require('os')
 const fs = require('fs')
 
 const thumbPrefix = 'thumb_'
-const thumbSize = '200x200'
+const thumbSize = '100x100^'
 
 exports.updateAsset = functions.storage.object()
     .onFinalize(object => {
@@ -32,7 +32,6 @@ exports.updateAsset = functions.storage.object()
         const tempFilePath = path.join(os.tmpdir(), fileName)
 
         // Exit if this is triggered on a file that is not an image.
-        console.log(contentType)
         if (!contentType.startsWith('image/')) {
             console.log('<----- This is not an image.')
             return 0
@@ -49,7 +48,7 @@ exports.updateAsset = functions.storage.object()
         // これでもバケット名が取れる
         // bucket = admin.storage().bucket()
         // console.log('bucket2@', bucket)
-        
+
         // サムネイルを作成
         bucket.file(filePath)
             .download({
@@ -58,7 +57,23 @@ exports.updateAsset = functions.storage.object()
             .then(() => {
                 console.log('-----> Image downloaded locally to', tempFilePath)
                 // ImageMagickを使用してサムネイルを生成
-                return spawn('convert', [tempFilePath, '-thumbnail', `${thumbSize}>`, tempFilePath])
+                // convert 
+                // -define jpeg:size=200x200 hatching_orig.jpg  
+                // -thumbnail 100x100^ 
+                // -gravity center 
+                // -extent 100x100
+
+                const args = [
+                    tempFilePath,
+                    '-thumbnail',
+                    '100x100^',
+                    '-gravity',
+                    'center',
+                    '-extent',
+                    '100x100',
+                    tempFilePath,
+                ]
+                spawn('convert', args)
             })
             .then(() => {
                 console.log('-----> Thumbnail created at', tempFilePath)
@@ -67,13 +82,17 @@ exports.updateAsset = functions.storage.object()
                 const thumbFilePath = path.join(path.dirname(filePath), thumbFileName)
 
                 // Uploading the thumbnail.
-                return bucket.upload(tempFilePath, {
+                bucket.upload(tempFilePath, {
                     destination: thumbFilePath,
-                    metadata: {}
+                    metadata: {
+                        contentType: contentType,
+                    }
                 })
             })
             .then(() => {
                 // Once the thumbnail has been uploaded delete the local file to free up disk space.
                 fs.unlinkSync(tempFilePath)
+                console.log('-----> deleted the local file')
             })
+        return 0;
     })
