@@ -11,9 +11,9 @@ const os = require('os')
 const fs = require('fs')
 
 let thumbPrefix = 't_'
-let thumbSize = '100x100'
+let thumbSize = '100x100^'
 let squarePrefix = 's_'
-let squareSize = '640x640'
+let squareSize = '640x640^'
 let landscapePrefix = 'l_'
 let landscapeSize = '800x640'
 let portraitPrefix = 'p_'
@@ -94,8 +94,8 @@ exports.updateAsset = functions.storage.object()
                 tempLandscapePath = path.join(tmpdir, `${landscapePrefix}${fileName}`)
                 storageLandscapePath = path.join(path.dirname(filePath), `${landscapePrefix}${fileName}`)
                 // portrait
-                tempPortraitPrefixPath = path.join(tmpdir, `${portraitPrefix}${fileName}`)
-                storagePortraitPrefixPath = path.join(path.dirname(filePath), `${portraitPrefix}${fileName}`)
+                tempPortraitPath = path.join(tmpdir, `${portraitPrefix}${fileName}`)
+                storagePortraitPath = path.join(path.dirname(filePath), `${portraitPrefix}${fileName}`)
 
                 return true
             })
@@ -106,18 +106,39 @@ exports.updateAsset = functions.storage.object()
                         destination: tempPath,
                     })
             })
+            // ImageMagickを使用して各イメージを生成
             .then(() => {
-                // ImageMagickを使用してサムネイルを生成
                 return creageImage('thumbnail', thumbSize, tempPath, tempThumbPath)
             })
             .then(() => {
-                // Uploading the thumbnail.
+                return creageImage('square', squareSize, tempPath, tempSquarePath)
+            })
+            .then(() => {
+                return creageImage('landscape', landscapeSize, tempPath, tempLandscapePath)
+            })
+            .then(() => {
+                return creageImage('portrait', portraitSize, tempPath, tempPortraitPath)
+            })
+            // 各イメージをストレージにアップロード
+            .then(() => {
                 return updateImage(bucket, tempThumbPath, storageThumbPath, contentType)
+            })
+            .then(() => {
+                return updateImage(bucket, tempSquarePath, storageSquarePath, contentType)
+            })
+            .then(() => {
+                return updateImage(bucket, tempLandscapePath, storageLandscapePath, contentType)
+            })
+            .then(() => {
+                return updateImage(bucket, tempPortraitPath, storagePortraitPath, contentType)
             })
             .then(() => {
                 // Once the thumbnail has been uploaded delete the local file to free up disk space.
                 fs.unlinkSync(tempPath)
                 fs.unlinkSync(tempThumbPath)
+                fs.unlinkSync(tempSquarePath)
+                fs.unlinkSync(tempLandscapePath)
+                fs.unlinkSync(tempPortraitPath)
                 console.log('<6> deleted the local file')
 
                 // fs.readdir(tmpdir, function (err, files) {
@@ -132,28 +153,41 @@ exports.updateAsset = functions.storage.object()
         return 0;
     })
 
+// function createImages(){
+//     const thumb = creageImage('thumbnail', thumbSize, tempPath, tempThumbPath)
+//     return Promise.all((resolve, reject) => {
+
+//     })
+// }
+
 function creageImage(type, size, path, newPath) {
     let args = []
-    if (type == 'thumbnail') {
-        args = [
-            path,
-            '-thumbnail',
-            size,
-            '-gravity',
-            'center',
-            '-extent',
-            size,
-            newPath,
-        ]
-    } else {
-        args = [
-            path,
-            '-resize',
-            size,
-            newPath,
-        ]
+    switch (type) {
+        case 'thumbnail':
+        case 'square':
+            args = [
+                path,
+                '-thumbnail',
+                size,
+                '-gravity',
+                'center',
+                '-extent',
+                size,
+                newPath,
+            ]
+            break;
+
+        default:
+            args = [
+                path,
+                '-resize',
+                size,
+                newPath,
+            ]
+            break;
     }
-    console.log(`<4> thumb create`)
+
+    console.log(`<4> image ${size} create`)
     return spawn('convert', args)
 }
 
