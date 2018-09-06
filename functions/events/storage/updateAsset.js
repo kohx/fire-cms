@@ -162,30 +162,30 @@ exports.updateAsset = functions.storage.object()
 
 function creageImage(type, size, path, newPath) {
     let args = []
-    switch (type) {
-        case 'thumbnail':
-        case 'square':
+    // switch (type) {
+    //     case 'thumbnail':
+    //     case 'square':
             args = [
                 path,
                 '-thumbnail',
-                size,
+                `${size}^`,
                 '-gravity',
                 'center',
                 '-extent',
                 size,
                 newPath,
             ]
-            break;
+    //         break;
 
-        default:
-            args = [
-                path,
-                '-resize',
-                size,
-                newPath,
-            ]
-            break;
-    }
+    //     default:
+    //         args = [
+    //             path,
+    //             '-resize',
+    //             size,
+    //             newPath,
+    //         ]
+    //         break;
+    // }
 
     console.log(`<4> image ${size} create`)
     return spawn('convert', args)
