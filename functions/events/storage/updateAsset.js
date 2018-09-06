@@ -108,16 +108,16 @@ exports.updateAsset = functions.storage.object()
             })
             // ImageMagickを使用して各イメージを生成
             .then(() => {
-                return creageImage('thumbnail', thumbSize, tempPath, tempThumbPath)
+                return creageImage(thumbSize, tempPath, tempThumbPath)
             })
             .then(() => {
-                return creageImage('square', squareSize, tempPath, tempSquarePath)
+                return creageImage(squareSize, tempPath, tempSquarePath)
             })
             .then(() => {
-                return creageImage('landscape', landscapeSize, tempPath, tempLandscapePath)
+                return creageImage(landscapeSize, tempPath, tempLandscapePath)
             })
             .then(() => {
-                return creageImage('portrait', portraitSize, tempPath, tempPortraitPath)
+                return creageImage(portraitSize, tempPath, tempPortraitPath)
             })
             // 各イメージをストレージにアップロード
             .then(() => {
@@ -143,7 +143,7 @@ exports.updateAsset = functions.storage.object()
 
                 // fs.readdir(tmpdir, function (err, files) {
                 //     if (err) throw err;
-                //     console.log(files);
+                //     console.log('files: ', files);
                 // });
             })
             .catch(err => {
@@ -153,19 +153,16 @@ exports.updateAsset = functions.storage.object()
         return 0;
     })
 
-// function createImages(){
-//     const thumb = creageImage('thumbnail', thumbSize, tempPath, tempThumbPath)
-//     return Promise.all((resolve, reject) => {
+function createImages(){
+    const thumb = creageImage(thumbSize, tempPath, tempThumbPath)
+    const square = creageImage(squareSize, tempPath, tempSquarePath)
+    const landscape = creageImage(landscapeSize, tempPath, tempLandscapePath)
+    const portrait = creageImage(portraitSize, tempPath, tempPortraitPath)
+    return Promise.all([thumb, square, landscape, portrait])
+}
 
-//     })
-// }
-
-function creageImage(type, size, path, newPath) {
-    let args = []
-    // switch (type) {
-    //     case 'thumbnail':
-    //     case 'square':
-            args = [
+function creageImage(size, path, newPath) {
+    const args = [
                 path,
                 '-thumbnail',
                 `${size}^`,
@@ -175,18 +172,6 @@ function creageImage(type, size, path, newPath) {
                 size,
                 newPath,
             ]
-    //         break;
-
-    //     default:
-    //         args = [
-    //             path,
-    //             '-resize',
-    //             size,
-    //             newPath,
-    //         ]
-    //         break;
-    // }
-
     console.log(`<4> image ${size} create`)
     return spawn('convert', args)
 }

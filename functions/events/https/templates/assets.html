@@ -27,8 +27,11 @@
                     .then(data => {
                         let assetFrame = document.getElementById(`#id_${data.id}`)
                         if (!assetFrame) {
+
+                        } else {
                             const html =
                                 `<div id="id_${data.id}">
+                                    <div>id_${data.id}</div>
                                     <a href="${data.url}">
                                         <img src="${data.thumbUrl}" height="20">
                                         <div>${data.unique}</div>
