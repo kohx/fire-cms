@@ -108,16 +108,23 @@ exports.updateAsset = functions.storage.object()
             })
             // ImageMagickを使用して各イメージを生成
             .then(() => {
-                return creageImage(thumbSize, tempPath, tempThumbPath)
-            })
-            .then(() => {
-                return creageImage(squareSize, tempPath, tempSquarePath)
-            })
-            .then(() => {
-                return creageImage(landscapeSize, tempPath, tempLandscapePath)
-            })
-            .then(() => {
-                return creageImage(portraitSize, tempPath, tempPortraitPath)
+                const types = [
+                    { size: thumbSize, path: tempThumbPath },
+                    { size: squareSize, path: tempSquarePath },
+                    { size: landscapeSize, path: tempLandscapePath },
+                    { size: portraitSize, path: tempPortraitPath },
+                ]
+                return createImages(tempPath, types)
+                // return creageImage(thumbSize, tempPath, tempThumbPath)
+                // })
+                // .then(() => {
+                //     return creageImage(squareSize, tempPath, tempSquarePath)
+                // })
+                // .then(() => {
+                //     return creageImage(landscapeSize, tempPath, tempLandscapePath)
+                // })
+                // .then(() => {
+                //     return creageImage(portraitSize, tempPath, tempPortraitPath)
             })
             // 各イメージをストレージにアップロード
             .then(() => {
@@ -142,38 +149,49 @@ exports.updateAsset = functions.storage.object()
                 console.log('<6> deleted the local file')
 
                 // fs.readdir(tmpdir, function (err, files) {
-                //     if (err) throw err;
-                //     console.log('files: ', files);
-                // });
+                //     if (err) throw err
+                //     console.log('files: ', files)
+                // })
             })
             .catch(err => {
                 console.log('<err>')
                 console.log(err)
             })
-        return 0;
+        return 0
     })
 
-function createImages(){
-    const thumb = creageImage(thumbSize, tempPath, tempThumbPath)
-    const square = creageImage(squareSize, tempPath, tempSquarePath)
-    const landscape = creageImage(landscapeSize, tempPath, tempLandscapePath)
-    const portrait = creageImage(portraitSize, tempPath, tempPortraitPath)
-    return Promise.all([thumb, square, landscape, portrait])
+function createImages(tempPath, types) {
+    let actions = []
+    types.forEach(type => {
+        actions.push(creageImage(type.size, tempPath, type.path))
+    })
+    return Promise.all(actions)
 }
 
 function creageImage(size, path, newPath) {
-    const args = [
-                path,
-                '-thumbnail',
-                `${size}^`,
-                '-gravity',
-                'center',
-                '-extent',
-                size,
-                newPath,
-            ]
-    console.log(`<4> image ${size} create`)
-    return spawn('convert', args)
+    return new Promise((resolve, reject) => {
+        console.log('in spawn')
+        const args = [
+            path,
+            '-thumbnail',
+            `${size}^`,
+            '-gravity',
+            'center',
+            '-extent',
+            size,
+            newPath,
+        ]
+
+        spawn('convert', args, { capture: ['stdout', 'stderr'] })
+            .then(result => {
+                console.log(`<4> image ${size} create`)
+                resolve(true)
+            })
+            .catch(err => {
+                console.error(`Error: Functions UpdatreAsset creageImage ${err.stderr}`)
+                reject(new Error(`Error: Functions UpdatreAsset creageImage ${err.stderr}`))
+            })
+    })
 }
 
 function updateImage(bucket, tempPath, storagePath, contentType) {
