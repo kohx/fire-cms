@@ -59,7 +59,7 @@ module.exports = (req, res, next) => {
                     } else {
                         const assetPath = `assets`
                         uploadBase64.fact(validate.values.content)
-                            .setMeta({})
+                            .setMeta({name: 'kohei'})
                             .upload(assetPath, validate.values.unique)
                             .then(() => {
                                 // set firestore
@@ -72,6 +72,10 @@ module.exports = (req, res, next) => {
                                         createdAt: new Date(),
                                         updatedAT: new Date(),
                                         deletedAt: null,
+                                        tumb: false,
+                                        square: false,
+                                        landscape: false,
+                                        portrait: false,
                                     })
                                     .then(result => {
                                         res.json({

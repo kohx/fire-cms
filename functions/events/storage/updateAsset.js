@@ -10,19 +10,17 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 
-let thumbPrefix = 't_'
-let thumbSize = '100x100^'
-let squarePrefix = 's_'
-let squareSize = '640x640^'
-let landscapePrefix = 'l_'
-let landscapeSize = '800x640'
-let portraitPrefix = 'p_'
-let portraitSize = '640x800'
+const types = {
+    thumb: { prefix: 't_', size: '100x100', temp: null, storage: null },
+    square: { prefix: 's_', size: '640x640', temp: null, storage: null },
+    landscape: { prefix: 'l_', size: '800x640', temp: null, storage: null },
+    portrait: { prefix: 'p_', size: '640x800', temp: null, storage: null },
+}
 
+let bucket = null
+let fileName = null
+let contentType = null
 let tempPath = null
-
-let tempThumbPath = null
-let storageThumbPath = null
 
 exports.updateAsset = functions.storage.object()
     .onFinalize(object => {
@@ -33,12 +31,12 @@ exports.updateAsset = functions.storage.object()
         // File path in the bucket.
         const filePath = object.name
         // File content type.
-        const contentType = object.contentType
+        contentType = object.contentType
         // Number of times metadata has been generated. New objects have a value of 1.
         const metageneration = object.metageneration
 
         // Get the file name.
-        const fileName = path.basename(filePath)
+        fileName = path.basename(filePath)
         // Get tmpdir
         const tmpdir = os.tmpdir()
 
@@ -50,17 +48,17 @@ exports.updateAsset = functions.storage.object()
 
         // サムネイルの場合は終了
         if (
-            fileName.startsWith(thumbPrefix)
-            || fileName.startsWith(squarePrefix)
-            || fileName.startsWith(landscapePrefix)
-            || fileName.startsWith(portraitPrefix)
+            fileName.startsWith(types.thumb.prefix)
+            || fileName.startsWith(types.square.prefix)
+            || fileName.startsWith(types.landscape.prefix)
+            || fileName.startsWith(types.portrait.prefix)
         ) {
             console.log('<0> Already a created.')
             return 0
         }
 
-        // これでもバケット名
-        const bucket = gcs.bucket(fileBucket)
+        // バケット名
+        bucket = gcs.bucket(fileBucket)
         // これでもバケット名が取れる
         // bucket = admin.storage().bucket()
         // console.log('bucket2@', bucket)
@@ -70,32 +68,29 @@ exports.updateAsset = functions.storage.object()
                 console.log('<2> Get config')
                 const config = doc.data()
 
-                thumbPrefix = config.thumbPrefix != null ? config.thumbPrefix : thumbPrefix
-                thumbSize = config.thumbSize != null ? config.thumbSize : thumbSize
-
-                squarePrefix = config.squarePrefix != null ? config.squarePrefix : squarePrefix
-                squareSize = config.squareSize != null ? config.squareSize : squareSize
-
-                landscapePrefix = config.landscapePrefix != null ? config.landscapePrefix : landscapePrefix
-                landscapeSize = config.landscapeSize != null ? config.landscapeSize : landscapeSize
-
-                portraitPrefix = config.portraitPrefix != null ? config.portraitPrefix : portraitPrefix
-                portraitSize = config.portraitSize != null ? config.portraitSize : portraitSize
+                if (config.thumbPrefix) { types.thumb.prefix = config.thumbPrefix }
+                if (config.thumbSize) { types.thumb.size = config.thumbSize }
+                if (config.squarePrefix) { types.square.prefix = config.squarePrefix }
+                if (config.squareSize) { types.square.size = config.squareSize }
+                if (config.landscapePrefix) { types.landscape.prefix = config.landscapePrefix }
+                if (config.landscapeSize) { types.landscape.size = config.landscapeSize }
+                if (config.portraitPrefix) { types.portrait.prefix = config.portraitPrefix }
+                if (config.portraitSize) { types.portrait.size = config.portraitSize }
 
                 // Get temp file path
                 tempPath = path.join(tmpdir, fileName)
                 // thumb
-                tempThumbPath = path.join(tmpdir, `${thumbPrefix}${fileName}`)
-                storageThumbPath = path.join(path.dirname(filePath), `${thumbPrefix}${fileName}`)
+                types.thumb.temp = path.join(tmpdir, `${types.thumb.prefix}${fileName}`)
+                types.thumb.storage = path.join(path.dirname(filePath), `${types.thumb.prefix}${fileName}`)
                 // square
-                tempSquarePath = path.join(tmpdir, `${squarePrefix}${fileName}`)
-                storageSquarePath = path.join(path.dirname(filePath), `${squarePrefix}${fileName}`)
+                types.square.temp = path.join(tmpdir, `${types.square.prefix}${fileName}`)
+                types.square.storage = path.join(path.dirname(filePath), `${types.square.prefix}${fileName}`)
                 // landscape
-                tempLandscapePath = path.join(tmpdir, `${landscapePrefix}${fileName}`)
-                storageLandscapePath = path.join(path.dirname(filePath), `${landscapePrefix}${fileName}`)
+                types.landscape.temp = path.join(tmpdir, `${types.landscape.prefix}${fileName}`)
+                types.landscape.storage = path.join(path.dirname(filePath), `${types.landscape.prefix}${fileName}`)
                 // portrait
-                tempPortraitPath = path.join(tmpdir, `${portraitPrefix}${fileName}`)
-                storagePortraitPath = path.join(path.dirname(filePath), `${portraitPrefix}${fileName}`)
+                types.portrait.temp = path.join(tmpdir, `${types.portrait.prefix}${fileName}`)
+                types.portrait.storage = path.join(path.dirname(filePath), `${types.portrait.prefix}${fileName}`)
 
                 return true
             })
@@ -105,47 +100,42 @@ exports.updateAsset = functions.storage.object()
                     .download({
                         destination: tempPath,
                     })
+
+                console.log(types)
             })
             // ImageMagickを使用して各イメージを生成
             .then(() => {
-                const types = [
-                    { size: thumbSize, path: tempThumbPath },
-                    { size: squareSize, path: tempSquarePath },
-                    { size: landscapeSize, path: tempLandscapePath },
-                    { size: portraitSize, path: tempPortraitPath },
-                ]
-                return createImages(tempPath, types)
-                // return creageImage(thumbSize, tempPath, tempThumbPath)
-                // })
-                // .then(() => {
-                //     return creageImage(squareSize, tempPath, tempSquarePath)
-                // })
-                // .then(() => {
-                //     return creageImage(landscapeSize, tempPath, tempLandscapePath)
-                // })
-                // .then(() => {
-                //     return creageImage(portraitSize, tempPath, tempPortraitPath)
+                return createImage(types.thumb.size, types.thumb.temp)
+            })
+            .then(() => {
+                return createImage(types.square.size, types.square.temp)
+            })
+            .then(() => {
+                return createImage(types.landscape.size, types.landscape.temp)
+            })
+            .then(() => {
+                return createImage(types.portrait.size, types.portrait.temp)
             })
             // 各イメージをストレージにアップロード
             .then(() => {
-                return updateImage(bucket, tempThumbPath, storageThumbPath, contentType)
+                return updateImage(types.thumb.temp, types.thumb.storage)
             })
             .then(() => {
-                return updateImage(bucket, tempSquarePath, storageSquarePath, contentType)
+                return updateImage(types.square.temp, types.square.storage)
             })
             .then(() => {
-                return updateImage(bucket, tempLandscapePath, storageLandscapePath, contentType)
+                return updateImage(types.landscape.temp, types.landscape.storage)
             })
             .then(() => {
-                return updateImage(bucket, tempPortraitPath, storagePortraitPath, contentType)
+                return updateImage(types.portrait.temp, types.portrait.storage)
             })
             .then(() => {
                 // Once the thumbnail has been uploaded delete the local file to free up disk space.
                 fs.unlinkSync(tempPath)
-                fs.unlinkSync(tempThumbPath)
-                fs.unlinkSync(tempSquarePath)
-                fs.unlinkSync(tempLandscapePath)
-                fs.unlinkSync(tempPortraitPath)
+                fs.unlinkSync(types.thumb.temp)
+                fs.unlinkSync(types.square.temp)
+                fs.unlinkSync(types.landscape.temp)
+                fs.unlinkSync(types.portrait.temp)
                 console.log('<6> deleted the local file')
 
                 // fs.readdir(tmpdir, function (err, files) {
@@ -160,19 +150,11 @@ exports.updateAsset = functions.storage.object()
         return 0
     })
 
-function createImages(tempPath, types) {
-    let actions = []
-    types.forEach(type => {
-        actions.push(creageImage(type.size, tempPath, type.path))
-    })
-    return Promise.all(actions)
-}
-
-function creageImage(size, path, newPath) {
+function createImage(size, newPath) {
     return new Promise((resolve, reject) => {
         console.log('in spawn')
         const args = [
-            path,
+            tempPath,
             '-thumbnail',
             `${size}^`,
             '-gravity',
@@ -188,20 +170,38 @@ function creageImage(size, path, newPath) {
                 resolve(true)
             })
             .catch(err => {
-                console.error(`Error: Functions UpdatreAsset creageImage ${err.stderr}`)
-                reject(new Error(`Error: Functions UpdatreAsset creageImage ${err.stderr}`))
+                console.error(`Error: Functions UpdatreAsset createImage ${err}`)
+                reject(new Error(`Error: Functions UpdatreAsset createImage ${err}`))
             })
     })
 }
 
-function updateImage(bucket, tempPath, storagePath, contentType) {
-    console.log('<5> Thumbnail created at', storagePath)
+function updateImage(temp, strage) {
+    console.log('<5> image created at', strage)
     // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
     // Uploading the thumbnail.
-    return bucket.upload(tempPath, {
-        destination: storagePath,
-        metadata: {
-            contentType: contentType
-        },
+    return new Promise((resolve, reject) => {
+
+        bucket.upload(temp, {
+            destination: strage,
+            metadata: {
+                contentType: contentType
+            },
+        })
+            .then(result => {
+                console.log('update!', result)
+                console.log('update!!', fileName)
+                admin.firestore().collection('assets').doc(fileName).update({
+                    tumb: true
+                })
+                    .then(result => resolve(result))
+                    .catch(err => reject(err))
+            })
     })
+    // return bucket.upload(temp, {
+    //     destination: strage,
+    //     metadata: {
+    //         contentType: contentType
+    //     },
+    // })
 }
