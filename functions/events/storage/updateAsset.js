@@ -10,41 +10,40 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 
-const types = {
-    thumb: { prefix: 't_', size: '100x100', temp: null, storage: null },
-    square: { prefix: 's_', size: '640x640', temp: null, storage: null },
-    landscape: { prefix: 'l_', size: '800x640', temp: null, storage: null },
-    portrait: { prefix: 'p_', size: '640x800', temp: null, storage: null },
-}
-
-let bucket = null
-let fileName = null
-let contentType = null
-let tempPath = null
-
 exports.updateAsset = functions.storage.object()
     .onFinalize(object => {
         console.log('<1> storage onFinalize')
+
+        const types = {
+            thumb: { prefix: 't_', size: '100x100', temp: null, storage: null },
+            square: { prefix: 's_', size: '640x640', temp: null, storage: null },
+            landscape: { prefix: 'l_', size: '800x640', temp: null, storage: null },
+            portrait: { prefix: 'p_', size: '640x800', temp: null, storage: null },
+        }
 
         // The Storage bucket that contains the file.
         const fileBucket = object.bucket
         // File path in the bucket.
         const filePath = object.name
         // File content type.
-        contentType = object.contentType
+        const contentType = object.contentType
         // Number of times metadata has been generated. New objects have a value of 1.
         const metageneration = object.metageneration
 
-        // Get the file name.
-        fileName = path.basename(filePath)
-        // Get tmpdir
-        const tmpdir = os.tmpdir()
-
         // Exit if this is triggered on a file that is not an image.
         if (!contentType.startsWith('image/')) {
-            console.log('<0> This is not an image.')
+            console.log('<start> This is not an image.')
             return 0
         }
+
+        // Get the file name.
+        const fileName = path.basename(filePath)
+        // Get tmpdir
+        const tmpdir = os.tmpdir()
+        // Get temp file path
+        const tempPath = path.join(tmpdir, fileName)
+        // バケット名
+        const bucket = gcs.bucket(fileBucket)
 
         // サムネイルの場合は終了
         if (
@@ -53,15 +52,60 @@ exports.updateAsset = functions.storage.object()
             || fileName.startsWith(types.landscape.prefix)
             || fileName.startsWith(types.portrait.prefix)
         ) {
-            console.log('<0> Already a created.')
+            console.log('<skip> Already a created.')
             return 0
         }
 
-        // バケット名
-        bucket = gcs.bucket(fileBucket)
-        // これでもバケット名が取れる
-        // bucket = admin.storage().bucket()
-        // console.log('bucket2@', bucket)
+        const createImage = (type) => {
+            return new Promise((resolve, reject) => {
+                target = types[type]
+                const args = [
+                    tempPath,
+                    '-thumbnail',
+                    `${target.size}^`,
+                    '-gravity',
+                    'center',
+                    '-extent',
+                    target.size,
+                    target.temp,
+                ]
+
+                spawn('convert', args, { capture: ['stdout', 'stderr'] })
+                    .then(result => {
+                        console.log(`<4> ${type} image ${target.size} created`)
+                        resolve(true)
+                    })
+                    .catch(err => reject(err))
+            })
+        }
+
+        const updateImage = (type) => {
+            return new Promise((resolve, reject) => {
+                target = types[type]
+                bucket.upload(target.temp, {
+                    destination: target.storage,
+                    metadata: {
+                        contentType: contentType
+                    },
+                })
+                    .then(result => {
+                        return admin.firestore().collection('assets').doc(fileName).get()
+                    })
+                    .then(snap => {
+                        const data = snap.data()
+                        const otherSize = data.otherSize
+                        otherSize[type] = true
+                        return snap.ref.update({otherSize: otherSize})
+                    })
+                    .then(result => {
+                        console.log(`<5> ${type} image created at ${target.storage}`)
+                        fs.unlinkSync(target.temp)
+                        console.log(`<6> ${type} image local file ${target.temp} deleted`)
+                        resolve(true)
+                    })
+                    .catch(err => reject(err))
+            })
+        }
 
         admin.firestore().collection('configs').doc('asset').get()
             .then(doc => {
@@ -77,8 +121,6 @@ exports.updateAsset = functions.storage.object()
                 if (config.portraitPrefix) { types.portrait.prefix = config.portraitPrefix }
                 if (config.portraitSize) { types.portrait.size = config.portraitSize }
 
-                // Get temp file path
-                tempPath = path.join(tmpdir, fileName)
                 // thumb
                 types.thumb.temp = path.join(tmpdir, `${types.thumb.prefix}${fileName}`)
                 types.thumb.storage = path.join(path.dirname(filePath), `${types.thumb.prefix}${fileName}`)
@@ -96,12 +138,10 @@ exports.updateAsset = functions.storage.object()
             })
             .then(() => {
                 console.log('<3> Image download locally to', tempPath)
-                console.log(types)
                 return bucket.file(filePath)
                     .download({
                         destination: tempPath,
                     })
-
             })
             // ImageMagickを使用して各イメージを生成
             .then(() => {
@@ -130,13 +170,8 @@ exports.updateAsset = functions.storage.object()
                 return updateImage('portrait')
             })
             .then(() => {
-                // Once the thumbnail has been uploaded delete the local file to free up disk space.
                 fs.unlinkSync(tempPath)
-                fs.unlinkSync(types.thumb.temp)
-                fs.unlinkSync(types.square.temp)
-                fs.unlinkSync(types.landscape.temp)
-                fs.unlinkSync(types.portrait.temp)
-                console.log('<6> deleted the local file')
+                console.log('<end> origin image local file deleted')
 
                 // fs.readdir(tmpdir, function (err, files) {
                 //     if (err) throw err
@@ -149,52 +184,3 @@ exports.updateAsset = functions.storage.object()
             })
         return 0
     })
-
-function createImage(type) {
-    return new Promise((resolve, reject) => {
-        console.log('in spawn')
-        const target = types[type]
-        const args = [
-            tempPath,
-            '-thumbnail',
-            `${target.size}^`,
-            '-gravity',
-            'center',
-            '-extent',
-            target.size,
-            target.temp,
-        ]
-
-        spawn('convert', args, { capture: ['stdout', 'stderr'] })
-            .then(result => {
-                console.log(`<4> image ${type} ${target.size} create`)
-                resolve(true)
-            })
-            .catch(err => reject(err))
-    })
-}
-
-function updateImage(type) {
-
-    // Uploading the created image.
-    return new Promise((resolve, reject) => {
-        const target = types[type]
-        return bucket.upload(target.temp, {
-            destination: target.storage,
-            metadata: {
-                contentType: contentType
-            },
-        })
-            // .then(result => {
-            //     console.log('update!!', fileName)
-            //     return admin.firestore().collection('assets').doc(fileName).update({
-            //         tumb: true
-            //     })
-            // })
-            .then(result => {
-                console.log('<5> image created at', target.storage)
-                resolve(true)
-            })
-            .catch(err => reject(err))
-    })
-}

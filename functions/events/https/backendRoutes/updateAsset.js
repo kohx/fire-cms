@@ -88,10 +88,12 @@ module.exports = (req, res, next) => {
                                     createdAt: new Date(),
                                     updatedAT: new Date(),
                                     deletedAt: null,
-                                    tumb: false,
-                                    square: false,
-                                    landscape: false,
-                                    portrait: false,
+                                    otherSize: {
+                                        tumb: false,
+                                        square: false,
+                                        landscape: false,
+                                        portrait: false,
+                                    }
                                 })
                                     .then(result => {
                                         res.json({
