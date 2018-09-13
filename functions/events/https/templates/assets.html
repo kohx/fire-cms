@@ -130,6 +130,7 @@
         const url = `${window.location.origin}/backend/updateAsset`
         Array.from(document.querySelectorAll('.file-frame')).forEach(element => {
             const uid = element.dataset.uid
+            console.log(uid)
             const name = element.querySelector('.file-name').value
             const unique = element.querySelector('.file-unique').value
             const description = element.querySelector('.file-description').value
@@ -169,7 +170,7 @@
                     }).then(json => {
                         console.log(json)
                         if (json.status) {
-                            document.querySelector(`#file_list-id_${unique}`).remove()
+                            document.querySelector(`#file_list-id_${uid}`).remove()
                         } else {
                             messageElement.innerHTML = json.messages[0]
                         }

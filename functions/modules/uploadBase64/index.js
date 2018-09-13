@@ -2,12 +2,6 @@ const parent = require('../../events/parent')
 const functions = parent.functions
 const admin = parent.admin
 const stream = require('stream')
-const path = require('path')
-const spawn = require('child-process-promise').spawn
-const gcs = require('@google-cloud/storage')()
-const os = require('os')
-const fs = require('fs')
-const b64toBlob = require('b64-to-blob');
 module.exports = class assets {
 
     // data:image/jpeg;base64,/9j/4AAQSkZJR
@@ -43,8 +37,6 @@ module.exports = class assets {
         this.path = stragePath
         this.name = name
         const bucket = admin.storage().bucket();
-        // const bucket = gcs.bucket(fileBucket)
-
         const bucketFile = bucket.file(`${this.path}/${this.name}`)
 
         return new Promise((resolve, reject) => {

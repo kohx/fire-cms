@@ -5,7 +5,6 @@ const admin = parent.admin
 const system = parent.system
 
 const spawn = require('child-process-promise').spawn
-const gcs = require('@google-cloud/storage')()
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
@@ -43,7 +42,7 @@ exports.updateAsset = functions.storage.object()
         // Get temp file path
         const tempPath = path.join(tmpdir, fileName)
         // バケット名
-        const bucket = gcs.bucket(fileBucket)
+        const bucket = admin.storage().bucket();
 
         // サムネイルの場合は終了
         if (

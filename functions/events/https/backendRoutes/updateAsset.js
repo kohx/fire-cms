@@ -33,22 +33,6 @@ module.exports = (req, res, next) => {
             .test('content', 'isBase64')
             .check()
 
-        // uploadBase64.fact(validate.values.content)
-        //     .setMeta({ name: 'kohei' })
-        //     .upload(assetPath, validate.values.unique)
-        //     .then(() => {
-        //         res.json({
-        //             status,
-        //             messages,
-        //         })
-        //     })
-        //     .catch(() => {
-        //         res.json({
-        //             status,
-        //             messages,
-        //         })
-        //     })
-
         // validation not passed
         if (!validate.status) {
             Object.keys(validate.errors).forEach(key => {
@@ -89,7 +73,7 @@ module.exports = (req, res, next) => {
                                     updatedAT: new Date(),
                                     deletedAt: null,
                                     otherSize: {
-                                        tumb: false,
+                                        thumb: false,
                                         square: false,
                                         landscape: false,
                                         portrait: false,
