@@ -96,38 +96,38 @@ exports.updateAsset = functions.storage.object()
             })
             .then(() => {
                 console.log('<3> Image download locally to', tempPath)
+                console.log(types)
                 return bucket.file(filePath)
                     .download({
                         destination: tempPath,
                     })
 
-                console.log(types)
             })
             // ImageMagickを使用して各イメージを生成
             .then(() => {
-                return createImage(types.thumb.size, types.thumb.temp)
-            })
-            .then(() => {
-                return createImage(types.square.size, types.square.temp)
-            })
-            .then(() => {
-                return createImage(types.landscape.size, types.landscape.temp)
-            })
-            .then(() => {
-                return createImage(types.portrait.size, types.portrait.temp)
+                return createImage('thumb')
             })
             // 各イメージをストレージにアップロード
             .then(() => {
-                return updateImage(types.thumb.temp, types.thumb.storage)
+                return updateImage('thumb')
             })
             .then(() => {
-                return updateImage(types.square.temp, types.square.storage)
+                return createImage('square')
             })
             .then(() => {
-                return updateImage(types.landscape.temp, types.landscape.storage)
+                return updateImage('square')
             })
             .then(() => {
-                return updateImage(types.portrait.temp, types.portrait.storage)
+                return createImage('landscape')
+            })
+            .then(() => {
+                return updateImage('landscape')
+            })
+            .then(() => {
+                return createImage('portrait')
+            })
+            .then(() => {
+                return updateImage('portrait')
             })
             .then(() => {
                 // Once the thumbnail has been uploaded delete the local file to free up disk space.
@@ -150,58 +150,51 @@ exports.updateAsset = functions.storage.object()
         return 0
     })
 
-function createImage(size, newPath) {
+function createImage(type) {
     return new Promise((resolve, reject) => {
         console.log('in spawn')
+        const target = types[type]
         const args = [
             tempPath,
             '-thumbnail',
-            `${size}^`,
+            `${target.size}^`,
             '-gravity',
             'center',
             '-extent',
-            size,
-            newPath,
+            target.size,
+            target.temp,
         ]
 
         spawn('convert', args, { capture: ['stdout', 'stderr'] })
             .then(result => {
-                console.log(`<4> image ${size} create`)
+                console.log(`<4> image ${type} ${target.size} create`)
                 resolve(true)
             })
-            .catch(err => {
-                console.error(`Error: Functions UpdatreAsset createImage ${err}`)
-                reject(new Error(`Error: Functions UpdatreAsset createImage ${err}`))
-            })
+            .catch(err => reject(err))
     })
 }
 
-function updateImage(temp, strage) {
-    console.log('<5> image created at', strage)
-    // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
-    // Uploading the thumbnail.
-    return new Promise((resolve, reject) => {
+function updateImage(type) {
 
-        bucket.upload(temp, {
-            destination: strage,
+    // Uploading the created image.
+    return new Promise((resolve, reject) => {
+        const target = types[type]
+        return bucket.upload(target.temp, {
+            destination: target.storage,
             metadata: {
                 contentType: contentType
             },
         })
+            // .then(result => {
+            //     console.log('update!!', fileName)
+            //     return admin.firestore().collection('assets').doc(fileName).update({
+            //         tumb: true
+            //     })
+            // })
             .then(result => {
-                console.log('update!', result)
-                console.log('update!!', fileName)
-                admin.firestore().collection('assets').doc(fileName).update({
-                    tumb: true
-                })
-                    .then(result => resolve(result))
-                    .catch(err => reject(err))
+                console.log('<5> image created at', target.storage)
+                resolve(true)
             })
+            .catch(err => reject(err))
     })
-    // return bucket.upload(temp, {
-    //     destination: strage,
-    //     metadata: {
-    //         contentType: contentType
-    //     },
-    // })
 }

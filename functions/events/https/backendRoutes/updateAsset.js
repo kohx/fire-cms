@@ -33,6 +33,22 @@ module.exports = (req, res, next) => {
             .test('content', 'isBase64')
             .check()
 
+        // uploadBase64.fact(validate.values.content)
+        //     .setMeta({ name: 'kohei' })
+        //     .upload(assetPath, validate.values.unique)
+        //     .then(() => {
+        //         res.json({
+        //             status,
+        //             messages,
+        //         })
+        //     })
+        //     .catch(() => {
+        //         res.json({
+        //             status,
+        //             messages,
+        //         })
+        //     })
+
         // validation not passed
         if (!validate.status) {
             Object.keys(validate.errors).forEach(key => {
@@ -59,24 +75,24 @@ module.exports = (req, res, next) => {
                     } else {
                         const assetPath = `assets`
                         uploadBase64.fact(validate.values.content)
-                            .setMeta({name: 'kohei'})
+                            .setMeta({ name: 'kohei' })
                             .upload(assetPath, validate.values.unique)
                             .then(() => {
                                 // set firestore
                                 doc.ref.set({
-                                        path: assetPath,
-                                        unique: validate.values.unique,
-                                        name: validate.values.name,
-                                        description: validate.values.description,
-                                        type: validate.values.type,
-                                        createdAt: new Date(),
-                                        updatedAT: new Date(),
-                                        deletedAt: null,
-                                        tumb: false,
-                                        square: false,
-                                        landscape: false,
-                                        portrait: false,
-                                    })
+                                    path: assetPath,
+                                    unique: validate.values.unique,
+                                    name: validate.values.name,
+                                    description: validate.values.description,
+                                    type: validate.values.type,
+                                    createdAt: new Date(),
+                                    updatedAT: new Date(),
+                                    deletedAt: null,
+                                    tumb: false,
+                                    square: false,
+                                    landscape: false,
+                                    portrait: false,
+                                })
                                     .then(result => {
                                         res.json({
                                             status: true,
