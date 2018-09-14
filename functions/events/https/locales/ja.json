@@ -21,5 +21,6 @@
 	"{{param1}} is already used.": "{{param1}} is already used.",
 	"{{param1}} is not base64 encoded.": "{{param1}} is not base64 encoded.",
 	"{{param1}} is not alphanumeric and underscore.": "{{param1}} is not alphanumeric and underscore.",
-	"update success!": "update success!"
+	"update success!": "update success!",
+	"{{param1}} is equals {{param2}}.": "{{param1}} is equals {{param2}}."
 }

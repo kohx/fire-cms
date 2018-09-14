@@ -8,7 +8,6 @@ module.exports = class validation {
         if (typeof list !== 'object') {
             throw new Error('error at validation module: list is not object')
         }
-
         this.list = list
 
         this.validity = true
@@ -41,6 +40,7 @@ module.exports = class validation {
             contains: `{{param1}} is not contains {{param2}}.`,
             equals: `{{param1}} is not equals {{param2}}.`,
             notEquals: `{{param1}} is equals {{param2}}.`,
+            notUse: `{{param1}} is already used.`,
             matches: `{{param1}} is not matches {{param2}}.`,
             isIn: `{{param1}} must be included in {{param2}}`,
             isLength: `{{param1}} length is min {{param2}}, max {{param3}}.`,
@@ -58,11 +58,11 @@ module.exports = class validation {
     test(key, type, ...args) {
 
         if (!Object.keys(this.list).includes(key)) {
-            throw new Error(`error at validation module: list has not key.`)
+            throw new Error(`error at validation module: list has not key ${key}.`)
         }
 
         if (!Object.keys(this.validationTypes).includes(type)) {
-            throw new Error(`error at validation module: validation type is not ture.`)
+            throw new Error(`error at validation module: validation type ${type} is not ture.`)
         }
 
         const value = this.list[key]
@@ -76,7 +76,12 @@ module.exports = class validation {
                     break
 
                 case 'notEquals':
-                    flag = !validator.equals(value)
+                flag = !validator.equals(value, ...args)
+                break
+
+                case 'notUse':
+                    flag = !validator.equals(value, ...args)
+                    console.log('->>', value, ...args)
                     break
 
                 case 'isAlnumunder':
@@ -126,11 +131,11 @@ module.exports = class validation {
     sanitize(key, type, ...arg) {
 
         if (!Object.keys(this.list).includes(key)) {
-            throw new Error(`error at validation module: list has not key.`)
+            throw new Error(`error at validation module: list has not key ${key}.`)
         }
 
         if (!Object.keys(this.sanitaizeTypes).includes(type)) {
-            throw new Error(`error at validation module: sanitaize type is not ture.`)
+            throw new Error(`error at validation module: sanitaize type ${type} is not ture.`)
         }
 
         const value = this.list[key]
