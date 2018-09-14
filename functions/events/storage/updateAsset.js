@@ -94,7 +94,7 @@ exports.updateAsset = functions.storage.object()
                         const data = snap.data()
                         const otherSize = data.otherSize
                         otherSize[type] = true
-                        return snap.ref.update({otherSize: otherSize})
+                        return snap.ref.update({ otherSize: otherSize })
                     })
                     .then(result => {
                         console.log(`<5> ${type} image created at ${target.storage}`)
@@ -106,7 +106,8 @@ exports.updateAsset = functions.storage.object()
             })
         }
 
-        admin.firestore().collection('configs').doc('asset').get()
+        // プロミスのときはプロミスを返す！
+        return admin.firestore().collection('configs').doc('asset').get()
             .then(doc => {
                 console.log('<2> Get config')
                 const config = doc.data()
@@ -146,24 +147,24 @@ exports.updateAsset = functions.storage.object()
             .then(() => {
                 return createImage('thumb')
             })
-            // 各イメージをストレージにアップロード
-            .then(() => {
-                return updateImage('thumb')
-            })
             .then(() => {
                 return createImage('square')
-            })
-            .then(() => {
-                return updateImage('square')
             })
             .then(() => {
                 return createImage('landscape')
             })
             .then(() => {
-                return updateImage('landscape')
+                return createImage('portrait')
+            })
+            // 各イメージをストレージにアップロード
+            .then(() => {
+                return updateImage('thumb')
             })
             .then(() => {
-                return createImage('portrait')
+                return updateImage('square')
+            })
+            .then(() => {
+                return updateImage('landscape')
             })
             .then(() => {
                 return updateImage('portrait')
@@ -181,5 +182,4 @@ exports.updateAsset = functions.storage.object()
                 console.log('<err>')
                 console.log(err)
             })
-        return 0
     })

@@ -4,9 +4,6 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-const path = require('path')
-const os = require('os')
-const fs = require('fs')
 const validation = require('../../../modules/validation')
 const uploadBase64 = require('../../../modules/uploadBase64')
 
