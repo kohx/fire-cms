@@ -147,24 +147,24 @@ exports.updateAsset = functions.storage.object()
             .then(() => {
                 return createImage('thumb')
             })
-            .then(() => {
-                return createImage('square')
-            })
-            .then(() => {
-                return createImage('landscape')
-            })
-            .then(() => {
-                return createImage('portrait')
-            })
             // 各イメージをストレージにアップロード
             .then(() => {
                 return updateImage('thumb')
             })
             .then(() => {
+                return createImage('square')
+            })
+            .then(() => {
                 return updateImage('square')
             })
             .then(() => {
+                return createImage('landscape')
+            })
+            .then(() => {
                 return updateImage('landscape')
+            })
+            .then(() => {
+                return createImage('portrait')
             })
             .then(() => {
                 return updateImage('portrait')
