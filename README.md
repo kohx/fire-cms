@@ -5,5 +5,8 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/aee99b4125f4d9d42c07/maintainability)](https://codeclimate.com/github/kohx/fire-cms/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/aee99b4125f4d9d42c07/test_coverage)](https://codeclimate.com/github/kohx/fire-cms/test_coverage)
 
+## demo
+[fire-cms](https://fire-cms.com)
+
 ## License
 [MIT License](https://github.com/kohx/fire-cms/blob/add-license-1/LICENSE)
