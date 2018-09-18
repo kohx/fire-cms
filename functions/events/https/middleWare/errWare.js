@@ -22,8 +22,7 @@ module.exports.internalServerError = (err, req, res, next) => {
                 const data = {
                     content: content,
                     params: thing,
-                    parts: req.vessel.parts,
-                    wraps: req.vessel.wraps,
+                    templates: req.vessel.templates,
                     sign: req.vessel.sign,
                 }
                 data.params.errStatus = err.status

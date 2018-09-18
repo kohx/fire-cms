@@ -58,7 +58,7 @@ function merge(content, templates) {
             const bodiedTag = cleanTag(wrapTag)
             
             if (templates[bodiedTag] == null) {
-                throw new WavebarError(`wrapTag "${bodiedTag}" is not defined!!`)
+                throw new WavebarError(`wrapTag "${bodiedTag}" is not defined!`)
             }
 
             const wrapContent = lining(templates[bodiedTag])
