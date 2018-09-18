@@ -56,26 +56,26 @@ module.exports.getInfo = (req, res, next) => {
         },
     }
 
-    // config 関係
-    const getConfigs = new Promise((resolve, reject) => {
+    // setting 関係
+    const getSettings = new Promise((resolve, reject) => {
         // キャッシュを取得
-        const configs = jsonCache.get('configs')
+        const settings = jsonCache.get('settings')
         // キャッシュから取得できればそれを返す
-        if (configs != null) {
-            resolve(configs)
+        if (settings != null) {
+            resolve(settings)
         }
 
-        admin.firestore().collection('configs')
+        admin.firestore().collection('settings')
             .get()
             .then(docs => {
-                let configs = {}
+                let settings = {}
                 docs.forEach((doc, key) => {
-                    configs[doc.id] = doc.data()
+                    settings[doc.id] = doc.data()
                 })
                 // キャッシュに入れる 
-                jsonCache.set('configs', configs)
+                jsonCache.set('settings', settings)
                 // 結果を返す
-                resolve(configs)
+                resolve(settings)
             })
             .catch(err => reject(err))
     })
@@ -130,23 +130,23 @@ module.exports.getInfo = (req, res, next) => {
 
     var start_ms = new Date().getTime()
 
-    Promise.all([getConfigs, getWraps, getParts])
+    Promise.all([getSettings, getWraps, getParts])
         .then(results => {
-            const [configs, wraps, parts] = results
+            const [settings, wraps, parts] = results
             vessel.frontendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/` || null
-            vessel.backendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/${configs.settings.backendUnique}/` || null
-            vessel.frontendUnique = configs.settings.frontendUnique
-            vessel.backendUnique = configs.settings.backendUnique
-            vessel.signinUnique = configs.settings.signinUnique
-            vessel.lang = configs.settings.lang
+            vessel.backendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/${settings.config.backendUnique}/` || null
+            vessel.frontendUnique = settings.config.frontendUnique
+            vessel.backendUnique = settings.config.backendUnique
+            vessel.signinUnique = settings.config.signinUnique
+            vessel.lang = settings.config.lang
             vessel.wraps = wraps
             vessel.parts = parts
-            vessel.back.signinUnique = configs.settings.backendSigninUnique
+            vessel.back.signinUnique = settings.config.backendSigninUnique
             req.vessel = vessel
 
             // set lang
-            if (configs.settings.lang) {
-                req.setLocale(configs.settings.lang)
+            if (settings.config.lang) {
+                req.setLocale(settings.config.lang)
             }
 
             var elapsed_ms = new Date().getTime() - start_ms
