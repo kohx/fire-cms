@@ -81,7 +81,7 @@ function getTemplate(req, res, next) {
         }
         // キャッシュに入れる 
         jsonCache.set('templates', templates)
-    }    
+    }
 
     // キャッシュを取得
     let content = jsonCache.get(`content_${unique}`)
@@ -96,7 +96,7 @@ function getTemplate(req, res, next) {
         // キャッシュに入れる 
         jsonCache.set(`content_${unique}`, content)
     }
-        
+
     // build data
     const data = {
         content,
@@ -140,8 +140,9 @@ function backendGetRoutes(unique, data) {
             console.log('<----------------------------- backend index')
             res.wbRender(data)
         },
-        configs: (req, res, next) => {
-            console.log('<----------------------------- configs')
+        settings: (req, res, next) => {
+            console.log(data)
+            console.log('<----------------------------- settings')
             res.wbRender(data)
         },
         divisions: (req, res, next) => {

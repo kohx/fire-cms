@@ -1,16 +1,22 @@
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    match /configs {
-      allow read, write: if false;
+    match /settings {
+      allow read : if true
+      allow create, update, delete: if request.auth != null
     }
 
-    match /parts {
-      allow read, write: if false;
+    match /settings/config {
+      allow read : if true
+      allow create, update, delete: if request.auth != null
+    }
+
+    match /tamplates {
+      allow read, write: if request.auth != null;
     }
 
     match /things {
-      allow read, write: if false;
+      allow read, write: if request.auth != null;
     }
 
     match /assets/{assetsId} {
