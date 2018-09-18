@@ -68,32 +68,20 @@ function getTemplate(req, res, next) {
     const unique = req.vessel.back.unique
 
     // build backend template path
-    const templatesPath = path.join(__dirname, '../', 'templates')
+    const templatesPath = path.join(__dirname, '../', 'backendTemplates')
 
     // キャッシュを取得
-    let wraps = jsonCache.get('wraps')
+    let templates = jsonCache.get('templates')
     // キャッシュが空のとき
-    if (wraps === null) {
-        wraps = {
-            html: fs.readFileSync(path.join(templatesPath, 'wraps/html.html'), 'utf8'),
+    if (templates === null) {
+        templates = {
+            header: fs.readFileSync(path.join(templatesPath, 'templates/header.html'), 'utf8'),
+            footer: fs.readFileSync(path.join(templatesPath, 'templates/footer.html'), 'utf8'),
+            wrapper: fs.readFileSync(path.join(templatesPath, 'templates/wrapper.html'), 'utf8'),
         }
         // キャッシュに入れる 
-        jsonCache.set('wraps', wraps)
-    }
-
-    // キャッシュを取得
-    let parts = jsonCache.get('parts')
-    // キャッシュが空のとき
-    if (parts === null) {
-        parts = {
-            header: fs.readFileSync(path.join(templatesPath, 'parts/header.html'), 'utf8'),
-            footer: fs.readFileSync(path.join(templatesPath, 'parts/footer.html'), 'utf8'),
-        }
-        // キャッシュに入れる 
-        jsonCache.set('parts', parts)
-    }
-
-    
+        jsonCache.set('templates', templates)
+    }    
 
     // キャッシュを取得
     let content = jsonCache.get(`content_${unique}`)
@@ -108,12 +96,11 @@ function getTemplate(req, res, next) {
         // キャッシュに入れる 
         jsonCache.set(`content_${unique}`, content)
     }
-
+        
     // build data
     const data = {
         content,
-        parts,
-        wraps,
+        templates,
         params: {
             backendName: req.vessel.backendUnique,
             user: req.vessel.sign.status ? req.vessel.sign.claims : {},

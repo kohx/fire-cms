@@ -20,11 +20,10 @@ module.exports.init = (req, res, next) => {
 /* render */
 function render(res, data) {
     let content = (data.content != null) ? data.content : ''
-    const wraps = (data.wraps != null) ? data.wraps : {}
-    const parts = (data.parts != null) ? data.parts : {}
+    const templates = (data.templates != null) ? data.templates : {}
     const params = (data.params != null) ? data.params : {}
 
-    const merged = merge(content, wraps, parts)
+    const merged = merge(content, templates)
     const segmented = segmentate(merged)
     // console.log('separated--->', segmented)
     const builded = build(segmented, params)
@@ -46,7 +45,8 @@ function render(res, data) {
 }
 
 // get merge
-function merge(content, wraps, parts) {
+function merge(content, templates) {
+
     // change new line to mark
     content = lining(content)
     // insert wrap content
@@ -56,10 +56,12 @@ function merge(content, wraps, parts) {
         wrapTags.forEach(wrapTag => {
             // get wrap content
             const bodiedTag = cleanTag(wrapTag)
-            if (wraps[bodiedTag] == null) {
-                throw new WavebarError(`wrapTag "${bodiedTag}" is not defined!`)
+            
+            if (templates[bodiedTag] == null) {
+                throw new WavebarError(`wrapTag "${bodiedTag}" is not defined!!`)
             }
-            const wrapContent = lining(wraps[bodiedTag])
+
+            const wrapContent = lining(templates[bodiedTag])
             // ラッパーのコンテントの中に有るタグを検索
             const contentSideTags = wrapContent.match(wrapReg)
 
@@ -81,10 +83,10 @@ function merge(content, wraps, parts) {
     if (partTags) {
         partTags.forEach(partTag => {
             bodiedTag = cleanTag(partTag)
-            if (parts[bodiedTag] == null) {
+            if (templates[bodiedTag] == null) {
                 throw new WavebarError(`partTag "${bodiedTag}" is not defined!`)
             }
-            const partContent = lining(parts[bodiedTag])
+            const partContent = lining(templates[bodiedTag])
             content = content.replace(partTag, partContent)
         })
     }

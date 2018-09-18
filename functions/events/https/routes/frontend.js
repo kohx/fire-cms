@@ -70,8 +70,7 @@ function renderPage(req, res, next) {
     const data = {
         content: content,
         params: thing,
-        parts: req.vessel.parts,
-        wraps: req.vessel.wraps,
+        templates: req.vessel.templates,
     }
     data.params.csrfToken = (req.vessel.csrfToken != null) ? req.vessel.csrfToken : null
     data.params.user = req.vessel.sign.status ? req.vessel.sign.claims : {}

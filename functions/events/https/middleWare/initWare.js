@@ -38,8 +38,7 @@ module.exports.getInfo = (req, res, next) => {
         frontendUnique: null,
         backendUnique: null,
         signinUnique: null,
-        wraps: null,
-        parts: null,
+        templates: null,
         firstPath: null,
         // get path
         paths: null,
@@ -80,67 +79,42 @@ module.exports.getInfo = (req, res, next) => {
             .catch(err => reject(err))
     })
 
-    // get wraps
-    const getWraps = new Promise((resolve, reject) => {
+    // get templates
+    const getTemplates = new Promise((resolve, reject) => {
         // キャッシュを取得
-        const wraps = jsonCache.get('wraps')
+        const templates = jsonCache.get('templates')
         // キャッシュから取得できればそれを返す
-        if (wraps != null) {
-            resolve(wraps)
-        }
-        // ラップを取得
-        admin.firestore().collection('wraps').get()
-            .then(docs => {
-                let wraps = {}
-                docs.forEach(doc => {
-                    const data = doc.data()
-                    wraps[doc.id] = data.content
-                })
-                // キャッシュに入れる 
-                jsonCache.set('wraps', wraps)
-                // 結果を返す
-                resolve(wraps)
-            })
-            .catch(err => reject(err))
-    })
-
-    // get parts
-    const getParts = new Promise((resolve, reject) => {
-        // キャッシュを取得
-        const parts = jsonCache.get('parts')
-        // キャッシュから取得できればそれを返す
-        if (parts != null) {
-            resolve(parts)
+        if (templates != null) {
+            resolve(templates)
         }
         // パーツを取得
-        admin.firestore().collection('parts').get()
+        admin.firestore().collection('templates').get()
             .then(docs => {
-                let parts = {}
+                let templates = {}
                 docs.forEach(doc => {
                     const data = doc.data()
-                    parts[doc.id] = data.content
+                    templates[doc.id] = data.content
                 })
                 // キャッシュに入れる 
-                jsonCache.set('parts', parts)
+                jsonCache.set('templates', templates)
                 // 結果を返す
-                resolve(parts)
+                resolve(templates)
             })
             .catch(err => reject(err))
     })
 
     var start_ms = new Date().getTime()
 
-    Promise.all([getSettings, getWraps, getParts])
+    Promise.all([getSettings, getTemplates])
         .then(results => {
-            const [settings, wraps, parts] = results
+            const [settings, templates] = results
             vessel.frontendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/` || null
             vessel.backendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/${settings.config.backendUnique}/` || null
             vessel.frontendUnique = settings.config.frontendUnique
             vessel.backendUnique = settings.config.backendUnique
             vessel.signinUnique = settings.config.signinUnique
             vessel.lang = settings.config.lang
-            vessel.wraps = wraps
-            vessel.parts = parts
+            vessel.templates = templates
             vessel.back.signinUnique = settings.config.backendSigninUnique
             req.vessel = vessel
 
