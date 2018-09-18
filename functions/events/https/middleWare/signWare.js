@@ -8,7 +8,7 @@ const url = require('url')
 const path = require('path')
 
 // サインインしてからのリミット
-const limit = 60 * 60
+const limit = 60 * 60 * 24
 
 /* csrf function */
 module.exports.csrf = (req, res, next) => {
@@ -73,7 +73,7 @@ module.exports.check = (req, res, next) => {
     admin.auth().verifySessionCookie(sessionCookie, true)
       .then(decodedClaims => {
 
-        // ユーザーが過去5分間にサインインしていない場合はリサインイン
+        // ユーザーが過去limit秒間以上サインインしていない場合はリサインイン
         const now = new Date().getTime() / 1000 - decodedClaims.auth_time
         if (now >= limit) {
 

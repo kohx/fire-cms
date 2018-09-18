@@ -140,6 +140,11 @@ function backendGetRoutes(unique, data) {
             console.log('<----------------------------- backend index')
             res.wbRender(data)
         },
+        signin: (req, res, next) => {
+            console.log(data)
+            console.log('<----------------------------- signin')
+            res.wbRender(data)
+        },
         settings: (req, res, next) => {
             console.log(data)
             console.log('<----------------------------- settings')
