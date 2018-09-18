@@ -19,29 +19,28 @@
     const assetsStoreRef = firebase.firestore().collection('assets')
     const assetsStrageRef = firebase.storage().ref('assets')
 
-    // assetsStoreRef
-    //     .orderBy('createdAt', 'desc')
-    //     .onSnapshot(docs => {
-    //         docs.forEach(doc => {
-    //             console.log('on snap -> ', doc)
-    //             getAssetFromDoc(doc)
-    //                 .then(data => {
-    //                     console.log(data)
-    //                     let assetFrame = document.getElementById(`#id_${data.id}`)
-    //                     if (!assetFrame) {
-    //                         const html =
-    //                             `<div id="id_${data.id}">
-    //                                 <div>id_${data.id}</div>
-    //                                 <a href="${data.url}">
-    //                                     <img src="${data.thumb}" height="20">
-    //                                 </a>
-    //                             </div>`
-    //                         assetList.insertAdjacentHTML('beforeend', html)
-    //                     }
-    //                 })
-    //                 .catch(err => console.log(err))
-    //         })
-    //     })
+    assetsStoreRef
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(docs => {
+            docs.forEach(doc => {
+                getAssetFromDoc(doc)
+                    .then(data => {
+                        console.log(data)
+                        let assetFrame = document.getElementById(`#id_${data.id}`)
+                        if (!assetFrame) {
+                            const html =
+                                `<div id="id_${data.id}">
+                                                        <div>id_${data.id}</div>
+                                                        <a href="${data.url}">
+                                                            <img src="${data.thumb}" height="20">
+                                                        </a>
+                                                    </div>`
+                            assetList.insertAdjacentHTML('beforeend', html)
+                        }
+                    })
+                    .catch(err => console.log(err))
+            })
+        })
 
     function getAssetFromDoc(doc) {
         return new Promise((resolve, reject) => {
