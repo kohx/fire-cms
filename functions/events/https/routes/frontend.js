@@ -11,24 +11,36 @@ const jsonCache = require('../../../modules/jsonCache')
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
-/* middle wares */
-function setLang(req, res, next) {
-    if (settings.config.lang) {
-        req.setLocale(settings.config.lang)
-    }
-}
+/* route */
+router.get('/*',
+    checkPath,
+    setLang,
+    getThing,
+    checkSingIn,
+    checkRole,
+    renderPage
+)
 
+/* middle wares */
 function checkPath(req, res, next) {
-    if (req.vessel.firstPath === req.vessel.backendUnique) {
+    if (req.vessel.paths.first === req.vessel.settings.backend.firstUnique) {
         next('route')
     } else {
         next()
     }
 }
 
+function setLang(req, res, next) {
+    const lang = req.vessel.get('settings.frontend.lang')
+    if (lang) {
+        req.setLocale(lang)
+    }
+    next()
+}
+
 function getThing(req, res, next) {
     // thingを取得
-    admin.firestore().collection('things').doc(req.vessel.unique)
+    admin.firestore().collection('things').doc(req.vessel.paths.unique)
         .get()
         .then(snap => {
             if (snap.exists) {
@@ -42,11 +54,15 @@ function getThing(req, res, next) {
 }
 
 function checkSingIn(req, res, next) {
+
+    const signin = req.vessel.get('settings.frontend.signinUnique', 'signin')
+    const unique = req.vessel.get('paths.unique')
+
     // サインインページかチェック
-    const isSigninPage = req.vessel.unique === req.vessel.signinUnique
+    const isSigninPage = signin === unique
 
     // サインインしているかチェック
-    const isSigned = req.vessel.sign.status
+    const isSigned = req.vessel.get('sign.status', false)
 
     // サインインページでサインインしている場合
     if (isSigninPage && isSigned) {
@@ -102,14 +118,5 @@ function renderPage(req, res, next) {
     res.wbRender(data)
     console.log(`>>>>>>>>>> ${req.vessel.unique} <<<<<<<<<<`)
 }
-
-/* route */
-router.get('/*',
-    checkPath,
-    getThing,
-    checkSingIn,
-    checkRole,
-    renderPage
-)
 
 module.exports = router

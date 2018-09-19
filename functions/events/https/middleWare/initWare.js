@@ -41,6 +41,14 @@ module.exports.getInfo = (req, res, next) => {
         paths: {},
         // route
         thing: {},
+        get: (path, sub = null) => {
+            const paths = path.split('.')
+            let result = req.vessel
+            paths.forEach(path => {
+                result = result[path]
+            })
+            return result != null ? result : sub
+        }
     }
 
     // setting 関係
@@ -107,7 +115,7 @@ module.exports.getInfo = (req, res, next) => {
             next()
         })
         .catch(err => {
-            console.log(err)
+            console.error(err)
             next(err)
         })
 }
