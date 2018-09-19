@@ -11,7 +11,7 @@ const jsonCache = require('../../../modules/jsonCache')
 jsonCache.isActive(system.cache)
 
 module.exports.getInfo = (req, res, next) => {
-    
+
     // const parse = {
     //   'headers.hosts': [
     //     req.headers['host'],              // us-central1-newfunctions-a8a25.cloudfunctions.net
@@ -33,14 +33,14 @@ module.exports.getInfo = (req, res, next) => {
 
     req.vessel = {
         // get info
-        frontendBase: null,
-        backendBase: null,
-        settings: null,
-        templates: null,
+        frontendBase: '',
+        backendBase: '',
+        settings: {},
+        templates: {},
         // get path
-        paths: null,
+        paths: {},
         // route
-        thing: null,
+        thing: {},
     }
 
     // setting 関係
@@ -103,7 +103,6 @@ module.exports.getInfo = (req, res, next) => {
 
             var elapsed_ms = new Date().getTime() - start_ms
             console.log('time -> ', elapsed_ms)
-    console.log('@@@', req.vessel)
 
             next()
         })
@@ -114,36 +113,36 @@ module.exports.getInfo = (req, res, next) => {
 }
 
 module.exports.getPath = (req, res, next) => {
+    const topUnique = req.vessel.settings.frontend.topUnique
 
     // パスを分解
     const pathString = req.path.trims('/')
-    const segments = pathString.split('/')
-    
-    // pathsをコピーして退避
-    let paths = segments.slice(0)
+    const pathArr = (pathString != '') ? pathString.split('/') : []
+
+    // segmentsをコピー
+    const segments = pathArr.slice(0)
 
     // firstpathをチェック
-    req.vessel.firstPath = paths[0]
+    let first = (pathArr[0] != null) ? pathArr[0] : ''
 
     // 最後を取得
-    let pathUnique = paths.pop() || req.vessel.frontendUnique
+    let unique = pathArr.pop() || topUnique
 
     // IDをチェッしてあれば取得
     const numberReg = /^\d*$/
-    let pathNumber = ''
+    let number = ''
 
     // 最後のパスが数字の場合
-    if (numberReg.test(pathUnique)) {
-        pathNumber = pathUnique
-        pathUnique = paths.pop() || frontendUnique
+    if (numberReg.test(unique)) {
+        number = unique
+        unique = pathArr.pop() || topUnique
     }
-
-    req.vessel.pathUnique = pathUnique
-    req.vessel.pathNumber = pathNumber
-
+    
     // パスの組み立て
-    req.vessel.unique = pathNumber ? `${pathUnique}/${pathNumber}` : pathUnique
-
     req.vessel.paths.segments = segments
+    req.vessel.paths.first = first
+    req.vessel.paths.number = number
+    req.vessel.paths.unique = number ? `${unique}/${number}` : unique
+
     next()
 }
