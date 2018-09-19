@@ -5,20 +5,25 @@ const admin = parent.admin
 const system = parent.system
 
 const url = require('url')
-const signWare = require('../middleWare/signWare')
 const express = require('express')
 const router = express.Router()
 const jsonCache = require('../../../modules/jsonCache')
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
-/* signWare csrf */
-router.use(signWare.csrf)
-
 /* middle wares */
+function setLang(req, res, next) {
+    if (settings.config.lang) {
+        req.setLocale(settings.config.lang)
+    }
+}
+
 function checkPath(req, res, next) {
-    if (req.vessel.firstPath === req.vessel.backendUnique) next('route')
-    else next()
+    if (req.vessel.firstPath === req.vessel.backendUnique) {
+        next('route')
+    } else {
+        next()
+    }
 }
 
 function getThing(req, res, next) {
@@ -39,7 +44,7 @@ function getThing(req, res, next) {
 function checkSingIn(req, res, next) {
     // サインインページかチェック
     const isSigninPage = req.vessel.unique === req.vessel.signinUnique
-    
+
     // サインインしているかチェック
     const isSigned = req.vessel.sign.status
 

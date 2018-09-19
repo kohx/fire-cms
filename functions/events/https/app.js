@@ -50,15 +50,18 @@ i18n.configure({
 });
 app.use(i18n.init)
 
-/* initWare getInfo */
-app.use(initWare.getInfo)
-app.use(initWare.getPath)
-
 /* wavebar */
 app.use(wavebar.init)
 
+/* initWare getInfo */
+app.use(initWare.getInfo)
+/* initWare getPath */
+app.use(initWare.getPath)
+
 /* signWare check */
 app.use(signWare.check)
+/* signWare csrf */
+app.use(signWare.csrf)
 
 /* route */
 app.use(`/*`, frontendRouter)

@@ -31,28 +31,16 @@ module.exports.getInfo = (req, res, next) => {
     // }
     // console.log('@parse', parse)
 
-    const vessel = {
+    req.vessel = {
         // get info
         frontendBase: null,
         backendBase: null,
-        frontendUnique: null,
-        backendUnique: null,
-        signinUnique: null,
+        settings: null,
         templates: null,
-        firstPath: null,
         // get path
         paths: null,
-        firstPath: null,
-        pathUnique: null,
-        pathNumber: null,
-        unique: null,
         // route
-        thing: {},
-        back: {
-            signinUnique: null,
-            unique: null,
-            data: null,
-        },
+        thing: null,
     }
 
     // setting 関係
@@ -108,36 +96,31 @@ module.exports.getInfo = (req, res, next) => {
     Promise.all([getSettings, getTemplates])
         .then(results => {
             const [settings, templates] = results
-            vessel.frontendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/` || null
-            vessel.backendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/${settings.config.backendUnique}/` || null
-            vessel.frontendUnique = settings.config.frontendUnique
-            vessel.backendUnique = settings.config.backendUnique
-            vessel.signinUnique = settings.config.signinUnique
-            vessel.lang = settings.config.lang
-            vessel.templates = templates
-            vessel.back.signinUnique = settings.config.backendSigninUnique
-            req.vessel = vessel
-
-            // set lang
-            if (settings.config.lang) {
-                req.setLocale(settings.config.lang)
-            }
+            req.vessel.frontendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/` || null
+            req.vessel.backendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/${settings.backend.firstUnique}/` || null
+            req.vessel.settings = settings
+            req.vessel.templates = templates
 
             var elapsed_ms = new Date().getTime() - start_ms
             console.log('time -> ', elapsed_ms)
+    console.log('@@@', req.vessel)
+
             next()
         })
-        .catch(err => next(err))
+        .catch(err => {
+            console.log(err)
+            next(err)
+        })
 }
 
 module.exports.getPath = (req, res, next) => {
 
     // パスを分解
     const pathString = req.path.trims('/')
-    req.vessel.paths = pathString.split('/')
-
+    const segments = pathString.split('/')
+    
     // pathsをコピーして退避
-    let paths = req.vessel.paths.slice(0)
+    let paths = segments.slice(0)
 
     // firstpathをチェック
     req.vessel.firstPath = paths[0]
@@ -161,5 +144,6 @@ module.exports.getPath = (req, res, next) => {
     // パスの組み立て
     req.vessel.unique = pathNumber ? `${pathUnique}/${pathNumber}` : pathUnique
 
+    req.vessel.paths.segments = segments
     next()
 }

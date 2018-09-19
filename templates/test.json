@@ -1,16 +1,5 @@
-{
-    frontBaseUrl: 'localhost:5000',
-    frontendUnique: 'home',
-    backendUnique: 'backend',
-    signinUnique: 'signin',
-    sign: {
-        status: false,
-        message: 'sign in failed. there is not sessionCookie.',
-        claims: {}
-    },
-    paths: ['backend'],
-    firstPath: 'backend',
-    pathUnique: 'backend',
-    pathNumber: '',
-    thingUnique: 'backend'
-}
+            settings.config.frontendUnique
+            settings.config.backendUnique
+            settings.config.signinUnique
+            settings.config.lang
+            settings.config.backendSigninUnique
