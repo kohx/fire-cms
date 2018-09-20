@@ -35,11 +35,9 @@ function checkSingIn(req, res, next) {
     // バックエンドユニークを削除
     let segments = req.vessel.copy('paths.segments')
     const backendFirst = segments.shift()
-
-    const unique = segments[] || 'index'
+    
+    const unique = segments.unshift() || 'index'
     req.vessel.paths.unique = unique
-
-    console.log('>>>>>', req.vessel.paths)
 
     // サインインしているかチェック
     const isSigned = req.vessel.get('sign.status')

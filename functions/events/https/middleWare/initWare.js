@@ -58,7 +58,7 @@ module.exports.getInfo = (req, res, next) => {
             return result != null ? result : sub
         },
         copy: (path = '', sub = null) => {
-            let copy = req.vessel.slice(0)
+            let copy = Object.assign({}, req.vessel)
 
             if (path == '') {
                 return copy
@@ -121,7 +121,7 @@ module.exports.getInfo = (req, res, next) => {
             .catch(err => reject(err))
     })
 
-    var start_ms = new Date().getTime()
+    console.time('initWare getInfo -> ')
 
     Promise.all([getSettings, getTemplates])
         .then(results => {
@@ -131,8 +131,7 @@ module.exports.getInfo = (req, res, next) => {
             req.vessel.settings = settings
             req.vessel.templates = templates
 
-            var elapsed_ms = new Date().getTime() - start_ms
-            console.log('time -> ', elapsed_ms)
+            console.timeEnd('initWare getInfo -> ')
 
             next()
         })
@@ -144,7 +143,9 @@ module.exports.getInfo = (req, res, next) => {
 
 module.exports.getPath = (req, res, next) => {
     // Toppage unique get from settings
-    const topUnique = req.vessel.get('settings.frontend.topUnique', 'home')
+    const frontendTopUnique = req.vessel.get('settings.frontend.topUnique', 'home')
+    const backendTopUnique = req.vessel.get('settings.backend.topUnique')
+    const backendFirst = req.vessel.get('settings.backend.first')
 
     // Disassemble path
     const pathString = req.path.trims('/')
@@ -152,21 +153,27 @@ module.exports.getPath = (req, res, next) => {
 
     // copy segments object
     const segments = pathArr.slice(0)
+    let first = pathArr.shift()
+    first = (first != null) ? first : ''
+    let last = pathArr.pop()
+    last = (last != null) ? last : first
 
-    // check the firstpath
-    let first = (pathArr[0] != null) ? pathArr[0] : ''
-
-    // get last
-    let unique = pathArr.pop() || topUnique
-
-    // if there is ID then get
+    // check last is number
     const numberReg = /^\d*$/
     let number = ''
+    let unique = ''
+    if (numberReg.test(last)) {
+        number = last
+        unique = pathArr.pop()
+    } else {
+        unique = last
+    }
 
-    // last path is number
-    if (numberReg.test(unique)) {
-        number = unique
-        unique = pathArr.pop() || topUnique
+    // check the firstpath
+    if (first == backendFirst) {
+        unique = (unique != null) ? unique : backendTopUnique
+    } else {
+        unique = (unique != null) ? unique : frontendTopUnique
     }
 
     // Assemble path
