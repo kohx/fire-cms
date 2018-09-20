@@ -127,7 +127,7 @@ module.exports.getInfo = (req, res, next) => {
         .then(results => {
             const [settings, templates] = results
             req.vessel.frontendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/` || null
-            req.vessel.backendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/${settings.backend.firstUnique}/` || null
+            req.vessel.backendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/${settings.backend.firstPath}/` || null
             req.vessel.settings = settings
             req.vessel.templates = templates
 
@@ -145,7 +145,7 @@ module.exports.getPath = (req, res, next) => {
     // Toppage unique get from settings
     const frontendTopUnique = req.vessel.get('settings.frontend.topUnique', 'home')
     const backendTopUnique = req.vessel.get('settings.backend.topUnique')
-    const backendFirst = req.vessel.get('settings.backend.first')
+    const backendFirstPath = req.vessel.get('settings.backend.firstPath')
 
     // Disassemble path
     const pathString = req.path.trims('/')
@@ -170,7 +170,8 @@ module.exports.getPath = (req, res, next) => {
     }
 
     // check the firstpath
-    if (first == backendFirst) {
+    if (first == backendFirstPath) {
+        unique = pathArr.pop()
         unique = (unique != null) ? unique : backendTopUnique
     } else {
         unique = (unique != null) ? unique : frontendTopUnique

@@ -19,34 +19,30 @@ jsonCache.isActive(system.cache)
 /* middle wares */
 function checkPath(req, res, next) {
 
-    const first = req.vessel.get('paths.first');
-    const backendFirst = req.vessel.get('settings.backend.first', 'backend')
+    const firstPath = req.vessel.get('paths.first');
+    const backendFirstPath = req.vessel.get('settings.backend.firstPath', 'backend')
 
-    // ファーストパスがバックエンドユニークでない場合
-    if (first !== backendFirst) {
+    // ファーストパスがバックエンドファーストパスでない場合
+    if (firstPath !== backendFirstPath) {
         next('route')
-    }
-    else {
+    } else {
         next()
     }
 }
 
 function checkSingIn(req, res, next) {
-    // バックエンドユニークを削除
-    let segments = req.vessel.copy('paths.segments')
-    const backendFirst = segments.shift()
-    
-    const unique = segments.unshift() || 'index'
-    req.vessel.paths.unique = unique
 
     // サインインしているかチェック
     const isSigned = req.vessel.get('sign.status')
 
+    const backendFirstPath = req.vessel.get('settings.backend.firstPath')
+    const backendSigninUnique = req.vessel.get('settings.backend.signinUnique')
+
     // サインインしてない場合
     if (!isSigned) {
-        const backendSigninPagePath = `/${backendFirst}/${req.vessel.set.signinUnique}`
-        console.log(`@ not sigin in. redirect to ${backendSigninPagePath}`)
-        // res.redirect(`/${req.vessel.backendUnique}/${req.vessel.back.signinUnique}`)
+        const redirectPath = `/${backendFirstPath}/${backendSigninUnique}`
+        console.log(`@ not sigin in. redirect to ${redirectPath}`)
+        // res.redirect(`${redirectPath}`)
         next()
     } else {
         next()
@@ -54,17 +50,19 @@ function checkSingIn(req, res, next) {
 }
 
 function checkSigninPage(req, res, next) {
-    // バックエンドのサインインページかチェック
-    const isSignInPage = req.vessel.back.unique === req.vessel.back.signinUnique
 
-    // サインインしているかチェック
-    const isSigned = req.vessel.sign.status
+    const isSigned = req.vessel.get('sign.status')
+
+    const backendFirstPath = req.vessel.get('settings.backend.firstPath')
+    const backendSigninUnique = req.vessel.get('settings.backend.signinUnique')
+    const isSignInPage = backendFirstPath == backendSigninUnique
 
     // サインインページでサインインしている場合
     if (isSignInPage && isSigned) {
         const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
         let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
-        if (referer === '' || referer === req.vessel.signinUnique) {
+
+        if (referer === '' || referer === backendSigninUnique) {
             referer = '/'
         }
         res.redirect(referer)
@@ -74,22 +72,33 @@ function checkSigninPage(req, res, next) {
 }
 
 function getTemplate(req, res, next) {
-    const unique = req.vessel.back.unique
+
+    //get unique
+    const unique = req.vessel.get('paths.unique')
 
     // build backend template path
-    const templatesPath = path.join(__dirname, '../', 'backendTemplates')
+    const templatesPath = path.join(__dirname, '../', 'backendTemplates', 'templates')
 
     // キャッシュを取得
     let templates = jsonCache.get('templates')
     // キャッシュが空のとき
     if (templates === null) {
-        templates = {
-            header: fs.readFileSync(path.join(templatesPath, 'templates/header.html'), 'utf8'),
-            footer: fs.readFileSync(path.join(templatesPath, 'templates/footer.html'), 'utf8'),
-            wrapper: fs.readFileSync(path.join(templatesPath, 'templates/wrapper.html'), 'utf8'),
-        }
-        // キャッシュに入れる 
-        jsonCache.set('templates', templates)
+
+        templates = {}
+        fs.readdir(templatesPath, (err, files) => {
+            if (err) {
+                throw err
+            }
+
+            // DOTO:: -----> promse!
+            files.forEach(file => {
+                const name = path.parse(file).name
+                templates[name] = fs.readFileSync(path.join(templatesPath, file), 'utf8')
+            })
+
+            // キャッシュに入れる 
+            jsonCache.set('templates', templates)
+        })
     }
 
     // キャッシュを取得
