@@ -66,9 +66,11 @@ function checkSingIn(req, res, next) {
 
     // サインインページでサインインしている場合
     if (isSigninPage && isSigned) {
+
         const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
         let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
-        if (referer === '' || referer === req.vessel.signinUnique) {
+
+        if (referer === '' || referer === signin) {
             referer = '/'
         }
         res.redirect(referer)

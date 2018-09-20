@@ -41,14 +41,36 @@ module.exports.getInfo = (req, res, next) => {
         paths: {},
         // route
         thing: {},
-        get: (path, sub = null) => {
+        sign: {},
+        claims: {},
+        csrfToken: '',
+        get: (path = '', sub = null) => {
+
+            if (path == '') {
+                return req.vessel
+            }
+
             const paths = path.split('.')
             let result = req.vessel
             paths.forEach(path => {
                 result = result[path]
             })
             return result != null ? result : sub
-        }
+        },
+        copy: (path = '', sub = null) => {
+            let copy = req.vessel.slice(0)
+
+            if (path == '') {
+                return copy
+            }
+
+            const paths = path.split('.')
+            let result = copy
+            paths.forEach(path => {
+                result = result[path]
+            })
+            return result != null ? result : sub
+        },
     }
 
     // setting 関係
@@ -121,32 +143,33 @@ module.exports.getInfo = (req, res, next) => {
 }
 
 module.exports.getPath = (req, res, next) => {
-    const topUnique = req.vessel.settings.frontend.topUnique
+    // Toppage unique get from settings
+    const topUnique = req.vessel.get('settings.frontend.topUnique', 'home')
 
-    // パスを分解
+    // Disassemble path
     const pathString = req.path.trims('/')
     const pathArr = (pathString != '') ? pathString.split('/') : []
 
-    // segmentsをコピー
+    // copy segments object
     const segments = pathArr.slice(0)
 
-    // firstpathをチェック
+    // check the firstpath
     let first = (pathArr[0] != null) ? pathArr[0] : ''
 
-    // 最後を取得
+    // get last
     let unique = pathArr.pop() || topUnique
 
-    // IDをチェッしてあれば取得
+    // if there is ID then get
     const numberReg = /^\d*$/
     let number = ''
 
-    // 最後のパスが数字の場合
+    // last path is number
     if (numberReg.test(unique)) {
         number = unique
         unique = pathArr.pop() || topUnique
     }
-    
-    // パスの組み立て
+
+    // Assemble path
     req.vessel.paths.segments = segments
     req.vessel.paths.first = first
     req.vessel.paths.number = number

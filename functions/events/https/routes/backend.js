@@ -18,24 +18,35 @@ jsonCache.isActive(system.cache)
 
 /* middle wares */
 function checkPath(req, res, next) {
+
+    const first = req.vessel.get('paths.first');
+    const backendFirst = req.vessel.get('settings.backend.first', 'backend')
+
     // ファーストパスがバックエンドユニークでない場合
-    if (req.vessel.firstPath !== req.vessel.backendUnique) next('route')
-    else next()
+    if (first !== backendFirst) {
+        next('route')
+    }
+    else {
+        next()
+    }
 }
 
 function checkSingIn(req, res, next) {
-
     // バックエンドユニークを削除
-    req.vessel.paths.shift()
-    const unique = req.vessel.paths.shift() || 'index'
-    req.vessel.back.unique = unique
+    let segments = req.vessel.copy('paths.segments')
+    const backendFirst = segments.shift()
+
+    const unique = segments[] || 'index'
+    req.vessel.paths.unique = unique
+
+    console.log('>>>>>', req.vessel.paths)
 
     // サインインしているかチェック
-    const isSigned = req.vessel.sign.status
+    const isSigned = req.vessel.get('sign.status')
 
     // サインインしてない場合
     if (!isSigned) {
-        const backendSigninPagePath = `/${req.vessel.backendUnique}/${req.vessel.back.signinUnique}`
+        const backendSigninPagePath = `/${backendFirst}/${req.vessel.set.signinUnique}`
         console.log(`@ not sigin in. redirect to ${backendSigninPagePath}`)
         // res.redirect(`/${req.vessel.backendUnique}/${req.vessel.back.signinUnique}`)
         next()
