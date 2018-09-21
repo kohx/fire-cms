@@ -77,36 +77,33 @@ function getTemplate(req, res, next) {
     const unique = req.vessel.get('paths.unique')
 
     // build backend template path
-    const templatesPath = path.join(__dirname, '../', 'backendTemplates', 'templates')
+    const backendTemplatesPath = path.join(__dirname, '../', 'backendTemplates')
+    const templatesPath = path.join(backendTemplatesPath, 'templates')
 
     // キャッシュを取得
     let templates = jsonCache.get('templates')
+
     // キャッシュが空のとき
     if (templates === null) {
-
         templates = {}
-        fs.readdir(templatesPath, (err, files) => {
-            if (err) {
-                throw err
-            }
-
-            // DOTO:: -----> promse!
-            files.forEach(file => {
-                const name = path.parse(file).name
-                templates[name] = fs.readFileSync(path.join(templatesPath, file), 'utf8')
-            })
-
-            // キャッシュに入れる 
-            jsonCache.set('templates', templates)
+        const files = fs.readdirSync(templatesPath)
+        // DOTO:: try catch
+        files.forEach(file => {
+            const name = path.parse(file).name
+            templates[name] = fs.readFileSync(path.join(templatesPath, file), 'utf8')
         })
+
+        // キャッシュに入れる 
+        jsonCache.set('templates', templates)
     }
 
     // キャッシュを取得
     let content = jsonCache.get(`content_${unique}`)
+
     // キャッシュが空のとき
     if (content === null) {
         try {
-            content = fs.readFileSync(path.join(templatesPath, `${unique}.html`), 'utf8')
+            content = fs.readFileSync(path.join(backendTemplatesPath, `${unique}.html`), 'utf8')
         } catch (err) {
             // ない場合
             content = false
@@ -114,18 +111,22 @@ function getTemplate(req, res, next) {
         // キャッシュに入れる 
         jsonCache.set(`content_${unique}`, content)
     }
+    console.log(req.vessel.get('settings.backend.firstPath'))
+    console.log(req.vessel.get('sign.status'))
+    console.log(req.vessel.get('sign.claims'))
+    // throw Error(templates.toString())
 
     // build data
     const data = {
         content,
         templates,
         params: {
-            backendName: req.vessel.backendUnique,
-            user: req.vessel.sign.status ? req.vessel.sign.claims : {},
+            backendName: req.vessel.get('settings.backend.firstPath'),
+            user: req.vessel.get('sign.claims'),
             sign: req.vessel.sign,
         }
     }
-
+    throw new Error(Object.entries(data))
     req.vessel.back.data = data
     next()
 }
