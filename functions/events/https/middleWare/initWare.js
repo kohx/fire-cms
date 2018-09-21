@@ -44,6 +44,7 @@ module.exports.getInfo = (req, res, next) => {
         sign: {},
         claims: {},
         csrfToken: '',
+        date: '',
         get: (path = '', sub = null) => {
 
             if (path == '') {
@@ -56,21 +57,7 @@ module.exports.getInfo = (req, res, next) => {
                 result = result[path]
             })
             return result != null ? result : sub
-        },
-        copy: (path = '', sub = null) => {
-            let copy = Object.assign({}, req.vessel)
-
-            if (path == '') {
-                return copy
-            }
-
-            const paths = path.split('.')
-            let result = copy
-            paths.forEach(path => {
-                result = result[path]
-            })
-            return result != null ? result : sub
-        },
+        }
     }
 
     // setting 関係
@@ -171,11 +158,12 @@ module.exports.getPath = (req, res, next) => {
 
     // check the firstpath
     if (first == backendFirstPath) {
-        unique = pathArr.pop()
-        unique = (unique != null) ? unique : backendTopUnique
+        unique = (last != backendFirstPath) ? last : backendTopUnique
     } else {
         unique = (unique != null) ? unique : frontendTopUnique
     }
+
+    console.log('===>', unique)
 
     // Assemble path
     req.vessel.paths.segments = segments

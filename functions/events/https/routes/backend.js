@@ -75,6 +75,7 @@ function getTemplate(req, res, next) {
 
     //get unique
     const unique = req.vessel.get('paths.unique')
+    console.log('=>', unique)
 
     // build backend template path
     const backendTemplatesPath = path.join(__dirname, '../', 'backendTemplates')
@@ -106,18 +107,14 @@ function getTemplate(req, res, next) {
             content = fs.readFileSync(path.join(backendTemplatesPath, `${unique}.html`), 'utf8')
         } catch (err) {
             // ない場合
-            content = false
+            content = ''
         }
         // キャッシュに入れる 
         jsonCache.set(`content_${unique}`, content)
     }
-    console.log(req.vessel.get('settings.backend.firstPath'))
-    console.log(req.vessel.get('sign.status'))
-    console.log(req.vessel.get('sign.claims'))
-    // throw Error(templates.toString())
 
     // build data
-    const data = {
+    req.vessel.data = {
         content,
         templates,
         params: {
@@ -126,15 +123,14 @@ function getTemplate(req, res, next) {
             sign: req.vessel.sign,
         }
     }
-    throw new Error(Object.entries(data))
-    req.vessel.back.data = data
+
     next()
 }
 
 function getBack(req, res, next) {
 
-    const unique = req.vessel.back.unique
-    const data = req.vessel.back.data
+    const unique = req.vessel.get('paths.unique')
+    const data = req.vessel.get('data')
     func = backendGetRoutes(unique, data)
 
     if (func) {
