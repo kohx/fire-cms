@@ -1,5 +1,6 @@
 // firebase
 const parent = require('../../parent')
+const debug = parent.debug
 const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
@@ -15,6 +16,14 @@ const updateAsset = require('../backendRoutes/updateAsset')
 
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
+
+/* route get */
+router.get('/*',
+    checkPath,
+    checkSingIn,
+    getTemplate,
+    getBack
+)
 
 /* middle wares */
 function checkPath(req, res, next) {
@@ -32,39 +41,31 @@ function checkPath(req, res, next) {
 
 function checkSingIn(req, res, next) {
 
+    const unique = req.vessel.get('paths.unique')
+    const backendSigninUnique = req.vessel.get('settings.backend.signinUnique')
+    const backendFirstPath = req.vessel.get('settings.backend.firstPath')
+    const backendTopUnique = req.vessel.get('settings.backend.topUnique')
+
     // サインインしているかチェック
     const isSigned = req.vessel.get('sign.status')
 
-    const backendFirstPath = req.vessel.get('settings.backend.firstPath')
-    const backendSigninUnique = req.vessel.get('settings.backend.signinUnique')
+    // サインインページかチェック
+    const isSignInPage = unique == backendSigninUnique
 
     // サインインしてない場合
-    if (!isSigned) {
+    if (!isSignInPage && !isSigned) {
         const redirectPath = `/${backendFirstPath}/${backendSigninUnique}`
         console.log(`@ not sigin in. redirect to ${redirectPath}`)
-        // res.redirect(`${redirectPath}`)
-        next()
-    } else {
-        next()
-    }
-}
-
-function checkSigninPage(req, res, next) {
-
-    const isSigned = req.vessel.get('sign.status')
-
-    const backendFirstPath = req.vessel.get('settings.backend.firstPath')
-    const backendSigninUnique = req.vessel.get('settings.backend.signinUnique')
-    const isSignInPage = backendFirstPath == backendSigninUnique
-
-    // サインインページでサインインしている場合
+        res.redirect(`${redirectPath}`)
+    } else
     if (isSignInPage && isSigned) {
         const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
         let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
 
         if (referer === '' || referer === backendSigninUnique) {
-            referer = '/'
+            referer = `/${backendFirstPath}/${backendTopUnique}`
         }
+        debug(referer, __filename, __line)
         res.redirect(referer)
     } else {
         next()
@@ -75,7 +76,6 @@ function getTemplate(req, res, next) {
 
     //get unique
     const unique = req.vessel.get('paths.unique')
-    console.log('=>', unique)
 
     // build backend template path
     const backendTemplatesPath = path.join(__dirname, '../', 'backendTemplates')
@@ -120,7 +120,7 @@ function getTemplate(req, res, next) {
         params: {
             backendName: req.vessel.get('settings.backend.firstPath'),
             user: req.vessel.get('sign.claims'),
-            sign: req.vessel.sign,
+            csrfToken: req.vessel.get('csrfToken'),
         }
     }
 
@@ -140,15 +140,6 @@ function getBack(req, res, next) {
     }
 }
 
-/* route get */
-router.get('/*',
-    checkPath,
-    checkSingIn,
-    checkSigninPage,
-    getTemplate,
-    getBack
-)
-
 function backendGetRoutes(unique, data) {
     const routes = {
         index: (req, res, next) => {
@@ -156,12 +147,10 @@ function backendGetRoutes(unique, data) {
             res.wbRender(data)
         },
         signin: (req, res, next) => {
-            console.log(data)
             console.log('<----------------------------- signin')
             res.wbRender(data)
         },
         settings: (req, res, next) => {
-            console.log(data)
             console.log('<----------------------------- settings')
             res.wbRender(data)
         },

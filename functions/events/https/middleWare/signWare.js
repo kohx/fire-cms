@@ -1,5 +1,6 @@
 // firebase
 const parent = require('../../parent')
+const debug = parent.debug
 const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
@@ -17,13 +18,12 @@ module.exports.csrf = (req, res, next) => {
   if (!req.vessel) {
     req.vessel = {}
   }
-  
+
   // サインインページの場合
   if (req.vessel.unique === req.vessel.signinUnique) {
 
     // セッションクッキーを取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : {}
-    
     // csrfToken
     const csrfToken = Math.random().toString(36).slice(-8)
     const options = {
@@ -37,6 +37,7 @@ module.exports.csrf = (req, res, next) => {
 
     req.vessel.csrfToken = csrfToken
   }
+  
   next()
 }
 
@@ -111,7 +112,7 @@ module.exports.in = (req, res, next) => {
   const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
   const cookieCsrfToken = (session['csrfToken'] != null) ? session['csrfToken'] : false
 
-  // Guard against CSRF attacks.
+  // Guard against CSRF attacks
   if (!bodyCsrfToken || !cookieCsrfToken || bodyCsrfToken !== cookieCsrfToken) {
     res.json({ status: false, message: `there is not csrfToken.` })
     return

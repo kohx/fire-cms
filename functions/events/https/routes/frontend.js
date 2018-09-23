@@ -1,5 +1,6 @@
 // firebase
 const parent = require('../../parent')
+const debug = parent.debug
 const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
@@ -23,7 +24,11 @@ router.get('/*',
 
 /* middle wares */
 function checkPath(req, res, next) {
-    if (req.vessel.paths.first === req.vessel.settings.backend.firstUnique) {
+    const firstPath = req.vessel.get('paths.first');
+    const backendFirstPath = req.vessel.get('settings.backend.firstPath', 'backend')
+
+    // ファーストパスがバックエンドファーストパスの場合
+    if (firstPath === backendFirstPath) {
         next('route')
     } else {
         next()
@@ -55,14 +60,14 @@ function getThing(req, res, next) {
 
 function checkSingIn(req, res, next) {
 
-    const signin = req.vessel.get('settings.frontend.signinUnique', 'signin')
     const unique = req.vessel.get('paths.unique')
-
-    // サインインページかチェック
-    const isSigninPage = signin === unique
+    const frontendSigninUnique = req.vessel.get('settings.frontend.signinUnique', 'signin')
 
     // サインインしているかチェック
     const isSigned = req.vessel.get('sign.status', false)
+    
+    // サインインページかチェック
+    const isSigninPage = unique === frontendSigninUnique
 
     // サインインページでサインインしている場合
     if (isSigninPage && isSigned) {
@@ -70,7 +75,7 @@ function checkSingIn(req, res, next) {
         const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
         let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
 
-        if (referer === '' || referer === signin) {
+        if (referer === '' || referer === frontendSigninUnique) {
             referer = '/'
         }
         res.redirect(referer)
@@ -93,10 +98,11 @@ function renderPage(req, res, next) {
     const data = {
         content: content,
         params: thing,
-        templates: req.vessel.templates,
+        templates: req.vessel.get('templates'),
+        user: req.vessel.get('sign.claims'),
+        csrfToken: req.vessel.get('csrfToken'),
     }
-    data.params.csrfToken = (req.vessel.csrfToken != null) ? req.vessel.csrfToken : null
-    data.params.user = req.vessel.sign.status ? req.vessel.sign.claims : {}
+
     // ココらへんはthingに入る
     data.params.items = [{
             name: '<h1>kohei</h1>',

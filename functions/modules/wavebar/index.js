@@ -41,6 +41,14 @@ function render(res, data) {
     if (isDebug === 2) {
         soce = compiled
     }
+    // res.header("Content-Type", "text/html; charset=utf-8");
+    // res.header("Content-Type", "text/csv; charset=utf-8");
+    // res.header("Content-Type", "text/plain; charset=utf-8");
+    // res.header("Content-Type", "text/css; charset=utf-8");
+    // res.header("Content-Type", "text/javascript; charset=utf-8");
+
+    // res.header("Content-Type", "application/json; charset=utf-8");
+    // res.header("Content-Type", "application/pdf;");
     res.send(soce)
 }
 

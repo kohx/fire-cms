@@ -163,8 +163,6 @@ module.exports.getPath = (req, res, next) => {
         unique = (unique != null) ? unique : frontendTopUnique
     }
 
-    console.log('===>', unique)
-
     // Assemble path
     req.vessel.paths.segments = segments
     req.vessel.paths.first = first

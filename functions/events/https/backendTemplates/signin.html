@@ -17,11 +17,13 @@
 
     /* サインイン */
     const signin = event => {
+        alert('start')
         const email = document.querySelector('#email').value
         const passwoard = document.querySelector('#password').value
         firebase.auth()
             .signInWithEmailAndPassword(email, passwoard)
             .then(result => {
+                alert('check token')
                 const user = result.user
                 // セッションCookieを交換するために必要なユーザーのIDトークンを取得
                 return user.getIdToken()
@@ -33,8 +35,9 @@
                     })
             })
             .then(result => {
+                alert('outh sign out')
                 // 永続性がNONEに設定されているため、ページのリダイレクトで十分
-                // firebase.auth().signOut()
+                firebase.auth().signOut()
                 return result
             })
             .then(result => {
@@ -65,7 +68,7 @@
 
         const headers = {
             'Authorization': 'Bearer ' + idToken,
-            // 'Access-Control-Allow-Credentials': 'true',xc
+            // 'Access-Control-Allow-Credentials': 'true',
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         }
@@ -117,7 +120,7 @@
 
     /* 非同期通信でサーバ側をサインアウト */
     function fetchServerSignout() {
-console.log('url', window.location.origin)
+
         const url = `${window.location.origin}/signEndPoint/out`
 
         const headers = {
