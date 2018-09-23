@@ -1,6 +1,5 @@
 // firebase
 const parent = require('../../parent')
-const debug = parent.debug
 const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
@@ -53,7 +52,7 @@ module.exports.check = (req, res, next) => {
   const sign = {
     status: false,
     message: '',
-    claims: {},
+    user: {},
   }
 
   // セッション Cookie を確認して権限をチェック
@@ -86,7 +85,7 @@ module.exports.check = (req, res, next) => {
 
           sign.status = true
           sign.message = `sign in success.`
-          sign.claims = decodedClaims
+          sign.user = decodedClaims
           req.vessel.sign = sign
 
           next()

@@ -1,15 +1,16 @@
 // firebase
 const parent = require('../../parent')
-const debug = parent.debug
 const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
+
 
 const express = require('express')
 const router = express.Router()
 const fs = require('fs')
 const path = require('path')
 
+const debug = require('../../../modules/debug').debug
 const jsonCache = require('../../../modules/jsonCache')
 
 const updateAsset = require('../backendRoutes/updateAsset')
@@ -114,12 +115,13 @@ function getTemplate(req, res, next) {
     }
 
     // build data
+    debug(req.vessel.get('sign'), __filename, __line)
     req.vessel.data = {
         content,
         templates,
         params: {
             backendName: req.vessel.get('settings.backend.firstPath'),
-            user: req.vessel.get('sign.claims'),
+            sign: req.vessel.get('sign.status'),
             csrfToken: req.vessel.get('csrfToken'),
         }
     }

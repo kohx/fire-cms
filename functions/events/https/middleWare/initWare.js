@@ -42,7 +42,6 @@ module.exports.getInfo = (req, res, next) => {
         // route
         thing: {},
         sign: {},
-        claims: {},
         csrfToken: '',
         date: '',
         get: (path = '', sub = null) => {

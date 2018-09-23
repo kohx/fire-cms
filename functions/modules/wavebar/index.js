@@ -64,7 +64,7 @@ function merge(content, templates) {
         wrapTags.forEach(wrapTag => {
             // get wrap content
             const bodiedTag = cleanTag(wrapTag)
-            
+
             if (templates[bodiedTag] == null) {
                 throw new WavebarError(`wrapTag "${bodiedTag}" is not defined!`)
             }
@@ -134,26 +134,28 @@ function build(segmented, params) {
             close: 0
         },
     }
+
     segmented.forEach((segment, key) => {
+
         if (segment.startsWith('{|')) {
             const baredTag = bareTag(segment)
             let type = baredTag.charAt(0)
             switch (type) {
                 case '*':
                     counter.for.open++
-                        body = bodyTag(baredTag)
+                    body = bodyTag(baredTag)
                     builded += BuildFor(body)
                     break
 
                 case '#':
                     counter.if.open++
-                        body = bodyTag(baredTag)
+                    body = bodyTag(baredTag)
                     builded += BuildIf(body)
                     break
 
                 case '^':
                     counter.not.open++
-                        body = bodyTag(baredTag)
+                    body = bodyTag(baredTag)
                     builded += BuildElse(body)
                     break
 
@@ -161,9 +163,9 @@ function build(segmented, params) {
                     body = bodyTag(baredTag)
                     const second = baredTag.charAt(1)
                     if (second === '*') counter.for.close++
-                        if (second === '#') counter.if.close++
-                            if (second === '^') counter.not.close++
-                                builded += `}\n`
+                    if (second === '#') counter.if.close++
+                    if (second === '^') counter.not.close++
+                    builded += `}\n`
                     break
 
                 case '~':
@@ -229,6 +231,7 @@ function checkTag(counter, segmented) {
 
 // compile
 function compile(builded, params) {
+
     // saves the script tags
     let scripts = {}
     let count = 1
@@ -287,6 +290,7 @@ function BuildFor(body) {
 // if
 function BuildIf(body) {
     var [variable, alias] = body.split(':')
+
     let text = `if(typeof ${variable} !== 'undefined' && checkValue(${variable})){\n`
     if (alias) {
         text += `const ${alias} = ${variable}\n`
@@ -304,7 +308,10 @@ function BuildElse(body) {
 }
 // text
 function buildText(body, doEntityify = true) {
-    let text = `if(typeof ${body} !== 'undefined' && checkValue(${body})){\n`
+
+    // console.log('@===>', body)
+
+    let text = `if(typeof ${body} !== 'undefined'){\n`
     if (doEntityify) {
         text += `builded += entityify(${body});\n`
     } else {
@@ -349,7 +356,7 @@ function checkValue(value, isObject = false) {
         return false
     }
     if (isObject) {
-        if (typeof value !== 'object'){
+        if (typeof value !== 'object') {
             return false
         }
     }
@@ -390,13 +397,13 @@ function WavebarError(message, segmented = null) {
 }
 
 function lining(string) {
-    
+
     string = string.replace(/\r/g, '')
     string = string.replace(/\n/g, '\\n')
     return string
 
-        // TODO:: これを使うとscriptもうまくいくかも？
-        // encodeURIComponent
-        // decodeURIComponent
+    // TODO:: これを使うとscriptもうまくいくかも？
+    // encodeURIComponent
+    // decodeURIComponent
 
 }

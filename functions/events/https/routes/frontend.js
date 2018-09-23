@@ -1,6 +1,5 @@
 // firebase
 const parent = require('../../parent')
-const debug = parent.debug
 const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
@@ -8,6 +7,8 @@ const system = parent.system
 const url = require('url')
 const express = require('express')
 const router = express.Router()
+
+const debug = require('../../../modules/debug').debug
 const jsonCache = require('../../../modules/jsonCache')
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
@@ -65,7 +66,7 @@ function checkSingIn(req, res, next) {
 
     // サインインしているかチェック
     const isSigned = req.vessel.get('sign.status', false)
-    
+
     // サインインページかチェック
     const isSigninPage = unique === frontendSigninUnique
 
@@ -99,7 +100,7 @@ function renderPage(req, res, next) {
         content: content,
         params: thing,
         templates: req.vessel.get('templates'),
-        user: req.vessel.get('sign.claims'),
+        sign: req.vessel.get('sign'),
         csrfToken: req.vessel.get('csrfToken'),
     }
 
