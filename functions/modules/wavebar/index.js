@@ -32,9 +32,6 @@ module.exports = class wavebar {
 
     /* render */
     render(res, data, contentType = null) {
-
-        contentType = contentType != null ? contentType : 'text/html; charset=utf-8'
-
         console.log('===>', 'in render!')
         this.content = (data.content != null) ? data.content : ''
         this.templates = (data.templates != null) ? data.templates : {}
@@ -54,15 +51,8 @@ module.exports = class wavebar {
         if (this.isDebug === 2) {
             source = compiled
         }
-        // res.header("Content-Type", "text/html; charset=utf-8");
-        // res.header("Content-Type", "text/csv; charset=utf-8");
-        // res.header("Content-Type", "text/plain; charset=utf-8");
-        // res.header("Content-Type", "text/css; charset=utf-8");
-        // res.header("Content-Type", "text/javascript; charset=utf-8");
 
-        // res.header("Content-Type", "application/json; charset=utf-8");
-        // res.header("Content-Type", "application/pdf;");
-        res.header(contentType)
+        contentType = this.getContentType(contentType)
         res.send(source)
     }
 
@@ -205,10 +195,6 @@ module.exports = class wavebar {
 
     // TODO:: check "Catch Cannot read property"
     checkVariable(value, isObject = false) {
-
-        console.log('===>', this.params)
-
-
 
         if (value === null || value === false) {
             return false
@@ -405,7 +391,7 @@ module.exports = class wavebar {
 
         // expand params then assign to context
         for (const key in this.params) {
-            context[key] = this.params[key];
+            context[key] = this.params[key]
         }
 
         // assign function of wbfunctions file
@@ -428,6 +414,51 @@ module.exports = class wavebar {
             console.log('vm error!')
             throw err
         }
+    }
+
+    getContentType(contentType) {
+
+        contentType = contentType != null ? contentType : 'text/html; charset=utf-8'
+
+        switch (contentType) {
+            case 'html':
+                contentType = 'text/html; charset=utf-8'
+                break
+
+            case 'plain':
+                contentType = 'text/plain; charset=utf-8'
+                break
+
+            case 'csv':
+                contentType = 'text/csv; charset=utf-8'
+                break
+
+            case 'css':
+                contentType = 'text/css; charset=utf-8'
+                break
+
+            case 'css':
+                contentType = 'text/css; charset=utf-8'
+                break
+
+            case 'javascript':
+                contentType = 'text/javascript; charset=utf-8'
+                break
+
+            case 'json':
+                contentType = 'application/json; charset=utf-8'
+                break
+
+            case 'pdf':
+                contentType = 'application/pdf;'
+                break
+
+            default:
+                contentType = contentType
+                break
+        }
+
+        return contentType
     }
 }
 
