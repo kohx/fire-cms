@@ -38,7 +38,7 @@ module.exports = class wavebar {
         this.params = (data.params != null) ? data.params : {}
         const merged = this.merge()
         const segmented = this.segmentate(merged)
-        const builded = this.build(segmented, this.params)
+        const builded = this.build(segmented)
 
         let compiled = ''
         if (!this.isDebug) {
@@ -47,9 +47,6 @@ module.exports = class wavebar {
         let source = compiled
         if (this.isDebug === 1) {
             source = builded
-        }
-        if (this.isDebug === 2) {
-            source = compiled
         }
 
         contentType = this.getContentType(contentType)
@@ -85,7 +82,7 @@ module.exports = class wavebar {
     // for
     BuildFor(body) {
         var [array, variable] = body.split(':')
-        let text = `if(typeof ${variable} !== 'undefined' && checkVariable(${variable}, true)){\n`
+        let text = `if(isExist("${variable}", params,  true)){\n`
         text += `for(let key in ${array}) {\n`
         if (variable) {
             text += `${variable} = ${array}[key]\n`
@@ -99,7 +96,7 @@ module.exports = class wavebar {
     BuildIf(body) {
         var [variable, alias] = body.split(':')
 
-        let text = `if(typeof ${variable} !== 'undefined' && checkVariable(${variable})){\n`
+        let text = `if(isExist("${variable}", params)){\n`
         if (alias) {
             text += `const ${alias} = ${variable}\n`
         }
@@ -108,7 +105,7 @@ module.exports = class wavebar {
     // else
     BuildElse(body) {
         var [variable, alias] = body.split(':')
-        let text = `if(typeof ${variable} === 'undefined' || !checkVariable(${variable})){\n`
+        let text = `if(!isExist("${variable}", params)){\n`
         if (alias) {
             text += `const ${alias} = ${variable}\n`
         }
@@ -117,7 +114,7 @@ module.exports = class wavebar {
     // text
     buildText(body, doEntityify = true) {
 
-        let text = `if(typeof ${body} !== 'undefined'){\n`
+        let text = `if(isExist("${body}", params)){\n`
         if (doEntityify) {
             text += `builded += entityify(${body});\n`
         } else {
@@ -194,29 +191,38 @@ module.exports = class wavebar {
     }
 
     // TODO:: check "Catch Cannot read property"
-    checkVariable(value, isObject = false) {
+    isExist(value, params, isObject = false) {
+        let result = null
+        value.split('.').forEach(path => {
+            result = params[path]
+        })
 
-        if (value === null || value === false) {
-            return false
-        }
-        if (typeof value === 'undefined') {
-            return false
-        }
-        if (typeof value === 'string' && value === '') {
-            return false
-        }
-        if (typeof value === 'object' && Object.keys(value).length === 0) {
-            return false
-        }
-        if (isObject) {
-            if (typeof value !== 'object') {
+        try {
+            if (result === null || result === false) {
                 return false
             }
+            if (typeof result === 'undefined') {
+                return false
+            }
+            if (typeof result === 'string' && result === '') {
+                return false
+            }
+            if (typeof result === 'object' && Object.keys(result).length === 0) {
+                return false
+            }
+            if (isObject) {
+                if (typeof result !== 'object') {
+                    return false
+                }
+            }
+            return true
+        } catch (e) {
+
+            return false
         }
-        return true
     }
 
-    // get merge
+    /* merge */
     merge() {
         console.log('===>', 'in merge!')
         // change new line to mark
@@ -270,7 +276,7 @@ module.exports = class wavebar {
         return content
     }
 
-    // get segment
+    /* segmentate */
     segmentate(string) {
         console.log('===>', 'in segmentate!')
         let line = this.lining(string)
@@ -289,7 +295,7 @@ module.exports = class wavebar {
         return line.split(replaceMarke)
     }
 
-    // build
+    /* build */
     build(segmented) {
         console.log('===>', 'in build!')
         let builded = `builded = ''\n`
@@ -330,7 +336,6 @@ module.exports = class wavebar {
                     case '^':
                         counter.not.open++
                         body = this.bodyTag(baredTag)
-                        console.log('@@@', body)
                         builded += this.BuildElse(body)
                         break
 
@@ -368,7 +373,7 @@ module.exports = class wavebar {
         return builded
     }
 
-    // compile
+    /* compile */
     compile(builded) {
         console.log('===>', 'in compile!')
 
@@ -386,10 +391,12 @@ module.exports = class wavebar {
             compiled: '',
             entityify: this.entityify,
             buildText: this.buildText,
-            checkVariable: this.checkVariable,
+            isExist: this.isExist,
         }
 
         // expand params then assign to context
+        // TODO:: ここでparamsごと投げる？
+        context.params = this.params
         for (const key in this.params) {
             context[key] = this.params[key]
         }
@@ -416,6 +423,7 @@ module.exports = class wavebar {
         }
     }
 
+    /* getContentType */
     getContentType(contentType) {
 
         contentType = contentType != null ? contentType : 'text/html; charset=utf-8'
