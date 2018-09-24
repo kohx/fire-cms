@@ -115,7 +115,6 @@ function getTemplate(req, res, next) {
     }
 
     // build data
-    debug(req.vessel.get('sign'), __filename, __line)
     req.vessel.data = {
         content,
         templates,

@@ -50,13 +50,13 @@ i18n.configure({
 });
 app.use(i18n.init)
 
-/* wavebar */
-app.use(wavebar.init)
-
 /* initWare getInfo */
 app.use(initWare.getInfo)
 /* initWare getPath */
 app.use(initWare.getPath)
+
+/* wavebar */
+app.use(wavebar.init)
 
 /* signWare check */
 app.use(signWare.check)
