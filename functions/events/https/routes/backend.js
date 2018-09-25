@@ -154,10 +154,12 @@ function backendGetRoutes(unique, data) {
             console.log('<----------------------------- signin')
             res.wbRender(data)
         },
+        // これがローカルだけできない
         'signin.js': (req, res, next) => {
             console.log('<----------------------------- signin')
-            res.wbRender(data)
+            res.wbRender(data, 'js')
         },
+        // これはローカル用
         'signinJs': (req, res, next) => {
             console.log('<----------------------------- signinJs')
             res.wbRender(data, 'js')

@@ -23,15 +23,15 @@ module.exports = class wavebar {
         // console.log('===>', 'in init!')
         const instance = new wavebar()
 
-        res.wbRender = (data) => {
-            return instance.render(res, data)
+        res.wbRender = (data, contentType = null) => {
+            return instance.render(res, data, contentType)
         }
 
         next()
     }
 
     /* render */
-    render(res, data, contentType = null) {
+    render(res, data, contentType) {
         // console.log('===>', 'in render!')
         console.time('wavebar render time')
 
