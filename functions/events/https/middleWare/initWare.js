@@ -4,14 +4,13 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-const url = require('url')
-const path = require('path')
+const debug = require('../../../modules/debug').debug
 const jsonCache = require('../../../modules/jsonCache')
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
 module.exports.getInfo = (req, res, next) => {
-
+    
     // const parse = {
     //   'headers.hosts': [
     //     req.headers['host'],              // us-central1-newfunctions-a8a25.cloudfunctions.net
@@ -107,7 +106,7 @@ module.exports.getInfo = (req, res, next) => {
             .catch(err => reject(err))
     })
 
-    console.time('initWare getInfo -> ')
+    console.time('initWare getInfo time')
 
     Promise.all([getSettings, getTemplates])
         .then(results => {
@@ -117,7 +116,7 @@ module.exports.getInfo = (req, res, next) => {
             req.vessel.settings = settings
             req.vessel.templates = templates
 
-            console.timeEnd('initWare getInfo -> ')
+            console.timeEnd('initWare getInfo time')
 
             next()
         })
