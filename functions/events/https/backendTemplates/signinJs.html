@@ -1,0 +1,42 @@
+{|@ wrapper |}
+{|> header |}
+
+<h1>sign in</h1>
+<input type="email" id="email" placeholder="email" value="">
+<input type="password" id="password" placeholder="password" value="SSSS">
+<button id="signin">sign in</button>
+<button id="signout">sign out</button>
+<div id="csrfToken">{|csrfToken|}</div>
+<p id="signin_message"></p>
+
+{|> footer |}
+
+<script>
+    
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);   
+
+    /* サインアウト */
+    const signout = event => {
+        firebase.auth().signOut()
+
+        return fetchServerSignout()
+            .then(result => {
+                console.log(result)
+                document.querySelector('#signin').disabled = false
+                document.querySelector('#signout').disabled = true
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    /* イベント */
+    const signinBtn = document.querySelector('#signin')
+    if (signinBtn) {
+        signinBtn.addEventListener('click', signin)
+    }
+    const signoutBtn = document.querySelector('#signout')
+    if (signoutBtn) {
+        signoutBtn.addEventListener('click', signout)
+    }
+</script>

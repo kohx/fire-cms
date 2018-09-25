@@ -4,7 +4,7 @@ const wbFunctions = require('./wbFunctions')
 module.exports = class wavebar {
 
     constructor() {
-        this.isDebug = 0
+        this.isDebug = 2
 
         this.templateTagReg = /\{\|.*?\|\}/g
         this.bareReg = /\{\||\|\}|\s/g
@@ -16,11 +16,11 @@ module.exports = class wavebar {
         this.content = ''
         this.templates = ''
         this.params = ''
-        console.log('===>', 'in constructore!')
+        // console.log('===>', 'in constructore!')
     }
 
     static init(req, res, next) {
-        console.log('===>', 'in init!')
+        // console.log('===>', 'in init!')
         const instance = new wavebar()
 
         res.wbRender = (data) => {
@@ -32,7 +32,9 @@ module.exports = class wavebar {
 
     /* render */
     render(res, data, contentType = null) {
-        console.log('===>', 'in render!')
+        // console.log('===>', 'in render!')
+        console.time('wavebar render time')
+
         this.content = (data.content != null) ? data.content : ''
         this.templates = (data.templates != null) ? data.templates : {}
         this.params = (data.params != null) ? data.params : {}
@@ -40,16 +42,25 @@ module.exports = class wavebar {
         const segmented = this.segmentate(merged)
         const builded = this.build(segmented)
 
-        let compiled = ''
-        if (!this.isDebug) {
-            compiled = this.compile(builded)
-        }
+        let compiled = this.compile(builded)
         let source = compiled
-        if (this.isDebug === 1) {
+        // isDebug === 1は「is not defined!」を出す
+        if (this.isDebug === 2) {
+            source = merged
+        }
+        if (this.isDebug === 3) {
+            source = segmented
+        }
+        if (this.isDebug === 4) {
             source = builded
         }
 
-        contentType = this.getContentType(contentType)
+        // http://expressjs.com/ja/api.html#res.type
+        res.type(contentType != null ? contentType : 'html')
+        // TODO:: どこで設定させる？
+        // https://firebase.google.com/docs/hosting/functions
+        res.set('Cache-Control', 'public, max-age=300, s-maxage=600')
+        console.timeEnd('wavebar render time')
         res.send(source)
     }
 
@@ -224,7 +235,7 @@ module.exports = class wavebar {
 
     /* merge */
     merge() {
-        console.log('===>', 'in merge!')
+        // console.log('===>', 'in merge!')
         // change new line to mark
         let content = this.lining(this.content)
         // insert wrap content
@@ -278,7 +289,7 @@ module.exports = class wavebar {
 
     /* segmentate */
     segmentate(string) {
-        console.log('===>', 'in segmentate!')
+        // console.log('===>', 'in segmentate!')
         let line = this.lining(string)
         const matches = line.match(this.templateTagReg)
         const replaceMarke = this.replaceMarke
@@ -297,7 +308,7 @@ module.exports = class wavebar {
 
     /* build */
     build(segmented) {
-        console.log('===>', 'in build!')
+        // console.log('===>', 'in build!')
         let builded = `builded = ''\n`
         const counter = {
             for: {
@@ -375,7 +386,7 @@ module.exports = class wavebar {
 
     /* compile */
     compile(builded) {
-        console.log('===>', 'in compile!')
+        // console.log('===>', 'in compile!')
 
         // saves the script tags
         let scripts = {}
@@ -421,52 +432,6 @@ module.exports = class wavebar {
             console.log('vm error!')
             throw err
         }
-    }
-
-    /* getContentType */
-    getContentType(contentType) {
-
-        contentType = contentType != null ? contentType : 'text/html; charset=utf-8'
-
-        switch (contentType) {
-            case 'html':
-                contentType = 'text/html; charset=utf-8'
-                break
-
-            case 'plain':
-                contentType = 'text/plain; charset=utf-8'
-                break
-
-            case 'csv':
-                contentType = 'text/csv; charset=utf-8'
-                break
-
-            case 'css':
-                contentType = 'text/css; charset=utf-8'
-                break
-
-            case 'css':
-                contentType = 'text/css; charset=utf-8'
-                break
-
-            case 'javascript':
-                contentType = 'text/javascript; charset=utf-8'
-                break
-
-            case 'json':
-                contentType = 'application/json; charset=utf-8'
-                break
-
-            case 'pdf':
-                contentType = 'application/pdf;'
-                break
-
-            default:
-                contentType = contentType
-                break
-        }
-
-        return contentType
     }
 }
 

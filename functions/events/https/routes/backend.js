@@ -4,7 +4,6 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-
 const express = require('express')
 const router = express.Router()
 const fs = require('fs')
@@ -12,11 +11,10 @@ const path = require('path')
 
 const debug = require('../../../modules/debug').debug
 const jsonCache = require('../../../modules/jsonCache')
-
-const updateAsset = require('../backendRoutes/updateAsset')
-
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
+
+const updateAsset = require('../backendRoutes/updateAsset')
 
 /* route get */
 router.get('/*',
@@ -28,7 +26,6 @@ router.get('/*',
 
 /* middle wares */
 function checkPath(req, res, next) {
-
     const firstPath = req.vessel.get('paths.first');
     const backendFirstPath = req.vessel.get('settings.backend.firstPath', 'backend')
 
@@ -57,7 +54,10 @@ function checkSingIn(req, res, next) {
     if (!isSignInPage && !isSigned) {
         const redirectPath = `/${backendFirstPath}/${backendSigninUnique}`
         console.log(`@ not sigin in. redirect to ${redirectPath}`)
-        res.redirect(`${redirectPath}`)
+
+        // res.redirect(`${redirectPath}`)  // product
+        // or
+        next(); // TODO::                   // for test
     } else
     if (isSignInPage && isSigned) {
         const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
@@ -77,6 +77,7 @@ function getTemplate(req, res, next) {
 
     //get unique
     const unique = req.vessel.get('paths.unique')
+    debug(unique, __filename, __line)
 
     // build backend template path
     const backendTemplatesPath = path.join(__dirname, '../', 'backendTemplates')
@@ -105,7 +106,9 @@ function getTemplate(req, res, next) {
     // キャッシュが空のとき
     if (content === null) {
         try {
-            content = fs.readFileSync(path.join(backendTemplatesPath, `${unique}.html`), 'utf8')
+            // 「.」があればそのまま、なければ「.html」
+            const filename = unique.indexOf('.') === -1 ? `${unique}.html` : unique
+            content = fs.readFileSync(path.join(backendTemplatesPath, filename), 'utf8')
         } catch (err) {
             // ない場合
             content = ''
@@ -150,6 +153,14 @@ function backendGetRoutes(unique, data) {
         signin: (req, res, next) => {
             console.log('<----------------------------- signin')
             res.wbRender(data)
+        },
+        'signin.js': (req, res, next) => {
+            console.log('<----------------------------- signin')
+            res.wbRender(data)
+        },
+        'signinJs': (req, res, next) => {
+            console.log('<----------------------------- signinJs')
+            res.wbRender(data, 'js')
         },
         settings: (req, res, next) => {
             console.log('<----------------------------- settings')

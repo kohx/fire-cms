@@ -17,6 +17,7 @@ const cors = require('cors')({
 var i18n = require('i18n')
 
 /* module */
+const debug = require('../../modules/debug').debug
 const cipher = require('../../modules/cipher')
 const wavebar = require('../../modules/wavebar')
 

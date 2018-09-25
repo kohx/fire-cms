@@ -5,7 +5,7 @@
     "trailingSlash": false,
     "rewrites": [
       {
-        "source": "!**/*.@(html|css|js|png|jpg|jpeg|gif)",
+        "source": "!app/*.@(png|jpg|jpeg|gif)",
         "function": "app"
       }
     ],

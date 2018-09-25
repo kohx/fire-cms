@@ -1,0 +1,6 @@
+[
+"<header>\\n<div>backend</div>\\n<div>signin: ",
+"{|sign.status|}"," ","{|sign.user.uid|}",
+"</div>\\n    <hr>\\n</header>\\n<h1>sign in</h1>\\n<input type=\"email\" id=\"email\" placeholder=\"email\"",
+"{|csrfToken|}","</div>\\n<p id=\"signin_message\"></p>\\n<footer>\\n    <hr>\\n    &copy; fire cms\\n</footer>\\n
+<script>\\n    \\n    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);   \\n\\n    /* サインアウト */\\n    const signout = event => {\\n        firebase.auth().signOut()\\n\\n        return fetchServerSignout()\\n            .then(result => {\\n                console.log(result)\\n                document.querySelector('#signin').disabled = false\\n                document.querySelector('#signout').disabled = true\\n            })\\n            .catch(err => {\\n                console.log(err)\\n            })\\n    }\\n\\n    /* イベント */\\n    const signinBtn = document.querySelector('#signin')\\n    if (signinBtn) {\\n        signinBtn.addEventListener('click', signin)\\n    }\\n    const signoutBtn = document.querySelector('#signout')\\n    if (signoutBtn) {\\n        signoutBtn.addEventListener('click', signout)\\n    }\\n</script>"]
