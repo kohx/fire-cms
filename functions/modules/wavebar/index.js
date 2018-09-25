@@ -4,7 +4,7 @@ const wbFunctions = require('./wbFunctions')
 module.exports = class wavebar {
 
     constructor() {
-        this.isDebug = 2
+        this.isDebug = 4
 
         this.templateTagReg = /\{\|.*?\|\}/g
         this.bareReg = /\{\||\|\}|\s/g
@@ -84,9 +84,10 @@ module.exports = class wavebar {
         return string
 
         // TODO:: これを使うとscriptもうまくいくかも？
+        // encodeURIComponent は次を除く全ての文字をエスケープ
+        // : アルファベット、10進数字、- _ . ! ~ * ' ( )
         // encodeURIComponent
         // decodeURIComponent
-
     }
 
     /* build funcitons */
@@ -443,7 +444,7 @@ class WavebarError extends Error {
         this.message = message
         if (segmented) {
             const template = segmented.join('').replace(regEscape('&lt|/|&gt', 'g'), '\n')
-            this.stack = `${this.name} at \n <pre> ${enLining(template)} </pre>` /*  */
+            this.stack = `${this.name} at \n <pre> ${enLining(template)} </pre>`
         } else {
             this.stack = new Error().stack
         }
