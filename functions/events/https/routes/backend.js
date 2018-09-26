@@ -48,7 +48,7 @@ function checkSingIn(req, res, next) {
     const isSigned = req.vessel.get('sign.status')
 
     // サインインページかチェック
-    const isSignInPage = unique == backendSigninUnique
+    const isSignInPage = [backendSigninUnique, 'signin.js'].includes(unique)
 
     // サインインしてない場合
     if (!isSignInPage && !isSigned) {
@@ -77,7 +77,6 @@ function getTemplate(req, res, next) {
 
     //get unique
     const unique = req.vessel.get('paths.unique')
-    debug(unique, __filename, __line)
 
     // build backend template path
     const backendTemplatesPath = path.join(__dirname, '../', 'backendTemplates')
@@ -122,7 +121,8 @@ function getTemplate(req, res, next) {
         content,
         templates,
         params: {
-            backendName: req.vessel.get('settings.backend.firstPath'),
+            frontendBase: req.vessel.get('frontendBase'),
+            backendBase: req.vessel.get('backendBase'),
             sign: req.vessel.get('sign.status'),
             csrfToken: req.vessel.get('csrfToken'),
         }
@@ -154,14 +154,8 @@ function backendGetRoutes(unique, data) {
             console.log('<----------------------------- signin')
             res.wbRender(data)
         },
-        // これがローカルだけできない
         'signin.js': (req, res, next) => {
-            console.log('<----------------------------- signin')
-            res.wbRender(data, 'js')
-        },
-        // これはローカル用
-        'signinJs': (req, res, next) => {
-            console.log('<----------------------------- signinJs')
+            console.log('<----------------------------- signin.js')
             res.wbRender(data, 'js')
         },
         settings: (req, res, next) => {

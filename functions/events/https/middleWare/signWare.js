@@ -18,7 +18,12 @@ module.exports.csrf = (req, res, next) => {
     }
 
     // サインインページの場合
-    if (req.vessel.unique === req.vessel.signinUnique) {
+    const unique = req.vessel.get('paths.unique')
+    const signinUniques = [
+        req.vessel.get('settings.frontend.signinUnique'),
+        req.vessel.get('settings.backend.signinUnique'),
+    ]
+    if (signinUniques.includes(unique)) {
 
         // セッションクッキーを取得
         const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : {}

@@ -15,6 +15,7 @@ const signin = event => {
                     // セッションログインエンドポイントが照会され、セッションクッキーが設定
                     // CSRFプロテクトのためのトークン
                     const csrfToken = document.querySelector('#csrfToken').textContent
+                    console.log(csrfToken)
                     return fetchServerSignin(idToken, csrfToken)
                 })
         })

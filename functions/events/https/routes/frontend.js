@@ -100,9 +100,9 @@ function renderPage(req, res, next) {
         content: content,
         params: thing,
         templates: req.vessel.get('templates'),
-        sign: req.vessel.get('sign'),
-        csrfToken: req.vessel.get('csrfToken'),
     }
+    data.params.sign = req.vessel.get('sign')
+    data.params.csrfToken = req.vessel.get('csrfToken')
 
     // ココらへんはthingに入る
     data.params.items = [{
@@ -121,7 +121,6 @@ function renderPage(req, res, next) {
             gender: 'male'
         }
     ]
-    data.params.sign = req.vessel.sign
 
     res.status(200)
     res.wbRender(data)

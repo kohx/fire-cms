@@ -303,7 +303,8 @@ module.exports = class wavebar {
         } catch (err) {
             // TODO:: スタック変更できるかな？
             console.log(context)
-            console.log(`vm error!`)
+            console.log(`vm error! ${err.message}`)
+            // throw new Error()
             throw err
         }
     }
