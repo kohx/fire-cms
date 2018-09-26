@@ -32,7 +32,7 @@ module.exports.csrf = (req, res, next) => {
         // セッションクッキーにcsrfTokenをセット
         session.csrfToken = csrfToken
         res.cookie('__session', JSON.stringify(session), options)
-        
+
         req.vessel.csrfToken = csrfToken
     }
 
@@ -102,19 +102,41 @@ module.exports.check = (req, res, next) => {
 /* in function */
 module.exports.in = (req, res, next) => {
 
-    // poatされたIDトークンとCSRFトークンを取得
+    // postされたIDトークンとCSRFトークンを取得
     const idToken = (req.body.idToken != null) ? req.body.idToken : false
+    if (!idToken) {
+        res.json({
+            status: false,
+            message: `there is not idToken in post data.`
+        })
+        return
+    }
+
     const bodyCsrfToken = (req.body.csrfToken != null) ? req.body.csrfToken : false
+    if (!bodyCsrfToken) {
+        res.json({
+            status: false,
+            message: `there is not csrfToken in post data.`
+        })
+        return
+    }
 
     // __sessionからcsrfTOkenを取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
     const cookieCsrfToken = (session['csrfToken'] != null) ? session['csrfToken'] : false
-
-    // Guard against CSRF attacks
-    if (!bodyCsrfToken || !cookieCsrfToken || bodyCsrfToken !== cookieCsrfToken) {
+    if (!cookieCsrfToken) {
         res.json({
             status: false,
-            message: `there is not csrfToken.`
+            message: `there is not cookieCsrfToken.`
+        })
+        return
+    }
+
+    // Guard against CSRF attacks
+    if (bodyCsrfToken !== cookieCsrfToken) {
+        res.json({
+            status: false,
+            message: `csrfToken is not match.`
         })
         return
     }
@@ -136,8 +158,8 @@ module.exports.in = (req, res, next) => {
     // セッションクッキーは、IDトークンと同じ要求を持つ
 
     admin.auth().createSessionCookie(idToken, {
-            expiresIn
-        })
+        expiresIn
+    })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {
