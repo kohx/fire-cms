@@ -1,4 +1,3 @@
-{|@ wrapper |}
 {|> header |}
 
 <h1>sign in</h1>
@@ -12,31 +11,5 @@
 {|> footer |}
 
 <script>
-    
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);   
 
-    /* サインアウト */
-    const signout = event => {
-        firebase.auth().signOut()
-
-        return fetchServerSignout()
-            .then(result => {
-                console.log(result)
-                document.querySelector('#signin').disabled = false
-                document.querySelector('#signout').disabled = true
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
-
-    /* イベント */
-    const signinBtn = document.querySelector('#signin')
-    if (signinBtn) {
-        signinBtn.addEventListener('click', signin)
-    }
-    const signoutBtn = document.querySelector('#signout')
-    if (signoutBtn) {
-        signoutBtn.addEventListener('click', signout)
-    }
 </script>
