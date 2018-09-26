@@ -1,15 +1,165 @@
-{|> header |}
+/* this is signin.js ! */
 
-<h1>sign in</h1>
-<input type="email" id="email" placeholder="email" value="">
-<input type="password" id="password" placeholder="password" value="SSSS">
-<button id="signin">sign in</button>
-<button id="signout">sign out</button>
-<div id="csrfToken">{|csrfToken|}</div>
-<p id="signin_message"></p>
+    // httpOnly Cookieを使用するため、クライアントの状態を保持しない
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
 
-{|> footer |}
+    /* サインイン */
+    const signin = event => {
+        alert('start')
+        const email = document.querySelector('#email').value
+        const passwoard = document.querySelector('#password').value
+        firebase.auth()
+            .signInWithEmailAndPassword(email, passwoard)
+            .then(result => {
+                alert('check token')
+                const user = result.user
+                // セッションCookieを交換するために必要なユーザーのIDトークンを取得
+                return user.getIdToken()
+                    .then(idToken => {
+                        // セッションログインエンドポイントが照会され、セッションクッキーが設定
+                        // CSRFプロテクトのためのトークン
+                        const csrfToken = document.querySelector('#csrfToken').textContent
+                        return fetchServerSignin(idToken, csrfToken)
+                    })
+            })
+            .then(result => {
+                alert('outh sign out')
+                // 永続性がNONEに設定されているため、ページのリダイレクトで十分
+                firebase.auth().signOut()
+                return result
+            })
+            .then(result => {
 
-<script>
+                if (result.status) {
+                    window.location.assign('/')
+                    // ui
+                    // console.log(result)
+                    // document.querySelector('#signin').disabled = true
+                    // document.querySelector('#signout').disabled = false
+                    document.querySelector('#signin_message').textContent = result.message
+                } else {
+                    // サインインメッセージ
+                    console.log(result)
+                    document.querySelector('#signin_message').textContent = result.message
+                }
+            })
+            .catch(err => {
+                // エラーメッセージ
+                document.querySelector('#signin_message').textContent = err.message
+            })
+    }
 
-</script>
+    // 非同期通信でサーバ側をログイン
+    function fetchServerSignin(idToken, csrfToken) {
+
+        const url = `${window.location.origin}/signEndPoint/in`
+
+        const headers = {
+            'Authorization': 'Bearer ' + idToken,
+            // 'Access-Control-Allow-Credentials': 'true',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+
+        const body = {
+            idToken: idToken,
+            csrfToken: csrfToken
+        }
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                    method: 'post',
+                    mode: 'cors',
+                    credentials: 'include',
+                    cache: 'no-cache',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                })
+                .then(data => {
+                    return data.json()
+                })
+                .then(json => {
+                    resolve(json)
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject({
+                        status: false,
+                        message: "network err.",
+                    })
+                })
+        })
+    }
+
+    /* サインアウト */
+    const signout = event => {
+        firebase.auth().signOut()
+
+        return fetchServerSignout()
+            .then(result => {
+                console.log(result)
+                document.querySelector('#signin').disabled = false
+                document.querySelector('#signout').disabled = true
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    /* 非同期通信でサーバ側をサインアウト */
+    function fetchServerSignout() {
+
+        const url = `${window.location.origin}/signEndPoint/out`
+
+        const headers = {
+            // 'Access-Control-Allow-Credentials': 'true',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+
+        const body = {}
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                    method: 'post',
+                    mode: 'cors',
+                    credentials: 'include',
+                    cache: 'no-cache',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                })
+                .then(data => {
+                    return data.json()
+                })
+                .then(json => {
+                    resolve(json)
+                })
+                .catch(err => {
+                    reject({
+                        status: true,
+                        message: "network err."
+                    })
+                })
+        })
+    }
+
+    /* チェンジユーザ */
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            // document.querySelector('#signin').disabled = true
+            // document.querySelector('#signout').disabled = false
+        } else {
+            // document.querySelector('#signin').disabled = false
+            // document.querySelector('#signout').disabled = true
+        }
+    })
+
+    /* イベント */
+    const signinBtn = document.querySelector('#signin')
+    if (signinBtn) {
+        signinBtn.addEventListener('click', signin)
+    }
+    const signoutBtn = document.querySelector('#signout')
+    if (signoutBtn) {
+        signoutBtn.addEventListener('click', signout)
+    }

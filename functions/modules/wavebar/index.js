@@ -116,7 +116,7 @@ module.exports = class wavebar {
         }
 
         // backquote escape
-        content = content.replace(/`/g, '\\`')
+        content = content.replace(/'/g, '\\\'')
 
         return content
     }
@@ -143,7 +143,7 @@ module.exports = class wavebar {
     /* build */
     build(segmented) {
         // console.log(`===>`, `in build!`)
-        let builded = `builded = \`\`\n`
+        let builded = `builded = ''\n`
         const counter = {
             for: {
                 open: 0,
@@ -207,7 +207,7 @@ module.exports = class wavebar {
                         builded += this.buildText(body)
                 }
             } else {
-                builded += `builded += \`${segment}\`\n`
+                builded += `builded += '${segment}'\n`
             }
         })
 
@@ -218,13 +218,64 @@ module.exports = class wavebar {
         return builded
     }
 
+    /* build funcitons */
+    // for
+    BuildFor(body) {
+        var [array, variable] = body.split(`:`)
+        let text = `if(isExist('${variable}', params,  true)){\n`
+        text += `for(let key in ${array}) {\n`
+        if (variable) {
+            text += `${variable} = ${array}[key]\n`
+        } else {
+            text += `value = ${array}[key]\n`
+        }
+        text += `}\n`
+        return text
+    }
+    // if
+    BuildIf(body) {
+        var [variable, alias] = body.split(`:`)
+
+        let text = `if(isExist('${variable}', params)){\n`
+        if (alias) {
+            text += `const ${alias} = ${variable}\n`
+        }
+        return text
+    }
+    // else
+    BuildElse(body) {
+        var [variable, alias] = body.split(`:`)
+        let text = `if(!isExist('${variable}', params)){\n`
+        if (alias) {
+            text += `const ${alias} = ${variable}\n`
+        }
+        return text
+    }
+    // text
+    buildText(body, doEntityify = true) {
+
+        let text = `if(isExist('${body}', params)){\n`
+        if (doEntityify) {
+            text += `builded += entityify(${body});\n`
+        } else {
+            text += `builded += ${body}\n`
+        }
+        text += `} else {\n`
+        if (this.isDebug) {
+            text += `builded += '[ "${body}" is not defined! ]'\n`
+        } else {
+            text += `builded += ''\n`
+        }
+        text += `}\n`
+        return text
+    }
+
     /* compile */
     compile(builded) {
         // console.log(`===>`, `in compile!`)
 
         // create context for vm then set values and functions
         const context = {
-            compiled: ``,
             entityify: this.entityify,
             buildText: this.buildText,
             isExist: this.isExist,
@@ -251,6 +302,7 @@ module.exports = class wavebar {
             return compiled
         } catch (err) {
             // TODO:: スタック変更できるかな？
+            console.log(context)
             console.log(`vm error!`)
             throw err
         }
@@ -280,58 +332,6 @@ module.exports = class wavebar {
 
     cleanTag(str) {
         return this.bodyTag(this.bareTag(str))
-    }
-
-    /* build funcitons */
-    // for
-    BuildFor(body) {
-        var [array, variable] = body.split(`:`)
-        let text = `if(isExist(\`${variable}\`, params,  true)){\n`
-        text += `for(let key in ${array}) {\n`
-        if (variable) {
-            text += `${variable} = ${array}[key]\n`
-        } else {
-            text += `value = ${array}[key]\n`
-        }
-        text += `}\n`
-        return text
-    }
-    // if
-    BuildIf(body) {
-        var [variable, alias] = body.split(`:`)
-
-        let text = `if(isExist(\`${variable}\`, params)){\n`
-        if (alias) {
-            text += `const ${alias} = ${variable}\n`
-        }
-        return text
-    }
-    // else
-    BuildElse(body) {
-        var [variable, alias] = body.split(`:`)
-        let text = `if(!isExist(\`${variable}\`, params)){\n`
-        if (alias) {
-            text += `const ${alias} = ${variable}\n`
-        }
-        return text
-    }
-    // text
-    buildText(body, doEntityify = true) {
-
-        let text = `if(isExist("${body}", params)){\n`
-        if (doEntityify) {
-            text += `builded += entityify(${body});\n`
-        } else {
-            text += `builded += ${body}\n`
-        }
-        text += `} else {\n`
-        if (this.isDebug) {
-            text += `builded += \`[ "${body}" is not defined! ]\`\n`
-        } else {
-            text += `builded += \`\`\n`
-        }
-        text += `}\n`
-        return text
     }
 
     // reg Escape
