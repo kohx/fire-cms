@@ -56,9 +56,6 @@ module.exports = class wavebar {
         const compiled = this.compile(builded)
         // http://expressjs.com/ja/api.html#res.type
         res.type(contentType != null ? contentType : `html`)
-        // TODO:: どこで設定させる？
-        // https://firebase.google.com/docs/hosting/functions
-        res.set(`Cache-Control`, `public, max-age=300, s-maxage=600`)
 
         console.timeEnd(`wavebar render time`)
         res.send(compiled)

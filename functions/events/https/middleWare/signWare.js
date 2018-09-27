@@ -17,12 +17,17 @@ module.exports.csrf = (req, res, next) => {
         req.vessel = {}
     }
 
-    // サインインページの場合
+    // Get unique
     const unique = req.vessel.get('paths.unique')
+
+    // allow unique
+    // TODO:: storeに出す？
     const signinUniques = [
         req.vessel.get('settings.frontend.signinUnique'),
         req.vessel.get('settings.backend.signinUnique'),
     ]
+
+    // サインインページの場合
     if (signinUniques.includes(unique)) {
 
         // セッションクッキーを取得
@@ -91,7 +96,6 @@ module.exports.check = (req, res, next) => {
                     sign.message = `sign in success.`
                     sign.user = decodedClaims
                     req.vessel.sign = sign
-
                     next()
                 }
             })
@@ -227,7 +231,7 @@ module.exports.out = (req, res, next) => {
         })
         .catch(err => {
             res.json({
-                status: false,
+                status: true,
                 message: `there is not claims.`
             })
         })
