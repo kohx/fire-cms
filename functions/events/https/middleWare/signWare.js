@@ -16,14 +16,13 @@ module.exports.csrf = (req, res, next) => {
     const unique = req.vessel.get('paths.unique')
 
     // allow unique
-    // TODO:: ここは各thingから取得
-    const unauthorityUniques = [
+    const signinUniques = [
         req.vessel.get('settings.frontend.signinUnique', []),
         req.vessel.get('settings.backend.signinUnique', [])
     ]
 
     // サインインページの場合
-    if (unauthorityUniques.includes(unique)) {
+    if (signinUniques.includes(unique)) {
 
         // セッションクッキーを取得
         const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : {}
