@@ -44,6 +44,8 @@ function checkThing(req, res, next) {
 function checkSingIn(req, res, next) {
 
     const unique = req.vessel.get('paths.unique')
+
+    // TODO:: ここは各thingから取得
     const frontendSigninUnique = req.vessel.get('settings.frontend.signinUnique', 'signin')
 
     // サインインしているかチェック
@@ -68,6 +70,7 @@ function checkSingIn(req, res, next) {
 }
 
 function checkRole(req, res, next) {
+    // TODO:: ここは各thingから取得
     // TODO:: ロール制限のある場合
     // サインインに移動？ OR Not found
     // console.log('role', req.vessel.role)
@@ -75,7 +78,7 @@ function checkRole(req, res, next) {
 }
 
 function renderPage(req, res, next) {
-    const thing = req.vessel.thing
+    const thing = req.vessel.get('thing', {})
     const content = (thing.content != null) ? thing.content : ''
     delete thing.content
     const data = {

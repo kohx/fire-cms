@@ -48,7 +48,6 @@ module.exports.csrf = (req, res, next) => {
 
 /* check middle ware */
 module.exports.check = (req, res, next) => {
-    debug(req.vessel.thing, __filename, __line)
     
     // sign object
     const sign = {

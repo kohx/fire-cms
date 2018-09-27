@@ -23,23 +23,23 @@ module.exports = class wavebar {
         // console.log(`===>`, `in init!`)
         const instance = new wavebar()
 
-        res.wbRender = (data, contentType = null) => {
-            return instance.render(res, data, contentType)
+        res.wbRender = (data) => {
+            return instance.render(res, data)
         }
 
         next()
     }
 
     /* render */
-    render(res, data, contentType) {
+    render(res, data) {
         // console.log(`===>`, `in render!`)
         console.time(`[time] wavebar render`)
 
         this.content = (data.content != null) ? data.content : ``
         this.templates = (data.templates != null) ? data.templates : {}
         this.params = (data.params != null) ? data.params : {}
-        this.complete = ''
-
+        this.contentType = data.contentType != null ? data.contentType : `html`
+        
         // isDebug === 1は「is not defined!」を出す
         const merged = this.merge()
         if (this.isDebug === 2) {
@@ -54,8 +54,9 @@ module.exports = class wavebar {
             res.send(builded)
         }
         const compiled = this.compile(builded)
+        
         // http://expressjs.com/ja/api.html#res.type
-        res.type(contentType != null ? contentType : `html`)
+        res.type(this.contentType)
 
         console.timeEnd(`[time] wavebar render`)
         res.send(compiled)

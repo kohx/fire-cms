@@ -19,6 +19,7 @@ const backendThings = {
         role: {
             admin: true,
         },
+        contentType: 'html'
     },
     signin: {
         unique: 'signin',
@@ -27,6 +28,7 @@ const backendThings = {
         role: {
             admin: false,
         },
+        contentType: 'html'
     },
     'signin.js': {
         unique: 'signin.js',
@@ -34,6 +36,7 @@ const backendThings = {
         role: {
             admin: false,
         },
+        contentType: 'js'
     },
     settings: {
         unique: 'settings',
@@ -48,6 +51,7 @@ const backendThings = {
         role: {
             admin: true,
         },
+        contentType: 'html'
     },
     parts: {
         unique: 'parts',
@@ -62,6 +66,7 @@ const backendThings = {
         role: {
             admin: true,
         },
+        contentType: 'html'
     },
     things: {
         unique: 'things',
@@ -69,6 +74,7 @@ const backendThings = {
         role: {
             admin: true,
         },
+        contentType: 'html'
     },
     thing: {
         unique: 'thing',
@@ -76,6 +82,7 @@ const backendThings = {
         role: {
             admin: true,
         },
+        contentType: 'html'
     },
 }
 
@@ -257,8 +264,6 @@ module.exports.getThing = (req, res, next) => {
         const backendThing = getBackendThing(req, res, next)
         req.vessel.templates = backendTemplate
         req.vessel.thing = backendThing
-
-        debug(backendThing, __filename, __line)
         next()
     }
 
@@ -333,7 +338,7 @@ module.exports.getThing = (req, res, next) => {
     function getBackendThing(req, res, next) {
 
         const unique = req.vessel.get('paths.unique')
-        const thing = Object.keys(backendThings).includes(unique)
+        const thing = backendThings[unique] != null ? backendThings[unique] : null
 
         if(!thing){
             return {}

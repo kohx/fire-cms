@@ -21,21 +21,23 @@ router.get('/*',
     checkPath,
     checkThing,
     checkSingIn,
-    getBack
+    checkRole,
+    renderPage
 )
 
 /* middle wares */
 function checkPath(req, res, next) {
+
     const isBackend = req.vessel.get('paths.isBackend')
     if (isBackend) {
-        next('route')
-    } else {
         next()
+    } else {
+        next('route')
     }
 }
 
 function checkThing(req, res, next) {
-    debug('in', __filename, __line)
+
     const isExist = req.vessel.get('thing.unique')
     if (isExist) {
         next()
@@ -55,6 +57,7 @@ function checkSingIn(req, res, next) {
     const isSigned = req.vessel.get('sign.status')
 
     // サインインページかチェック
+    // TODO:: ここは各thingから取得
     const isSignInPage = [backendSigninUnique].includes(unique)
 
     // サインインしてない場合
@@ -79,53 +82,28 @@ function checkSingIn(req, res, next) {
     }
 }
 
-function getBack(req, res, next) {
-
-    debug(req.vessel.get('thing'), __filename, __line)
-    const unique = req.vessel.get('paths.unique')
-    const data = req.vessel.get('data')
-    func = backendGetRoutes(unique, data)
-
-    if (func) {
-        func(req, res, next)
-    } else {
-        next('route')
-    }
+function checkRole(req, res, next) {
+    // TODO:: ここは各thingから取得
+    // TODO:: ロール制限のある場合
+    // サインインに移動？ OR Not found
+    // console.log('role', req.vessel.role)
+    next()
 }
 
-function backendGetRoutes(unique, data) {
-    const routes = {
-        index: (req, res, next) => {
-            console.log('<----------------------------- backend index')
-            res.wbRender(data)
-        },
-        signin: (req, res, next) => {
-            console.log('<----------------------------- signin')
-            res.wbRender(data)
-        },
-        'signin.js': (req, res, next) => {
-            console.log('<----------------------------- signin.js')
-            res.wbRender(data, 'js')
-        },
-        settings: (req, res, next) => {
-            console.log('<----------------------------- settings')
-            res.wbRender(data)
-        },
-        divisions: (req, res, next) => {
-            console.log('<----------------------------- divisions')
-            res.wbRender(data)
-        },
-        parts: (req, res, next) => {
-            console.log('<----------------------------- parts')
-            res.wbRender(data)
-        },
-        assets: (req, res, next) => {
-            console.log('<----------------------------- assets')
-            res.wbRender(data)
-        },
+function renderPage(req, res, next) {
+    const thing = req.vessel.get('thing', {})
+    const content = (thing.content != null) ? thing.content : ''
+    delete thing.content
+    const data = {
+        content: content,
+        params: thing,
+        templates: req.vessel.get('templates'),
     }
-    const func = (routes[unique] != null) ? routes[unique] : false
-    return func
+    data.params.sign = req.vessel.get('sign')
+    data.params.csrfToken = req.vessel.get('csrfToken')
+
+    debug(data, __filename, __line)
+    res.wbRender(data)
 }
 
 /* route post */
