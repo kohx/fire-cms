@@ -103,7 +103,6 @@ function renderPage(req, res, next) {
     data.params.sign = req.vessel.get('sign')
     data.params.csrfToken = req.vessel.get('csrfToken')
 
-    debug(data, __filename, __line)
     res.wbRender(data)
 }
 

@@ -17,12 +17,10 @@ module.exports.csrf = (req, res, next) => {
 
     // allow unique
     // TODO:: ここは各thingから取得
-    const unauthorityUniques = req.vessel.get('settings.backend.unauthorityUniques', [])
-
-
-
-
-
+    const unauthorityUniques = [
+        req.vessel.get('settings.frontend.signinUnique', []),
+        req.vessel.get('settings.backend.signinUnique', [])
+    ]
 
     // サインインページの場合
     if (unauthorityUniques.includes(unique)) {
@@ -39,7 +37,7 @@ module.exports.csrf = (req, res, next) => {
         // セッションクッキーにcsrfTokenをセット
         session.csrfToken = csrfToken
         res.cookie('__session', JSON.stringify(session), options)
-
+        // vesselにcsrfTokenをセット
         req.vessel.csrfToken = csrfToken
     }
 
@@ -48,7 +46,7 @@ module.exports.csrf = (req, res, next) => {
 
 /* check middle ware */
 module.exports.check = (req, res, next) => {
-    
+
     // sign object
     const sign = {
         status: false,
@@ -135,6 +133,9 @@ module.exports.in = (req, res, next) => {
 
     // Guard against CSRF attacks
     if (bodyCsrfToken !== cookieCsrfToken) {
+        debug(bodyCsrfToken, __filename, __line)
+        debug(cookieCsrfToken, __filename, __line)
+
         res.json({
             status: false,
             message: `csrfToken is not match.`
@@ -159,8 +160,8 @@ module.exports.in = (req, res, next) => {
     // セッションクッキーは、IDトークンと同じ要求を持つ
 
     admin.auth().createSessionCookie(idToken, {
-        expiresIn
-    })
+            expiresIn
+        })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {
