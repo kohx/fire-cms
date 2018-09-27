@@ -55,20 +55,32 @@ function checkSingIn(req, res, next) {
     const backendTopUnique = req.vessel.get('settings.backend.topUnique')
 
     // サインインしているかチェック
-    const isSigned = req.vessel.get('sign.status')
+    // const isSigned = req.vessel.get('sign.status')
+    const isSigned = true
+    debug(isSigned, __filename, __line)
 
     // サインインページかチェック
     // TODO:: ここは各thingから取得
-    const isSignInPage = [backendSigninUnique].includes(unique)
+
+    debug(req.vessel.get('thing.roles'), __filename, __line)
+    const roles = req.vessel.get('thing.roles')
+    debug(Object.keys(roles), __filename, __line)
+    Object.keys(roles).forEach(role => {
+        debug(role, __filename, __line)
+        debug(roles[role], __filename, __line)
+    })
+
+
+    const isSigninPage = [backendSigninUnique].includes(unique)
 
     // サインインしてない場合
-    if (!isSignInPage && !isSigned && unique !== 'signin.js') {
+    if (!isSigninPage && !isSigned && unique !== 'signin.js') {
         const redirectPath = `/${backendFirstPath}/${backendSigninUnique}`
         console.log(`@ not sigin in. redirect to ${redirectPath}`)
 
         res.redirect(`${redirectPath}`)
     } else
-    if (isSignInPage && isSigned) {
+    if (isSigninPage && isSigned) {
         const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
         let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
 
@@ -100,9 +112,13 @@ function renderPage(req, res, next) {
         params: thing,
         templates: req.vessel.get('templates'),
     }
+
+    // add params
     data.params.sign = req.vessel.get('sign')
     data.params.csrfToken = req.vessel.get('csrfToken')
-
+    data.params.frontendBase = req.vessel.get('frontendBase')
+    data.params.backendBase = req.vessel.get('backendBase')
+    data.params.backendFirstpath = req.vessel.get('settings.backend.firstPath')
     res.wbRender(data)
 }
 

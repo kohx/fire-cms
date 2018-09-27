@@ -16,7 +16,7 @@ const backendThings = {
     index: {
         unique: 'index',
         name: 'index',
-        role: {
+        roles: {
             admin: true,
         },
         contentType: 'html'
@@ -25,7 +25,7 @@ const backendThings = {
         unique: 'signin',
         name: 'signin',
         content: '',
-        role: {
+        roles: {
             admin: false,
         },
         contentType: 'html'
@@ -33,7 +33,7 @@ const backendThings = {
     'signin.js': {
         unique: 'signin.js',
         name: 'signin.js',
-        role: {
+        roles: {
             admin: false,
         },
         contentType: 'js'
@@ -41,14 +41,14 @@ const backendThings = {
     settings: {
         unique: 'settings',
         name: 'settings',
-        role: {
+        roles: {
             admin: true,
         },
     },
     divisions: {
         unique: 'divisions',
         name: 'divisions',
-        role: {
+        roles: {
             admin: true,
         },
         contentType: 'html'
@@ -56,14 +56,14 @@ const backendThings = {
     parts: {
         unique: 'parts',
         name: 'parts',
-        role: {
+        roles: {
             admin: true,
         },
     },
     assets: {
         unique: 'assets',
         name: 'assets',
-        role: {
+        roles: {
             admin: true,
         },
         contentType: 'html'
@@ -71,7 +71,7 @@ const backendThings = {
     things: {
         unique: 'things',
         name: 'things',
-        role: {
+        roles: {
             admin: true,
         },
         contentType: 'html'
@@ -79,7 +79,7 @@ const backendThings = {
     thing: {
         unique: 'thing',
         name: 'thing',
-        role: {
+        roles: {
             admin: true,
         },
         contentType: 'html'
@@ -157,7 +157,7 @@ module.exports.getInfo = (req, res, next) => {
                 req.vessel.backendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/${settings.backend.firstPath}/` || null
                 req.vessel.settings = settings
 
-                console.time('[time] initWare getInfo')
+                console.timeEnd('[time] initWare getInfo')
                 next()
             })
             .catch(err => {

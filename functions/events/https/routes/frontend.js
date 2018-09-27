@@ -44,8 +44,6 @@ function checkThing(req, res, next) {
 function checkSingIn(req, res, next) {
 
     const unique = req.vessel.get('paths.unique')
-
-    // TODO:: ここは各thingから取得
     const frontendSigninUnique = req.vessel.get('settings.frontend.signinUnique', 'signin')
 
     // サインインしているかチェック
@@ -86,8 +84,12 @@ function renderPage(req, res, next) {
         params: thing,
         templates: req.vessel.get('templates'),
     }
+
+    // add params
     data.params.sign = req.vessel.get('sign')
     data.params.csrfToken = req.vessel.get('csrfToken')
+    data.params.frontendBase = req.vessel.get('settings.frontendBase')
+    data.params.backendBase = req.vessel.get('settings.backendBase')
 
     // ココらへんはthingに入る
     data.params.items = [{

@@ -8,7 +8,6 @@ const signin = event => {
     firebase.auth()
         .signInWithEmailAndPassword(email, passwoard)
         .then(result => {
-            alert('check token')
             const user = result.user
             // セッションCookieを交換するために必要なユーザーのIDトークンを取得
             return user.getIdToken()
@@ -26,12 +25,12 @@ const signin = event => {
         })
         .then(result => {
             if (result.status) {
-                window.location.assign('/')
+                window.location.assign('/{|backendFirstpath|}')
                 // ui
                 // console.log(result)
                 // document.querySelector('#signin').disabled = true
                 // document.querySelector('#signout').disabled = false
-                document.querySelector('#signin_message').textContent = result.message
+                // document.querySelector('#signin_message').textContent = result.message
             } else {
                 // サインインメッセージ
                 console.log(result)
@@ -92,9 +91,11 @@ const signout = event => {
 
     return fetchServerSignout()
         .then(result => {
-            console.log(result)
-            document.querySelector('#signin').disabled = false
-            document.querySelector('#signout').disabled = true
+            if(result.status == false){
+                window.location.reload()
+            }
+            // document.querySelector('#signin').disabled = false
+            // document.querySelector('#signout').disabled = true
         })
         .catch(err => {
             console.log(err)
