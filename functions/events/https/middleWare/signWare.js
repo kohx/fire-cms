@@ -12,23 +12,20 @@ const limit = 60 * 60 * 24
 /* csrf function */
 module.exports.csrf = (req, res, next) => {
 
-    // vessalがない場合
-    if (!req.vessel) {
-        req.vessel = {}
-    }
-
     // Get unique
     const unique = req.vessel.get('paths.unique')
 
     // allow unique
-    // TODO:: storeに出す？
-    const signinUniques = [
-        req.vessel.get('settings.frontend.signinUnique'),
-        req.vessel.get('settings.backend.signinUnique'),
-    ]
+    // TODO:: ここは各thingから取得
+    const unauthorityUniques = req.vessel.get('settings.backend.unauthorityUniques', [])
+
+
+
+
+
 
     // サインインページの場合
-    if (signinUniques.includes(unique)) {
+    if (unauthorityUniques.includes(unique)) {
 
         // セッションクッキーを取得
         const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : {}
@@ -51,12 +48,8 @@ module.exports.csrf = (req, res, next) => {
 
 /* check middle ware */
 module.exports.check = (req, res, next) => {
-
-    // vesselがない場合
-    if (req.vessel == null) {
-        req.vessel = {}
-    }
-
+    debug(req.vessel.thing, __filename, __line)
+    
     // sign object
     const sign = {
         status: false,

@@ -16,8 +16,7 @@ jsonCache.isActive(system.cache)
 /* route */
 router.get('/*',
     checkPath,
-    setLang,
-    getThing,
+    checkThing,
     checkSingIn,
     checkRole,
     renderPage
@@ -25,38 +24,21 @@ router.get('/*',
 
 /* middle wares */
 function checkPath(req, res, next) {
-    const firstPath = req.vessel.get('paths.first');
-    const backendFirstPath = req.vessel.get('settings.backend.firstPath', 'backend')
-
-    // ファーストパスがバックエンドファーストパスの場合
-    if (firstPath === backendFirstPath) {
-        next('route')
-    } else {
+    const isFrontend = req.vessel.get('paths.isFrontend')
+    if (isFrontend) {
         next()
+    } else {
+        next('route')
     }
 }
 
-function setLang(req, res, next) {
-    const lang = req.vessel.get('settings.frontend.lang')
-    if (lang) {
-        req.setLocale(lang)
+function checkThing(req, res, next) {
+    const isExist = req.vessel.get('thing.unique')
+    if (isExist) {
+        next()
+    } else {
+        next('route')
     }
-    next()
-}
-
-function getThing(req, res, next) {
-    // thingを取得
-    admin.firestore().collection('things').doc(req.vessel.paths.unique)
-        .get()
-        .then(snap => {
-            if (snap.exists) {
-                req.vessel.thing = snap.data()
-                next()
-            } else {
-                next('route')
-            }
-        })
-        .catch(err => next(err))
 }
 
 function checkSingIn(req, res, next) {

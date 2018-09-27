@@ -55,6 +55,8 @@ app.use(i18n.init)
 app.use(initWare.getInfo)
 /* initWare getPath */
 app.use(initWare.getPath)
+app.use(initWare.setLang)
+app.use(initWare.getThing)
 
 /* wavebar */
 app.use(wavebar.init)

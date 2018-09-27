@@ -19,21 +19,28 @@ const updateAsset = require('../backendRoutes/updateAsset')
 /* route get */
 router.get('/*',
     checkPath,
+    checkThing,
     checkSingIn,
-    getTemplate,
     getBack
 )
 
 /* middle wares */
 function checkPath(req, res, next) {
-    const firstPath = req.vessel.get('paths.first');
-    const backendFirstPath = req.vessel.get('settings.backend.firstPath', 'backend')
-
-    // ファーストパスがバックエンドファーストパスでない場合
-    if (firstPath !== backendFirstPath) {
+    const isBackend = req.vessel.get('paths.isBackend')
+    if (isBackend) {
         next('route')
     } else {
         next()
+    }
+}
+
+function checkThing(req, res, next) {
+    debug('in', __filename, __line)
+    const isExist = req.vessel.get('thing.unique')
+    if (isExist) {
+        next()
+    } else {
+        next('route')
     }
 }
 
@@ -48,16 +55,14 @@ function checkSingIn(req, res, next) {
     const isSigned = req.vessel.get('sign.status')
 
     // サインインページかチェック
-    const isSignInPage = [backendSigninUnique, 'signin.js'].includes(unique)
+    const isSignInPage = [backendSigninUnique].includes(unique)
 
     // サインインしてない場合
-    if (!isSignInPage && !isSigned) {
+    if (!isSignInPage && !isSigned && unique !== 'signin.js') {
         const redirectPath = `/${backendFirstPath}/${backendSigninUnique}`
         console.log(`@ not sigin in. redirect to ${redirectPath}`)
 
-        // res.redirect(`${redirectPath}`)  // product
-        // or
-        next(); // TODO::                   // for test
+        res.redirect(`${redirectPath}`)
     } else
     if (isSignInPage && isSigned) {
         const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
@@ -66,73 +71,17 @@ function checkSingIn(req, res, next) {
         if (referer === '' || referer === backendSigninUnique) {
             referer = `/${backendFirstPath}/${backendTopUnique}`
         }
-        debug(referer, __filename, __line)
+        console.log(`@${__line}`, referer)
+        console.log(`@ already sigin in. redirect to ${referer}`)
         res.redirect(referer)
     } else {
         next()
     }
 }
 
-function getTemplate(req, res, next) {
-
-    //get unique
-    const unique = req.vessel.get('paths.unique')
-
-    // build backend template path
-    const backendTemplatesPath = path.join(__dirname, '../', 'backendTemplates')
-    const templatesPath = path.join(backendTemplatesPath, 'templates')
-
-    // キャッシュを取得
-    let templates = jsonCache.get('templates')
-
-    // キャッシュが空のとき
-    if (templates === null) {
-        templates = {}
-        const files = fs.readdirSync(templatesPath)
-        // DOTO:: try catch
-        files.forEach(file => {
-            const name = path.parse(file).name
-            templates[name] = fs.readFileSync(path.join(templatesPath, file), 'utf8')
-        })
-
-        // キャッシュに入れる 
-        jsonCache.set('templates', templates)
-    }
-
-    // キャッシュを取得
-    let content = jsonCache.get(`content_${unique}`)
-
-    // キャッシュが空のとき
-    if (content === null) {
-        try {
-            // 「.」があればそのまま、なければ「.html」
-            const filename = unique.indexOf('.') === -1 ? `${unique}.html` : unique
-            content = fs.readFileSync(path.join(backendTemplatesPath, filename), 'utf8')
-        } catch (err) {
-            // ない場合
-            content = ''
-        }
-        // キャッシュに入れる 
-        jsonCache.set(`content_${unique}`, content)
-    }
-
-    // build data
-    req.vessel.data = {
-        content,
-        templates,
-        params: {
-            frontendBase: req.vessel.get('frontendBase'),
-            backendBase: req.vessel.get('backendBase'),
-            sign: req.vessel.get('sign.status'),
-            csrfToken: req.vessel.get('csrfToken'),
-        }
-    }
-
-    next()
-}
-
 function getBack(req, res, next) {
 
+    debug(req.vessel.get('thing'), __filename, __line)
     const unique = req.vessel.get('paths.unique')
     const data = req.vessel.get('data')
     func = backendGetRoutes(unique, data)
