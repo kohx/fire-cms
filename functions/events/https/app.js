@@ -63,13 +63,15 @@ app.use(initWare.setLang)
 /* initWare getThing */
 app.use(initWare.getThing)
 
-/* wavebar */
-app.use(wavebar.init)
-
 /* signWare check */
 app.use(signWare.check)
+/* signWare getUser */
+app.use(signWare.user)
 /* signWare csrf */
 app.use(signWare.csrf)
+
+/* wavebar */
+app.use(wavebar.init)
 
 /* route */
 app.use(`/*`, frontendRouter)

@@ -32,13 +32,6 @@ module.exports.checkSingIn = (req, res, next) => {
     // サインインしているかチェック
     let isSigned = req.vessel.get('sign.status')
 
-    const unique = req.vessel.get('paths.unique')
-    const backendSigninUnique = req.vessel.get('settings.backend.signinUnique')
-    const backendFirstPath = req.vessel.get('settings.backend.firstPath')
-    const backendTopUnique = req.vessel.get('settings.backend.topUnique')
-
-    debug(system.debugSinin, __filename, __line)
-
     if (system.debugSinin) {
         console.error(`@ line: ${__line}`)
         isSigned = true
@@ -64,7 +57,15 @@ module.exports.checkSingIn = (req, res, next) => {
             }
         }
     }
-    const user = req.vessel.get('sign.user.uid')
+    const user = req.vessel.get('sign.user')
+
+
+
+    const unique = req.vessel.get('paths.unique')
+    const backendSigninUnique = req.vessel.get('settings.backend.signinUnique')
+    const backendFirstPath = req.vessel.get('settings.backend.firstPath')
+    const backendTopUnique = req.vessel.get('settings.backend.topUnique')
+
 
     debug(user, __filename, __line)
     // サインインページかチェック

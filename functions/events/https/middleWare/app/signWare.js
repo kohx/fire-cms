@@ -97,6 +97,48 @@ module.exports.check = (req, res, next) => {
     }
 }
 
+module.exports.user = (req, res, next) => {
+    // サインインしているかチェック
+    let isSigned = req.vessel.get('sign.status')
+
+    // ローカルでバグ用
+    if (system.debugSinin) {
+        console.error(`@ line: ${__line}`)
+        isSigned = true
+        req.vessel.sign = {
+            "status": true,
+            "message": "sign in success.",
+            "user": {
+                "iss": "https://session.firebase.google.com/fire-cms-86681",
+                "aud": "fire-cms-86681", "auth_time": 1538110178,
+                "user_id": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1",
+                "sub": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1",
+                "iat": 1538110181,
+                "exp": 1538542181,
+                "email": "kohei0728@gmail.com",
+                "email_verified": false,
+                "firebase": {
+                    "identities": {
+                        "email": ["kohei0728@gmail.com"]
+                    },
+                    "sign_in_provider": "password"
+                },
+                "uid": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1"
+            }
+        }
+    }
+
+    if (isSigned) {
+        const uid = req.vessel.get('sign.user.uid')
+        admin.firestore().collection('users').doc(uid).get()
+        .then(res => {
+            debug(res.data(), __filename, __line)
+        })
+    }
+
+    next()
+}
+
 /* in function */
 module.exports.in = (req, res, next) => {
 
@@ -159,8 +201,8 @@ module.exports.in = (req, res, next) => {
     // セッションクッキーは、IDトークンと同じ要求を持つ
 
     admin.auth().createSessionCookie(idToken, {
-            expiresIn
-        })
+        expiresIn
+    })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {
