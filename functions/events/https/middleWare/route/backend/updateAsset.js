@@ -1,11 +1,11 @@
 // firebase
-const parent = require('../../parent')
+const parent = require('../../../../parent')
 const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-const validation = require('../../../modules/validation')
-const uploadBase64 = require('../../../modules/uploadBase64')
+const validation = require('../../../../../modules/validation')
+const uploadBase64 = require('../../../../../modules/uploadBase64')
 
 module.exports = (req, res, next) => {
     console.log('<<<<<<<<<< start backend updateAsset >>>>>>>>>>\n\n')

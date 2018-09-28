@@ -13,105 +13,16 @@ const jsonCache = require('../../../modules/jsonCache')
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
+// middleWare
+const generalMethod = require('../middleWare/route/frontend/general')
+
 /* route */
 router.get('/*',
-    checkPath,
-    checkThing,
-    checkSingIn,
-    checkRole,
-    renderPage
+    generalMethod.checkPath,
+    generalMethod.checkThing,
+    generalMethod.checkSingIn,
+    generalMethod.checkRole,
+    generalMethod.renderPage
 )
-
-/* middle wares */
-function checkPath(req, res, next) {
-    const isFrontend = req.vessel.get('paths.isFrontend')
-    if (isFrontend) {
-        next()
-    } else {
-        next('route')
-    }
-}
-
-function checkThing(req, res, next) {
-    const isExist = req.vessel.get('thing.unique')
-    if (isExist) {
-        next()
-    } else {
-        next('route')
-    }
-}
-
-function checkSingIn(req, res, next) {
-
-    const unique = req.vessel.get('paths.unique')
-    const frontendSigninUnique = req.vessel.get('settings.frontend.signinUnique', 'signin')
-
-    // サインインしているかチェック
-    const isSigned = req.vessel.get('sign.status', false)
-
-    // サインインページかチェック
-    const isSigninPage = unique === frontendSigninUnique
-
-    // サインインページでサインインしている場合
-    if (isSigninPage && isSigned) {
-
-        const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
-        let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
-
-        if (referer === '' || referer === frontendSigninUnique) {
-            referer = '/'
-        }
-        res.redirect(referer)
-    } else {
-        next()
-    }
-}
-
-function checkRole(req, res, next) {
-    // TODO:: ここは各thingから取得
-    // TODO:: ロール制限のある場合
-    // サインインに移動？ OR Not found
-    // console.log('role', req.vessel.role)
-    next()
-}
-
-function renderPage(req, res, next) {
-    const thing = req.vessel.get('thing', {})
-    const content = (thing.content != null) ? thing.content : ''
-    delete thing.content
-    const data = {
-        content: content,
-        params: thing,
-        templates: req.vessel.get('templates'),
-    }
-
-    // add params
-    data.params.sign = req.vessel.get('sign')
-    data.params.csrfToken = req.vessel.get('csrfToken')
-    data.params.frontendBase = req.vessel.get('settings.frontendBase')
-    data.params.backendBase = req.vessel.get('settings.backendBase')
-
-    // ココらへんはthingに入る
-    data.params.items = [{
-            name: '<h1>kohei</h1>',
-            age: 40,
-            gender: 'male'
-        },
-        {
-            name: 'kohei',
-            age: 40,
-            gender: 'male'
-        },
-        {
-            name: 'kohei',
-            age: 40,
-            gender: 'male'
-        }
-    ]
-
-    res.status(200)
-    res.wbRender(data)
-    console.log(`>>>>>>>>>> ${req.vessel.unique} <<<<<<<<<<`)
-}
 
 module.exports = router

@@ -1,0 +1,119 @@
+{
+    "index": {
+        "unique": "index",
+        "name": "index",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "contentType": "html"
+    },
+    "signin": {
+        "unique": "signin",
+        "name": "signin",
+        "roles": {
+            "owner": false,
+            "direct": false,
+            "admin": false,
+            "editor": false,
+            "writer": false,
+            "user": false
+        },
+        "contentType": "html"
+    },
+    "signin.js": {
+        "unique": "signin.js",
+        "name": "signin.js",
+        "roles": {
+            "owner": false,
+            "direct": false,
+            "admin": false,
+            "editor": false,
+            "writer": false,
+            "user": false
+        },
+        "contentType": "js"
+    },
+    "settings": {
+        "unique": "settings",
+        "name": "settings",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "contentType": "html"
+    },
+    "divisions": {
+        "unique": "divisions",
+        "name": "divisions",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "contentType": "html"
+    },
+    "parts": {
+        "unique": "parts",
+        "name": "parts",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "contentType": "html"
+    },
+    "assets": {
+        "unique": "assets",
+        "name": "assets",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "contentType": "html"
+    },
+    "things": {
+        "unique": "things",
+        "name": "things",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "contentType": "html"
+    },
+    "thing": {
+        "unique": "thing",
+        "name": "thing",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "contentType": "html"
+    }
+}

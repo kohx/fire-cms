@@ -45,10 +45,6 @@ module.exports.admin = admin
 module.exports.system = (() => {
     return {
         cache: false,
-        lang: {
-            default: 'ja',
-            locales: ['ja', 'en', 'nl'],
-            dirname: 'locales'
-        }
+        debugSinin: true,
     }
 })()

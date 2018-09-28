@@ -21,15 +21,15 @@ const debug = require('../../modules/debug').debug
 const cipher = require('../../modules/cipher')
 const wavebar = require('../../modules/wavebar')
 
-/* middleware */
-const initWare = require('./middleWare/initWare')
-const errWare = require('./middleWare/errWare')
-const signWare = require('./middleWare/signWare')
-
 /* routes */
 var backendRouter = require('./routes/backend')
 var frontendRouter = require('./routes/frontend')
 var signEndPointRouter = require('./routes/signEndPoint')
+
+/* middleware */
+const initWare = require('./middleWare/app/initWare')
+const signWare = require('./middleWare/app/signWare')
+const errWare = require('./middleWare/app/errWare')
 
 // app
 console.log('\n\n\n<<<<<<<<<< app start >>>>>>>>>>\n\n')
@@ -42,20 +42,25 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-i18n.configure({
-    locales: system.lang.locales,
-    defaultLocale: system.lang.default,
-    directory: path.join(__dirname, system.lang.dirname),
-    // オブジェクトを利用したい場合はtrue
-    objectNotation: true
-});
-app.use(i18n.init)
-
 /* initWare getInfo */
 app.use(initWare.getInfo)
+/* set language */
+app.use((req, res, next) => {
+    i18n.configure({
+        locales: req.vessel.get('settings.lang.locales', ['en', 'ja']),
+        defaultLocale: req.vessel.get('settings.lang.default', 'en'),
+        directory: path.join(__dirname, req.vessel.get('settings.lang.dirname', 'locales')),
+        // オブジェクトを利用したい場合はtrue
+        objectNotation: true
+    })
+    next()
+})
+app.use(i18n.init)
 /* initWare getPath */
 app.use(initWare.getPath)
+/* initWare setLang */
 app.use(initWare.setLang)
+/* initWare getThing */
 app.use(initWare.getThing)
 
 /* wavebar */

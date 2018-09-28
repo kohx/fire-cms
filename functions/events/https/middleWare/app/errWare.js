@@ -1,4 +1,4 @@
-const parent = require('../../parent')
+const parent = require('../../../parent')
 const functions = parent.functions
 const admin = parent.admin
 const system = parent.system

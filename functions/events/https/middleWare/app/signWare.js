@@ -1,10 +1,10 @@
 // firebase
-const parent = require('../../parent')
+const parent = require('../../../parent')
 const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-const debug = require('../../../modules/debug').debug
+const debug = require('../../../../modules/debug').debug
 
 // サインインしてからのリミット
 const limit = 60 * 60 * 24

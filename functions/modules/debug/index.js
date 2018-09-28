@@ -7,11 +7,11 @@ module.exports = class debug {
         }
         file = file.split('\\').pop()
         let str = `
-┌  ${file} - ${line}  ─
-│
-   ${value}
-│
-└─
+┌─  ${file} - ${line}  ─┐
+
+${value}
+
+└─  ${file} - ${line}  ─┘
 `
         console.info(str)
     }

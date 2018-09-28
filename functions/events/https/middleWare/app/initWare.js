@@ -1,90 +1,19 @@
 // firebase
-const parent = require('../../parent')
+const parent = require('../../../parent')
 const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
+var i18n = require('i18n')
 const path = require('path')
 const fs = require('fs')
 
-const debug = require('../../../modules/debug').debug
-const jsonCache = require('../../../modules/jsonCache')
+const debug = require('../../../../modules/debug').debug
+const jsonCache = require('../../../../modules/jsonCache')
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
-const backendThings = {
-    index: {
-        unique: 'index',
-        name: 'index',
-        roles: {
-            admin: true,
-        },
-        contentType: 'html'
-    },
-    signin: {
-        unique: 'signin',
-        name: 'signin',
-        content: '',
-        roles: {
-            admin: false,
-        },
-        contentType: 'html'
-    },
-    'signin.js': {
-        unique: 'signin.js',
-        name: 'signin.js',
-        roles: {
-            admin: false,
-        },
-        contentType: 'js'
-    },
-    settings: {
-        unique: 'settings',
-        name: 'settings',
-        roles: {
-            admin: true,
-        },
-    },
-    divisions: {
-        unique: 'divisions',
-        name: 'divisions',
-        roles: {
-            admin: true,
-        },
-        contentType: 'html'
-    },
-    parts: {
-        unique: 'parts',
-        name: 'parts',
-        roles: {
-            admin: true,
-        },
-    },
-    assets: {
-        unique: 'assets',
-        name: 'assets',
-        roles: {
-            admin: true,
-        },
-        contentType: 'html'
-    },
-    things: {
-        unique: 'things',
-        name: 'things',
-        roles: {
-            admin: true,
-        },
-        contentType: 'html'
-    },
-    thing: {
-        unique: 'thing',
-        name: 'thing',
-        roles: {
-            admin: true,
-        },
-        contentType: 'html'
-    },
-}
+const backendThings = require('./backendThings.json')
 
 module.exports.getInfo = (req, res, next) => {
     console.time('[time] initWare getInfo')
@@ -312,7 +241,7 @@ module.exports.getThing = (req, res, next) => {
     function getBackendTemplate(req, res, next) {
 
         // build backend template path
-        const backendTemplatesPath = path.join(__dirname, '../', 'backendTemplates')
+        const backendTemplatesPath = path.join(__dirname, '../../', 'backendTemplates')
         const templatesPath = path.join(backendTemplatesPath, 'templates')
 
         // キャッシュを取得
@@ -340,7 +269,7 @@ module.exports.getThing = (req, res, next) => {
         const unique = req.vessel.get('paths.unique')
         const thing = backendThings[unique] != null ? backendThings[unique] : null
 
-        if(!thing){
+        if (!thing) {
             return {}
         }
 
@@ -350,7 +279,7 @@ module.exports.getThing = (req, res, next) => {
         // キャッシュが空のとき
         if (content === null) {
             try {
-                const backendTemplatesPath = path.join(__dirname, '../', 'backendTemplates')
+                const backendTemplatesPath = path.join(__dirname, '../../', 'backendTemplates')
                 // 「.」があればそのまま、なければ「.html」
                 const filename = unique.indexOf('.') === -1 ? `${unique}.html` : unique
                 content = fs.readFileSync(path.join(backendTemplatesPath, filename), 'utf8')
