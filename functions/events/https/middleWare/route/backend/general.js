@@ -59,9 +59,6 @@ module.exports.checkSingIn = (req, res, next) => {
     const userRole = req.vessel.get('user.role')
     const hasRole = thingRoles[userRole] != null ? thingRoles[userRole] : false
 
-    debug(userRole, __filename, __line)
-    debug(thingRoles, __filename, __line)
-
     // サインインが必要ない場合
     if (freeRole) {
         next()
@@ -92,7 +89,6 @@ module.exports.checkSingIn = (req, res, next) => {
         next(err)
     }
     else {
-        console.log(`@ ok`)
         next()
     }
 }

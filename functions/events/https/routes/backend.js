@@ -21,8 +21,17 @@ router.get('/*',
     generalMethod.checkPath,
     generalMethod.checkThing,
     generalMethod.checkSingIn,
+    getBack,
     generalMethod.renderPage
 )
+
+function getBack(req, res, next) {
+    getBack2(req, res, next) 
+}
+
+function getBack2(req, res, next) {
+    next()
+}
 
 /* route post */
 router.post('/*',
