@@ -16,7 +16,6 @@ jsonCache.isActive(system.cache)
 const backendThings = require('./backendThings.json')
 
 module.exports.getInfo = (req, res, next) => {
-    console.time('[time] initWare getInfo')
 
     // const parse = {
     //   'headers.hosts': [
@@ -86,7 +85,6 @@ module.exports.getInfo = (req, res, next) => {
                 req.vessel.backendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/${settings.backend.firstPath}/` || null
                 req.vessel.settings = settings
 
-                console.timeEnd('[time] initWare getInfo')
                 next()
             })
             .catch(err => {

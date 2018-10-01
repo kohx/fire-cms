@@ -31,87 +31,70 @@ module.exports.checkSingIn = (req, res, next) => {
 
     // サインインしているかチェック
     let isSigned = req.vessel.get('sign.status')
-
-    if (system.debugSinin) {
-        console.error(`@ line: ${__line}`)
-        isSigned = true
-        req.vessel.sign = {
-            "status": true,
-            "message": "sign in success.",
-            "user": {
-                "iss": "https://session.firebase.google.com/fire-cms-86681",
-                "aud": "fire-cms-86681", "auth_time": 1538110178,
-                "user_id": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1",
-                "sub": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1",
-                "iat": 1538110181,
-                "exp": 1538542181,
-                "email": "kohei0728@gmail.com",
-                "email_verified": false,
-                "firebase": {
-                    "identities": {
-                        "email": ["kohei0728@gmail.com"]
-                    },
-                    "sign_in_provider": "password"
-                },
-                "uid": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1"
-            }
-        }
-    }
-    const user = req.vessel.get('sign.user')
-
-
-
+    // thingのユニーク
     const unique = req.vessel.get('paths.unique')
+    // バックエンドのサインインページ
     const backendSigninUnique = req.vessel.get('settings.backend.signinUnique')
+    // バックエンドの最初のパス
     const backendFirstPath = req.vessel.get('settings.backend.firstPath')
+    // バックエンドのインデックスページ
     const backendTopUnique = req.vessel.get('settings.backend.topUnique')
 
-
-    debug(user, __filename, __line)
+    // signin Uniques
+    const signinUniques = [
+        req.vessel.get('settings.frontend.signinUnique', []),
+        req.vessel.get('settings.backend.signinUnique', [])
+    ]
     // サインインページかチェック
-    // TODO:: ここは各thingから取得
-    const roles = req.vessel.get('thing.roles')
-    const activeRoles = Object.keys(roles).filter((key) => {
-        return roles[key] === true
+    const isSigninPage = signinUniques.includes(unique)
+
+    // ロールが必要かどうか
+    const thingRoles = req.vessel.get('thing.roles')
+    const activeThingRoles = Object.keys(thingRoles).filter((key) => {
+        return thingRoles[key] === true
     })
+    const freeRole = activeThingRoles.length === 0 ? true : false
 
-    if (activeRoles.length === 0) {
+    // ユーザのロール
+    const userRole = req.vessel.get('user.role')
+    const hasRole = thingRoles[userRole] != null ? thingRoles[userRole] : false
 
+    debug(userRole, __filename, __line)
+    debug(thingRoles, __filename, __line)
+
+    // サインインが必要ない場合
+    if (freeRole) {
+        next()
     }
-
-
-
-
-    const isSigninPage = [backendSigninUnique].includes(unique)
-
-    // サインインしてない場合
-    if (!isSigninPage && !isSigned && unique !== 'signin.js') {
+    // サインインページでなく、サインインしてない場合
+    else if (!isSigninPage && !isSigned) {
         const redirectPath = `/${backendFirstPath}/${backendSigninUnique}`
         console.log(`@ not sigin in. redirect to ${redirectPath}`)
-
         res.redirect(`${redirectPath}`)
-    } else
-        if (isSigninPage && isSigned) {
-            const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
-            let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
+    }
+    // サインインページで、サインインしている場合
+    else if (isSigninPage && isSigned) {
 
-            if (referer === '' || referer === backendSigninUnique) {
-                referer = `/${backendFirstPath}/${backendTopUnique}`
-            }
-            console.log(`@${__line}`, referer)
-            console.log(`@ already sigin in. redirect to ${referer}`)
-            res.redirect(referer)
-        } else {
-            next()
+        const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
+        let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
+
+        if (referer === '' || referer === backendSigninUnique) {
+            referer = `/${backendFirstPath}/${backendTopUnique}`
         }
-}
-
-module.exports.checkRole = (req, res, next) => {
-    // TODO:: ここは各thingから取得
-    // TODO:: ロール制限のある場合
-    // サインインに移動？ OR Not found
-    // console.log('role', req.vessel.role)
-    next()
+        console.log(`@ already sigin in. redirect to ${referer}`)
+        res.redirect(referer)
+    }
+    // ロールが一致しない場合
+    else if (!hasRole) {
+        console.log(`@ can not access ${userRole}.`)
+        let err = new Error('Not Found.')
+        err.status = 404
+        next(err)
+    }
+    else {
+        console.log(`@ ok`)
+        next()
+    }
 }
 
 module.exports.renderPage = (req, res, next) => {

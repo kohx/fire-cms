@@ -45,9 +45,22 @@
             "owner": true,
             "direct": true,
             "admin": true,
-            "editor": true,
-            "writer": true,
-            "user": true
+            "editor": false,
+            "writer": false,
+            "user": false
+        },
+        "contentType": "html"
+    },
+    "users": {
+        "unique": "settings",
+        "name": "settings",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": false,
+            "editor": false,
+            "writer": false,
+            "user": false
         },
         "contentType": "html"
     },

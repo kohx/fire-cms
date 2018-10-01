@@ -15,7 +15,7 @@ module.exports.csrf = (req, res, next) => {
     // Get unique
     const unique = req.vessel.get('paths.unique')
 
-    // allow unique
+    // signin Uniques
     const signinUniques = [
         req.vessel.get('settings.frontend.signinUnique', []),
         req.vessel.get('settings.backend.signinUnique', [])
@@ -47,11 +47,13 @@ module.exports.csrf = (req, res, next) => {
 module.exports.check = (req, res, next) => {
 
     // sign object
-    const sign = {
+    req.vessel.sign = {
         status: false,
-        message: '',
-        user: {},
+        message: ``,
     }
+    // user object
+    req.vessel.user = {}
+
 
     // セッション Cookie を確認して権限をチェック
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
@@ -60,9 +62,8 @@ module.exports.check = (req, res, next) => {
     // sessionCookieがない場合
     if (!sessionCookie) {
 
-        sign.status = false
-        sign.message = `sign in failed. there is not sessionCookie.`
-        req.vessel.sign = sign
+        req.vessel.sign.status = false
+        req.vessel.sign.message = `sign in failed. there is not sessionCookie.`
         next()
     } else {
 
@@ -75,23 +76,21 @@ module.exports.check = (req, res, next) => {
                 const now = new Date().getTime() / 1000 - decodedClaims.auth_time
                 if (now >= limit) {
 
-                    sign.status = false
-                    sign.message = `sign in failed. recent sign in required. limit: ${limit}`
-                    req.vessel.sign = sign
+                    req.vessel.sign.status = false
+                    req.vessel.sign.message = `sign in failed. recent sign in required. limit: ${limit}`
                     next()
                 } else {
 
-                    sign.status = true
-                    sign.message = `sign in success.`
-                    sign.user = decodedClaims
-                    req.vessel.sign = sign
+                    req.vessel.sign.status = true
+                    req.vessel.sign.message = `sign in success.`
+                    sign.user.uid = decodedClaims.uid
+                    sign.user.email = decodedClaims.email
                     next()
                 }
             })
             .catch(err => {
-                sign.status = false
-                sign.message = `sign in failed. ${err.message}`
-                req.vessel.sign = sign
+                req.vessel.sign.status = false
+                req.vessel.sign.message = `sign in failed. ${err.message}`
                 next()
             })
     }
@@ -101,39 +100,27 @@ module.exports.user = (req, res, next) => {
     // サインインしているかチェック
     let isSigned = req.vessel.get('sign.status')
 
+    // ユーザの詳細を追加
+    if (isSigned) {
+        const uid = req.vessel.get('user.uid')
+        admin.firestore().collection('users').doc(uid).get()
+            .then(res => {
+                const data = res.data()
+                req.vessel.user.name = data.name
+                req.vessel.user.roles = data.roles
+            })
+    }
+
     // ローカルでバグ用
     if (system.debugSinin) {
         console.error(`@ line: ${__line}`)
         isSigned = true
-        req.vessel.sign = {
-            "status": true,
-            "message": "sign in success.",
-            "user": {
-                "iss": "https://session.firebase.google.com/fire-cms-86681",
-                "aud": "fire-cms-86681", "auth_time": 1538110178,
-                "user_id": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1",
-                "sub": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1",
-                "iat": 1538110181,
-                "exp": 1538542181,
-                "email": "kohei0728@gmail.com",
-                "email_verified": false,
-                "firebase": {
-                    "identities": {
-                        "email": ["kohei0728@gmail.com"]
-                    },
-                    "sign_in_provider": "password"
-                },
-                "uid": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1"
-            }
-        }
-    }
-
-    if (isSigned) {
-        const uid = req.vessel.get('sign.user.uid')
-        admin.firestore().collection('users').doc(uid).get()
-        .then(res => {
-            debug(res.data(), __filename, __line)
-        })
+        req.vessel.sign.status = true
+        req.vessel.sign.message = `sign in success.`
+        req.vessel.user.uid = `TFHZ4VowjVbtcxPnrvNzM1LtlNv1`
+        req.vessel.user.email = `kohei0728@gmail.com`
+        req.vessel.user.name = `kohei`
+        req.vessel.user.role = `direct`
     }
 
     next()

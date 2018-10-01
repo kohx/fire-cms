@@ -21,7 +21,6 @@ router.get('/*',
     generalMethod.checkPath,
     generalMethod.checkThing,
     generalMethod.checkSingIn,
-    generalMethod.checkRole,
     generalMethod.renderPage
 )
 
@@ -30,7 +29,6 @@ router.post('/*',
     generalMethod.checkPath,
     generalMethod.checkThing,
     generalMethod.checkSingIn,
-    generalMethod.checkRole,
     postBack
 )
 
