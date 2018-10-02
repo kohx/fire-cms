@@ -1,7 +1,7 @@
 module.exports = class debug {
 
-    static debug(value, file, line) {
-        
+    static debug(value, file, line, err = false) {
+
         if ('===>', typeof value === 'object') {
             value = JSON.stringify(value)
         }
@@ -13,6 +13,11 @@ ${value}
 
 └─  ${file} - ${line}  ─┘
 `
-        console.info(str)
+        if (err) {
+            console.error(str)
+        } else {
+            console.info(str)
+        }
     }
 }
+

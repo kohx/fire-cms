@@ -3,6 +3,9 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
+/* module */
+const debug = require('../../../../modules/debug').debug
+
 module.exports.notFound = (req, res, next) => {
     let err = new Error('Not Found.')
     err.status = 404
@@ -11,7 +14,7 @@ module.exports.notFound = (req, res, next) => {
 
 module.exports.internalServerError = (err, req, res, next) => {
     const status = err.status || 500
-    console.error(err)
+    debug(err, __filename, __line, true)
     res.status(status)
     res.send(`<!doctype html>
                               <head>
@@ -23,5 +26,5 @@ module.exports.internalServerError = (err, req, res, next) => {
                               <p>${err.stack}</p>
                               </body>
                           </html>`)
-    console.log('<-----------------------------', 'error from err!')
+    console.log('\n\n\n<<<<<<<<<< app end error >>>>>>>>>>\n\n')
 }

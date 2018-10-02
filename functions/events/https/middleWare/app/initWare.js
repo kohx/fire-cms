@@ -88,7 +88,6 @@ module.exports.getInfo = (req, res, next) => {
                 next()
             })
             .catch(err => {
-                console.error(err)
                 next(err)
             })
     }
@@ -181,7 +180,6 @@ module.exports.getThing = (req, res, next) => {
                 next()
             })
             .catch(err => {
-                console.error(err)
                 next(err)
             })
     }

@@ -66,7 +66,7 @@ module.exports.checkSingIn = (req, res, next) => {
     // サインインページでなく、サインインしてない場合
     else if (!isSigninPage && !isSigned) {
         const redirectPath = `/${backendFirstPath}/${backendSigninUnique}`
-        console.log(`@ not sigin in. redirect to ${redirectPath}`)
+        debug(`@ not sigin in. redirect to ${redirectPath}`, __filename, __line, true)
         res.redirect(`${redirectPath}`)
     }
     // サインインページで、サインインしている場合
@@ -78,12 +78,12 @@ module.exports.checkSingIn = (req, res, next) => {
         if (referer === '' || referer === backendSigninUnique) {
             referer = `/${backendFirstPath}/${backendTopUnique}`
         }
-        console.log(`@ already sigin in. redirect to ${referer}`)
+        debug(`@ already sigin in. redirect to ${referer}`, __filename, __line)
         res.redirect(referer)
     }
     // ロールが一致しない場合
     else if (!hasRole) {
-        console.log(`@ can not access ${userRole}.`)
+        debug(`@ can not access ${userRole}.`, __filename, __line)
         next('route')
     }
     else {

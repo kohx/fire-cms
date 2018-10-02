@@ -113,7 +113,7 @@ module.exports.user = (req, res, next) => {
 
     // ローカルでバグ用
     if (system.debugSinin) {
-        console.error(`@ line: ${__line}`)
+        debug(`@ line: ${__line}`, __filename, __line, true)
         isSigned = true
         req.vessel.sign.status = true
         req.vessel.sign.message = `sign in success.`
