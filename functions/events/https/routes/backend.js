@@ -28,10 +28,13 @@ router.get('/*',
     generalMethod.renderPage
 )
 
+/* sub route */
+// ここで各バックエンドの処理を入れていく
 function subRoute(req, res, next) {
     const unique = req.vessel.get('paths.unique')
     const subRoutes = {
         divisions: divisions.index,
+        'division-edit': divisions.edit,
     }
 
     const subRoute = subRoutes[unique] != null ? subRoutes[unique] : null

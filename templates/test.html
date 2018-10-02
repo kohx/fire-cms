@@ -1,0 +1,60 @@
+<!DOCTYPE html><html><head>    <meta charset="utf-8">    <meta name="viewport" content="width=device-width, initial-scale=1">    <title>'
+    if (isExist('name', params)) {
+        builded += entityify(name);
+    } else {
+        builded += '[ "name" is not defined! ]'
+    }
+    builded += '</title>    <link rel="apple-touch-icon" href="./images/favicon.png">    <script src="/__/firebase/5.5.1/firebase-app.js"></script>
+<script src="/__/firebase/5.5.1/firebase-auth.js"></script>
+<script src="/__/firebase/5.5.1/firebase-firestore.js"></script>
+<script src="/__/firebase/5.5.1/firebase-storage.js"></script>
+<script src="/__/firebase/5.5.1/firebase-messaging.js"></script>
+<script src="/__/firebase/5.5.1/firebase-functions.js"></script>
+<script src="/__/firebase/init.js"></script>
+<script>
+const firestore = firebase.firestore();        
+ const settings = {
+                  timestampsInSnapshots: true };  
+                         firestore.settings(settings);     </script>
+                         </head>
+<body> <header> <div>backend</div> <div>signin: ';
+            if(isExist('sign.status', params)){
+            builded += entityify(sign.status);
+            } else {
+            builded += '[ "sign.status" is not defined! ]'
+            }
+            builded += ' '
+            if(isExist('sign.user.uid', params)){
+            builded += entityify(sign.user.uid);
+            } else {
+            builded += '[ "sign.user.uid" is not defined! ]'
+            }
+            builded += '</div> <div></div><button id="signout">sign out</button></div>
+        <hr></header><h2>divisions!</h2>'
+    builded += de(divisions)
+    builded += ''
+    if(isExist('division', params, true)){
+    for(let key in divisions) {
+    division = divisions[key]
+    }
+    builded += ''
+    if(isExist('division.name', params)){
+    builded += entityify(division.name);
+    } else {
+    builded += '[ "division.name" is not defined! ]'
+    }
+    builded += ''
+    }
+    builded += '<div id="list"></div><footer>
+        <hr> &copy; fire cms</footer>
+    <!-- <script src="/'
+if(isExist('backendFirstpath', params)){
+builded += entityify(backendFirstpath);
+} else {
+builded += '[ "backendFirstpath" is not defined! ]'
+}
+builded += '/signin.js"></script> --></body>
+
+</html>'
+
+</script>

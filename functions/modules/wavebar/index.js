@@ -1,5 +1,6 @@
 const vm = require(`vm`)
 const wbFunctions = require(`./wbFunctions`)
+const debug = require('../../modules/debug').debug
 
 module.exports = class wavebar {
 
@@ -39,6 +40,9 @@ module.exports = class wavebar {
         this.templates = (data.templates != null) ? data.templates : {}
         this.params = (data.params != null) ? data.params : {}
         this.contentType = data.contentType != null ? data.contentType : `html`
+
+        debug(data.params.unique, __filename, __line)    
+        debug(this.params.divisions, __filename, __line)    
         
         // isDebug === 1は「is not defined!」を出す
         const merged = this.merge()
@@ -59,7 +63,8 @@ module.exports = class wavebar {
         res.type(this.contentType)
 
         console.timeEnd(`[time] wavebar render`)
-        res.send(compiled)
+        console.log(`\n\n\n>>>>>>>>>> app end ${data.params.unique} <<<<<<<<<<\n\n`)
+        return res.send(compiled)
     }
 
     /* merge */
