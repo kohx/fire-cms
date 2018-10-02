@@ -1,6 +1,7 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 admin.initializeApp()
+const path = require('path')
 
 // firebase-admin 5.13.0 なら動く！
 // https://stackoverflow.com/questions/51412652/i-dont-know-how-to-set-firebase-firestore-settings-at-case-admin-firestore
@@ -46,5 +47,6 @@ module.exports.system = (() => {
     return {
         cache: false,
         debugSinin: true,
+        backendDir: path.join(__dirname, 'https', 'backendDir')
     }
 })()

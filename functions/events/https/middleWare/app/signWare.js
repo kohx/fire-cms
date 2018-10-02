@@ -120,7 +120,7 @@ module.exports.user = (req, res, next) => {
         req.vessel.user.uid = `TFHZ4VowjVbtcxPnrvNzM1LtlNv1`
         req.vessel.user.email = `kohei0728@gmail.com`
         req.vessel.user.name = `kohei`
-        req.vessel.user.role = `direct`
+        req.vessel.user.role = `admin`
     }
 
     next()

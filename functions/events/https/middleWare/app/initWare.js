@@ -13,7 +13,7 @@ const jsonCache = require('../../../../modules/jsonCache')
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
-const backendThings = require('./backendThings.json')
+const backendThings = require('../../backendDir/things.json')
 
 module.exports.getInfo = (req, res, next) => {
 
@@ -239,8 +239,7 @@ module.exports.getThing = (req, res, next) => {
     function getBackendTemplate(req, res, next) {
 
         // build backend template path
-        const backendTemplatesPath = path.join(__dirname, '../../', 'backendTemplates')
-        const templatesPath = path.join(backendTemplatesPath, 'templates')
+        const templatesPath = path.join(system.backendDir, 'templates')
 
         // キャッシュを取得
         let templates = jsonCache.get('templates')
@@ -265,7 +264,11 @@ module.exports.getThing = (req, res, next) => {
     function getBackendThing(req, res, next) {
 
         const unique = req.vessel.get('paths.unique')
+        // thing取得
         const thing = backendThings[unique] != null ? backendThings[unique] : null
+        // 「.」があればそのまま、なければ「.html」
+        const filename = unique.indexOf('.') === -1 ? `${unique}.html` : unique
+        const filePath = path.join(system.backendDir, 'contents', filename)
 
         if (!thing) {
             return {}
@@ -277,10 +280,7 @@ module.exports.getThing = (req, res, next) => {
         // キャッシュが空のとき
         if (content === null) {
             try {
-                const backendTemplatesPath = path.join(__dirname, '../../', 'backendTemplates')
-                // 「.」があればそのまま、なければ「.html」
-                const filename = unique.indexOf('.') === -1 ? `${unique}.html` : unique
-                content = fs.readFileSync(path.join(backendTemplatesPath, filename), 'utf8')
+                content = fs.readFileSync(filePath, 'utf8')
             } catch (err) {
                 // ない場合
                 content = ''

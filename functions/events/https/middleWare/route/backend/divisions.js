@@ -7,7 +7,7 @@ const url = require('url')
 
 const debug = require('../../../../../modules/debug').debug
 
-module.exports.list = (req, res, next) => {
+module.exports.index = (req, res, next) => {
 
     debug('divisions', __filename, __line)
 

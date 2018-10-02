@@ -84,9 +84,7 @@ module.exports.checkSingIn = (req, res, next) => {
     // ロールが一致しない場合
     else if (!hasRole) {
         console.log(`@ can not access ${userRole}.`)
-        let err = new Error('Not Found.')
-        err.status = 404
-        next(err)
+        next('route')
     }
     else {
         next()

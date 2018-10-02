@@ -16,21 +16,30 @@ jsonCache.isActive(system.cache)
 const generalMethod = require('../middleWare/route/backend/general')
 const updateAsset = require('../middleWare/route/backend/updateAsset')
 
+// subRote
+const divisions = require('../middleWare/route/backend/divisions')
+
 /* route get */
 router.get('/*',
     generalMethod.checkPath,
     generalMethod.checkThing,
     generalMethod.checkSingIn,
-    getBack,
+    subRoute,
     generalMethod.renderPage
 )
 
-function getBack(req, res, next) {
-    getBack2(req, res, next) 
-}
+function subRoute(req, res, next) {
+    const unique = req.vessel.get('paths.unique')
+    const subRoutes = {
+        divisions: divisions.index,
+    }
 
-function getBack2(req, res, next) {
-    next()
+    const subRoute = subRoutes[unique] != null ? subRoutes[unique] : null
+    if(subRoute) {
+        subRoute(req, res, next)
+    } else {
+        next()
+    }
 }
 
 /* route post */

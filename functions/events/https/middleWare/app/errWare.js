@@ -11,6 +11,7 @@ module.exports.notFound = (req, res, next) => {
 
 module.exports.internalServerError = (err, req, res, next) => {
     const status = err.status || 500
+    console.error(err)
     res.status(status)
     res.send(`<!doctype html>
                               <head>
