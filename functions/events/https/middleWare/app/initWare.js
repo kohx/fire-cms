@@ -16,6 +16,7 @@ jsonCache.isActive(system.cache)
 const backendThings = require('../../backendDir/things.json')
 
 module.exports.getInfo = (req, res, next) => {
+    console.log('\n\n\n<<<<<<<<<< app start >>>>>>>>>>\n\n')
 
     // const parse = {
     //   'headers.hosts': [

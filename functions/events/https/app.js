@@ -32,7 +32,6 @@ const signWare = require('./middleWare/app/signWare')
 const errWare = require('./middleWare/app/errWare')
 
 // app
-console.log('\n\n\n<<<<<<<<<< app start >>>>>>>>>>\n\n')
 const app = express()
 
 app.use(cors)

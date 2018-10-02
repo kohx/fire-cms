@@ -107,5 +107,6 @@ module.exports.renderPage = (req, res, next) => {
     data.params.frontendBase = req.vessel.get('frontendBase')
     data.params.backendBase = req.vessel.get('backendBase')
     data.params.backendFirstpath = req.vessel.get('settings.backend.firstPath')
+    console.log(`\n\n\n>>>>>>>>>> app end ${req.vessel.get('paths.unique')} <<<<<<<<<<\n\n`)
     return res.wbRender(data)
 }

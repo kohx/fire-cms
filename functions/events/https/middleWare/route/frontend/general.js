@@ -95,6 +95,6 @@ module.exports.renderPage = (req, res, next) => {
     ]
 
     res.status(200)
-    res.wbRender(data)
-    console.log(`>>>>>>>>>> ${req.vessel.get('paths.unique')} <<<<<<<<<<`)
+    console.log(`\n\n\n>>>>>>>>>> app end ${req.vessel.get('paths.unique')} <<<<<<<<<<\n\n`)
+    return res.wbRender(data)
 }
