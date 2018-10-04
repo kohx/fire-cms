@@ -103,6 +103,7 @@ module.exports.renderPage = (req, res, next) => {
 
     // add params
     data.params.sign = req.vessel.get('sign')
+    data.params.user = req.vessel.get('user')
     data.params.csrfToken = req.vessel.get('csrfToken')
     data.params.frontendBase = req.vessel.get('frontendBase')
     data.params.backendBase = req.vessel.get('backendBase')

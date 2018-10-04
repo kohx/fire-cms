@@ -41,9 +41,8 @@ module.exports = class wavebar {
         this.params = (data.params != null) ? data.params : {}
         this.contentType = data.contentType != null ? data.contentType : `html`
 
-        debug(data.params.unique, __filename, __line)    
-        debug(this.params.divisions, __filename, __line)    
-        
+        // debug(this.params.divisions, __filename, __line)
+
         // isDebug === 1は「is not defined!」を出す
         const merged = this.merge()
         if (this.isDebug === 2) {
@@ -58,7 +57,7 @@ module.exports = class wavebar {
             res.send(builded)
         }
         const compiled = this.compile(builded)
-        
+
         // http://expressjs.com/ja/api.html#res.type
         res.type(this.contentType)
 
@@ -169,6 +168,7 @@ module.exports = class wavebar {
                 let type = baredTag.charAt(0)
                 let body = ``
                 switch (type) {
+
                     case `*`:
                         counter.for.open++
                         body = this.bodyTag(baredTag)
@@ -190,10 +190,19 @@ module.exports = class wavebar {
                     case `/`:
                         body = this.bodyTag(baredTag)
                         const second = baredTag.charAt(1)
-                        if (second === `*`) counter.for.close++
-                        if (second === `#`) counter.if.close++
-                        if (second === `^`) counter.not.close++
-                        builded += `}\n`
+                        if (second === `*`) {
+                            builded += `}\n`
+                            builded += `}\n`
+                            counter.for.close++
+                        }
+                        if (second === `#`) {
+                            builded += `}\n`
+                            counter.if.close++
+                        }
+                        if (second === `^`) {
+                            builded += `}\n`
+                            counter.not.close++
+                        }
                         break
 
                     case `~`:
@@ -221,25 +230,47 @@ module.exports = class wavebar {
         return builded
     }
 
+    // check exist function
+    // isExist(typeof value)
+    isExist(value) {
+        return value !== 'undefined';
+    }
+
+    isCorrect(value) {
+        if (value === null || value === false) {
+            return false
+        }
+        if (typeof value === 'string' && value === '') {
+            return false
+        }
+        if (typeof value === 'object' && Object.keys(value).length === 0) {
+            return false
+        }
+        return true
+    }
+
+    isObject(value){
+        return typeof value === 'object' && Object.keys(value).length !== 0
+    }
+
     /* build funcitons */
     // for
     BuildFor(body) {
         var [array, variable] = body.split(`:`)
-        let text = `if(isExist('${variable}', params,  true)){\n`
+        let text = `if(isExist(typeof ${array}) && isCorrect(${array}) && isObject(${array})){\n`
         text += `for(let key in ${array}) {\n`
         if (variable) {
             text += `${variable} = ${array}[key]\n`
         } else {
             text += `value = ${array}[key]\n`
         }
-        text += `}\n`
         return text
     }
     // if
     BuildIf(body) {
         var [variable, alias] = body.split(`:`)
 
-        let text = `if(isExist('${variable}', params)){\n`
+        let text = `if(isExist(typeof ${variable})){\n`
         if (alias) {
             text += `const ${alias} = ${variable}\n`
         }
@@ -248,7 +279,7 @@ module.exports = class wavebar {
     // else
     BuildElse(body) {
         var [variable, alias] = body.split(`:`)
-        let text = `if(!isExist('${variable}', params)){\n`
+        let text = `if(!isExist(typeof ${variable})){\n`
         if (alias) {
             text += `const ${alias} = ${variable}\n`
         }
@@ -256,16 +287,16 @@ module.exports = class wavebar {
     }
     // text
     buildText(body, doEntityify = true) {
-
-        let text = `if(isExist('${body}', params)){\n`
+        var variable = body
+        let text = `if(isExist(typeof ${variable})){\n`
         if (doEntityify) {
-            text += `builded += entityify(${body});\n`
+            text += `builded += entityify(${variable});\n`
         } else {
-            text += `builded += ${body}\n`
+            text += `builded += ${variable}\n`
         }
         text += `} else {\n`
         if (this.isDebug) {
-            text += `builded += '[ "${body}" is not defined! ]'\n`
+            text += `builded += '[ "${variable}" is not defined! ]'\n`
         } else {
             text += `builded += ''\n`
         }
@@ -282,6 +313,8 @@ module.exports = class wavebar {
             entityify: this.entityify,
             buildText: this.buildText,
             isExist: this.isExist,
+            isCorrect: this.isCorrect,
+            isObject: this.isObject,
         }
 
         // expand params then assign to context
@@ -396,39 +429,6 @@ module.exports = class wavebar {
             return chars[char]
         })
     }
-
-    // check exist function
-    isExist(value, params, isObject = false) {
-        let result = null
-        value.split(`.`).forEach(path => {
-            result = params[path]
-        })
-
-        try {
-            if (result === null || result === false) {
-                return false
-            }
-            if (typeof result === `undefined`) {
-                return false
-            }
-            if (typeof result === `string` && result === ``) {
-                return false
-            }
-            if (typeof result === `object` && Object.keys(result).length === 0) {
-                return false
-            }
-            if (isObject) {
-                if (typeof result !== `object`) {
-                    return false
-                }
-            }
-            return true
-        } catch (e) {
-
-            return false
-        }
-    }
-
 }
 
 /* Wavebar Error */
@@ -439,7 +439,7 @@ class WavebarError extends Error {
         this.message = message
         if (segmented) {
             const template = segmented.join(``).replace(regEscape(`&lt|/|&gt`, `g`), `\n`)
-            this.stack = `${this.name} at \n <pre> ${enLining(template)} </pre>`
+            this.stack = `${this.name} at \n <pre> ${template} </pre>`
         } else {
             this.stack = new Error().stack
         }
