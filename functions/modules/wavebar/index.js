@@ -270,7 +270,7 @@ module.exports = class wavebar {
     BuildIf(body) {
         var [variable, alias] = body.split(`:`)
 
-        let text = `if(isExist(typeof ${variable})){\n`
+        let text = `if(isExist(typeof ${variable}) && isCorrect(${variable})){\n`
         if (alias) {
             text += `const ${alias} = ${variable}\n`
         }
@@ -279,7 +279,7 @@ module.exports = class wavebar {
     // else
     BuildElse(body) {
         var [variable, alias] = body.split(`:`)
-        let text = `if(!isExist(typeof ${variable})){\n`
+        let text = `if(!isExist(typeof ${variable}) || !isCorrect(${variable})){\n`
         if (alias) {
             text += `const ${alias} = ${variable}\n`
         }
@@ -288,7 +288,7 @@ module.exports = class wavebar {
     // text
     buildText(body, doEntityify = true) {
         var variable = body
-        let text = `if(isExist(typeof ${variable})){\n`
+        let text = `if(isExist(typeof ${variable}) && isCorrect(${variable}) && !isObject(${variable})){\n`
         if (doEntityify) {
             text += `builded += entityify(${variable});\n`
         } else {
