@@ -17,6 +17,12 @@ module.exports = class wavebar {
         this.content = ``
         this.templates = ``
         this.params = ``
+
+        this.merged = null
+        this.segmented = null
+        this.builded = null
+        this.countTags = null
+
         // console.log(`===>`, `in constructore!`)
     }
 
@@ -40,23 +46,26 @@ module.exports = class wavebar {
         this.templates = (data.templates != null) ? data.templates : {}
         this.params = (data.params != null) ? data.params : {}
         this.contentType = data.contentType != null ? data.contentType : `html`
-
         // debug(this.params.divisions, __filename, __line)
 
         // isDebug === 1は「is not defined!」を出す
-        const merged = this.merge()
+        this.merge()
         if (this.isDebug === 2) {
-            res.send(merged)
+            res.send(this.merged)
         }
-        const segmented = this.segmentate(merged)
+        this.segmentate()
         if (this.isDebug === 3) {
-            res.send(segmented)
+            res.send(this.segmented)
         }
-        const builded = this.build(segmented)
+        this.build()
         if (this.isDebug === 4) {
             res.send(builded)
         }
-        const compiled = this.compile(builded)
+
+        // check the number of template tag
+        this.checkTag(this.countTags, this.segmented)
+        
+        const compiled = this.compile(this.builded)
 
         // http://expressjs.com/ja/api.html#res.type
         res.type(this.contentType)
@@ -120,30 +129,32 @@ module.exports = class wavebar {
         // backquote escape
         content = content.replace(/'/g, '\\\'')
 
-        return content
+        this.merged = content
     }
 
     /* segmentate */
-    segmentate(string) {
+    segmentate() {
         // console.log(`===>`, `in segmentate!`)
-
-        const matches = string.match(this.templateTagReg)
         const replaceMarke = this.replaceMarke
 
-        let replaces = []
-        for (let key in matches) {
-            replaces[matches[key]] = `${replaceMarke}${matches[key]}${replaceMarke}`
-        }
+        const matches = this.merged.match(this.templateTagReg)
 
+        let replaces = {}
+        matches.forEach(match => {
+            replaces[match] = `${replaceMarke}${match}${replaceMarke}`
+        })
+
+        let segmented = this.merged
         for (let key in replaces) {
             const value = replaces[key]
-            string = string.replace(this.regEscape(key, `g`), value)
+            segmented = segmented.replace(this.regEscape(key, `g`), value)
         }
-        return string.split(replaceMarke)
+
+        this.segmented = segmented.split(replaceMarke)
     }
 
     /* build */
-    build(segmented) {
+    build() {
         // console.log(`===>`, `in build!`)
         let builded = `builded = ''\n`
         const counter = {
@@ -161,7 +172,7 @@ module.exports = class wavebar {
             },
         }
 
-        segmented.forEach((segment, key) => {
+        this.segmented.forEach((segment, key) => {
 
             if (segment.startsWith(`{|`)) {
                 const baredTag = this.bareTag(segment)
@@ -223,11 +234,9 @@ module.exports = class wavebar {
             }
         })
 
-        // check the number of template tag
-        this.checkTag(counter, segmented)
-
         // console.log(builded)
-        return builded
+        this.countTags = counter
+        this.builded = builded
     }
 
     // check exist function
@@ -249,7 +258,7 @@ module.exports = class wavebar {
         return true
     }
 
-    isObject(value){
+    isObject(value) {
         return typeof value === 'object' && Object.keys(value).length !== 0
     }
 
@@ -318,8 +327,6 @@ module.exports = class wavebar {
         }
 
         // expand params then assign to context
-        // paramsもチェック用に投げる
-        context.params = this.params
         for (const key in this.params) {
             context[key] = this.params[key]
         }
@@ -399,7 +406,7 @@ module.exports = class wavebar {
         if (targetType) {
             segmented.forEach((segment, key) => {
                 if (segment.startsWith(`{|`)) {
-                    const baredTag = bareTag(segment)
+                    const baredTag = this.bareTag(segment)
                     const type = baredTag.charAt(0)
                     const second = baredTag.substr(0, 2)
                     if (type === targetType) {
@@ -409,7 +416,7 @@ module.exports = class wavebar {
                         segmented[key] = `<span style="color:red;">${segment}</span>`
                     }
                 } else {
-                    segmented[key] = entityify(segment)
+                    segmented[key] = this.entityify(segment)
                 }
             })
             throw new WavebarError(`"${name}" tag not match!`, segmented)
@@ -438,7 +445,8 @@ class WavebarError extends Error {
         this.name = `wavebar tamplate error`
         this.message = message
         if (segmented) {
-            const template = segmented.join(``).replace(regEscape(`&lt|/|&gt`, `g`), `\n`)
+
+            const template = segmented.join(``).replace(/\\n/g, `\n`)
             this.stack = `${this.name} at \n <pre> ${template} </pre>`
         } else {
             this.stack = new Error().stack
