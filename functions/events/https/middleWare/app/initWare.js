@@ -17,6 +17,7 @@ const backendThings = require('../../backendDir/things.json')
 
 module.exports.getInfo = (req, res, next) => {
     console.log('\n\n\n<<<<<<<<<< app start >>>>>>>>>>\n\n')
+    console.time('[time] init app')
 
     // const parse = {
     //   'headers.hosts': [
@@ -291,4 +292,5 @@ module.exports.getThing = (req, res, next) => {
         thing.content = content
         return thing
     }
+    console.timeEnd('[time] init app')
 }

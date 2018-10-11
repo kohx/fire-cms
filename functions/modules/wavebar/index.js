@@ -341,7 +341,7 @@ module.exports = class wavebar {
     checkTag(counter, segmented) {
         let targetType = null
         let name = null
-        debug(counter, __filename, __line)
+
         if (counter.for.open !== counter.for.close) {
             name = `for`
             targetType = `*`
