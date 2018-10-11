@@ -1,15 +1,16 @@
 {|@ wrapper |}
-<h2>divisions!</h2>
-
-{| unique |}
-{|^ uniqu.aaa |}non{|/^|}
+{|> header |}
 
 {|# divisions |}
 <ul>
-{|* divisions : division |}
-<li>{| division.name |}</li>
-{|/*|}
-<ul>
-{|/#|}
+    {|* divisions : division |}
+    <li>
+        <a href="/{| backendFirstpath |}/divisions/">
+            {| division.name |}
+        </a>
+    </li>
+    {|/*|} 
+    <ul>
+        {|/#|}
 
-<div id="list"></div>
+        <div id="list"></div>

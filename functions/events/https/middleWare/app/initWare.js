@@ -97,7 +97,6 @@ module.exports.getInfo = (req, res, next) => {
 
 module.exports.getPath = (req, res, next) => {
     // Toppage unique get from settings
-    const frontendTopUnique = req.vessel.get('settings.frontend.topUnique', 'home')
     const backendTopUnique = req.vessel.get('settings.backend.topUnique')
     const backendFirstPath = req.vessel.get('settings.backend.firstPath')
 
@@ -116,24 +115,6 @@ module.exports.getPath = (req, res, next) => {
     let last = pathArr.pop()
     last = (last != null) ? last : first
 
-    // check last is number
-    const numberReg = /^\d*$/
-    let number = ''
-    let unique = ''
-    if (numberReg.test(last)) {
-        number = last
-        unique = pathArr.pop()
-    } else {
-        unique = last
-    }
-
-    // check the firstpath
-    if (first == backendFirstPath) {
-        unique = (last != backendFirstPath) ? last : backendTopUnique
-    } else {
-        unique = (unique != null) ? unique : frontendTopUnique
-    }
-
     // get front back flag
     if (first !== backendFirstPath) {
         req.vessel.paths.isFrontend = true
@@ -143,11 +124,19 @@ module.exports.getPath = (req, res, next) => {
         req.vessel.paths.isBackend = true
     }
 
+    // check last is number
+    const numberReg = /^\d+$/
+    let number = ''
+    if (numberReg.test(last)) {
+        number = last
+        last = pathArr.pop()
+    }
+
     // Assemble path
     req.vessel.paths.segments = segments
     req.vessel.paths.first = first
+    req.vessel.paths.last = last
     req.vessel.paths.number = number
-    req.vessel.paths.unique = number ? `${unique}/${number}` : unique
 
     next()
 }
@@ -221,8 +210,16 @@ module.exports.getThing = (req, res, next) => {
     }
 
     function getFrontThing(req, res, next) {
+
+        // front end top unique
+        const frontendTopUnique = req.vessel.get('settings.frontend.topUnique', 'home')
+
+        // get paths from req
+        const paths = req.vessel.get('paths')
+        let unique = paths.last !== '' ? paths.last : frontendTopUnique
+        unique = paths.number !== '' ? `${unique}/${number}` : unique
+
         return new Promise((resolve, reject) => {
-            const unique = req.vessel.get('paths.unique')
             admin.firestore().collection('things').doc(unique)
                 .get()
                 .then(snap => {
@@ -263,7 +260,10 @@ module.exports.getThing = (req, res, next) => {
 
     function getBackendThing(req, res, next) {
 
-        const unique = req.vessel.get('paths.unique')
+        const paths = req.vessel.get('paths')
+        paths.segments = paths.segments.slice(1)
+        debug(paths.segments.join('/'), __filename, __line)
+        
         // thing取得
         const thing = backendThings[unique] != null ? backendThings[unique] : null
         // 「.」があればそのまま、なければ「.html」

@@ -1,9 +1,12 @@
-<header>
-    <div>backend</div>
-    <div>signin: {| sign.status |} </div>
-    <div>uid: {| user.uid |}</div>
-    <div>name: {| user.name |}</div>
-    <div>email: {| user.email |}</div>
-    <div></div><button id="signout">sign out</button></div>
-    <hr>
+<header class="grid12">
+    <div class="col5">backend {| unique |}</div>
+    <div class="col6">
+        <div>signin: {| sign.status |} </div>
+        <div>uid: {| user.uid |}</div>
+        <div>name: {| user.name |}</div>
+        <div>email: {| user.email |}</div>
+    </div>
+    <div class="col12 grid2 rig mid">
+        <button class="col2" id="signout">sign out</button>
+    </div> 
 </header>
