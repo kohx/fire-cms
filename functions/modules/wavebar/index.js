@@ -136,21 +136,26 @@ module.exports = class wavebar {
     segmentate() {
         // console.log(`===>`, `in segmentate!`)
         const replaceMarke = this.replaceMarke
-
         const matches = this.merged.match(this.templateTagReg)
 
-        let replaces = {}
-        matches.forEach(match => {
-            replaces[match] = `${replaceMarke}${match}${replaceMarke}`
-        })
+        if (matches === null) {
+            
+            this.segmented = [this.merged]
+        } else {
 
-        let segmented = this.merged
-        for (let key in replaces) {
-            const value = replaces[key]
-            segmented = segmented.replace(this.regEscape(key, `g`), value)
+            let replaces = {}
+            matches.forEach(match => {
+                replaces[match] = `${replaceMarke}${match}${replaceMarke}`
+            })
+
+            let segmented = this.merged
+            for (let key in replaces) {
+                const value = replaces[key]
+                segmented = segmented.replace(this.regEscape(key, `g`), value)
+            }
+
+            this.segmented = segmented.split(replaceMarke)
         }
-
-        this.segmented = segmented.split(replaceMarke)
     }
 
     /* build */
@@ -326,7 +331,7 @@ module.exports = class wavebar {
         text += `variable = isCorrect(${variable});\n`
         text += `variable = isText(variable);\n`
         text += `}catch(e){}\n`
-        
+
         text += `if(variable !== false){\n`
         if (doEntityify) {
             text += `builded += entityify(variable);\n`
