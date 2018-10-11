@@ -23,7 +23,7 @@ module.exports.internalServerError = (err, req, res, next) => {
                               <body>
                               <h1>${err.status || 500} not from template!</h1>
                               <p>${err.message}</p>
-                              <p>${err.stack}</p>
+                              ${err.stack}
                               </body>
                           </html>`)
     console.log('\n\n\n<<<<<<<<<< app end error >>>>>>>>>>\n\n')

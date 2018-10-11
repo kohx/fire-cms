@@ -59,12 +59,12 @@ module.exports = class wavebar {
         }
         this.build()
         if (this.isDebug === 4) {
-            res.send(builded)
+            res.send(this.builded)
         }
 
         // check the number of template tag
         this.checkTag(this.countTags, this.segmented)
-        
+
         const compiled = this.compile(this.builded)
 
         // http://expressjs.com/ja/api.html#res.type
@@ -156,7 +156,7 @@ module.exports = class wavebar {
     /* build */
     build() {
         // console.log(`===>`, `in build!`)
-        let builded = `builded = ''\n`
+        let builded = `builded = '';\n`
         const counter = {
             for: {
                 open: 0,
@@ -202,16 +202,15 @@ module.exports = class wavebar {
                         body = this.bodyTag(baredTag)
                         const second = baredTag.charAt(1)
                         if (second === `*`) {
-                            builded += `}\n`
-                            builded += `}\n`
+                            builded += `}\n}\n}\n`
                             counter.for.close++
                         }
                         if (second === `#`) {
-                            builded += `}\n`
+                            builded += `}\n}\n`
                             counter.if.close++
                         }
                         if (second === `^`) {
-                            builded += `}\n`
+                            builded += `}\n}\n`
                             counter.not.close++
                         }
                         break
@@ -230,7 +229,7 @@ module.exports = class wavebar {
                         builded += this.buildText(body)
                 }
             } else {
-                builded += `builded += '${segment}'\n`
+                builded += `builded += '${segment}';\n`
             }
         })
 
@@ -239,13 +238,11 @@ module.exports = class wavebar {
         this.builded = builded
     }
 
-    // check exist function
-    // isExist(typeof value)
-    isExist(value) {
-        return value !== 'undefined';
-    }
-
+    /* in build funcitons */
     isCorrect(value) {
+        if (typeof value === 'undefined') {
+            return false
+        }
         if (value === null || value === false) {
             return false
         }
@@ -255,62 +252,126 @@ module.exports = class wavebar {
         if (typeof value === 'object' && Object.keys(value).length === 0) {
             return false
         }
-        return true
+        return value
+    }
+
+    isText(value) {
+        if (typeof value === 'string' || typeof value === 'number') {
+            return value
+        }
+        return false
     }
 
     isObject(value) {
-        return typeof value === 'object' && Object.keys(value).length !== 0
+        if (typeof value === 'object') {
+            return value
+        }
+        return false
     }
 
     /* build funcitons */
     // for
     BuildFor(body) {
-        var [array, variable] = body.split(`:`)
-        let text = `if(isExist(typeof ${array}) && isCorrect(${array}) && isObject(${array})){\n`
-        text += `for(let key in ${array}) {\n`
+        var [object, variable] = body.split(`:`)
+        let text = `{\n`
+        text += `let object = false;\n`
+        text += `try{\n`
+        text += `object = isCorrect(${object});\n`
+        text += `object = isObject(object);\n`
+        text += `}catch(e){}\n`
+
+        text += `if(object !== false){\n`
+        text += `for(let key in object) {\n`
         if (variable) {
-            text += `${variable} = ${array}[key]\n`
+            text += `const ${variable} = object[key];\n`
         } else {
-            text += `value = ${array}[key]\n`
+            text += `value = object[key];\n`
         }
         return text
     }
     // if
     BuildIf(body) {
-        var [variable, alias] = body.split(`:`)
+        let [variable, alias] = body.split(`:`)
+        let text = `{\n`
+        text += `let variable = false;\n`
+        text += `try{\n`
+        text += `variable = isCorrect(${variable});\n`
+        text += `}catch(e){}\n`
 
-        let text = `if(isExist(typeof ${variable}) && isCorrect(${variable})){\n`
+        text += `if(variable !== false){\n`
         if (alias) {
-            text += `const ${alias} = ${variable}\n`
+            text += `const ${alias} = variable\n`
         }
         return text
     }
     // else
     BuildElse(body) {
-        var [variable, alias] = body.split(`:`)
-        let text = `if(!isExist(typeof ${variable}) || !isCorrect(${variable})){\n`
-        if (alias) {
-            text += `const ${alias} = ${variable}\n`
-        }
+        let variable = body
+        let text = `{\n`
+        text += `let variable = false;\n`
+        text += `try{\n`
+        text += `variable = isCorrect(${variable});\n`
+        text += `}catch(e){}\n`
+
+        text += `if(variable === false){\n`
+
         return text
     }
     // text
     buildText(body, doEntityify = true) {
-        var variable = body
-        let text = `if(isExist(typeof ${variable}) && isCorrect(${variable}) && !isObject(${variable})){\n`
+        let variable = body
+        let text = `{\n`
+        text += `let variable = false;\n`
+        text += `try{\n`
+        text += `variable = isCorrect(${variable});\n`
+        text += `variable = isText(variable);\n`
+        text += `}catch(e){}\n`
+        
+        text += `if(variable !== false){\n`
         if (doEntityify) {
-            text += `builded += entityify(${variable});\n`
+            text += `builded += entityify(variable);\n`
         } else {
-            text += `builded += ${variable}\n`
+            text += `builded += variable\n`
         }
-        text += `} else {\n`
-        if (this.isDebug) {
-            text += `builded += '[ "${variable}" is not defined! ]'\n`
-        } else {
-            text += `builded += ''\n`
-        }
-        text += `}\n`
+        text += `}\n}\n`
         return text
+    }
+
+    /* tag not match error */
+    checkTag(counter, segmented) {
+        let targetType = null
+        let name = null
+        debug(counter, __filename, __line)
+        if (counter.for.open !== counter.for.close) {
+            name = `for`
+            targetType = `*`
+        }
+        if (counter.if.open !== counter.if.close) {
+            name = `if`
+            targetType = `#`
+        }
+        if (counter.not.open !== counter.not.close) {
+            name = `not`
+            targetType = `^`
+        }
+        if (targetType) {
+            segmented.forEach((segment, key) => {
+                if (segment.startsWith(`{|`)) {
+                    const baredTag = this.bareTag(segment)
+                    const type = baredTag.charAt(0)
+                    const second = baredTag.substr(0, 2)
+                    if (type === targetType) {
+                        segmented[key] = `<span style="color:red;">${segment}</span>`
+                    }
+                    if (second === `/${targetType}`) {
+                        segmented[key] = `<span style="color:red;">${segment}</span>`
+                    }
+                } else {
+                    segmented[key] = this.entityify(segment)
+                }
+            })
+            throw new WavebarError(`"${name}" tag not match!`, segmented)
+        }
     }
 
     /* compile */
@@ -323,6 +384,7 @@ module.exports = class wavebar {
             buildText: this.buildText,
             isExist: this.isExist,
             isCorrect: this.isCorrect,
+            isText: this.isText,
             isObject: this.isObject,
         }
 
@@ -387,42 +449,6 @@ module.exports = class wavebar {
         return new RegExp(escaped)
     }
 
-    // tag not match error
-    checkTag(counter, segmented) {
-        let targetType = null
-        let name = null
-        if (counter.for.open !== counter.for.close) {
-            name = `for`
-            targetType = `*`
-        }
-        if (counter.if.open !== counter.if.close) {
-            name = `if`
-            targetType = `#`
-        }
-        if (counter.not.open !== counter.not.close) {
-            name = `not`
-            targetType = `^`
-        }
-        if (targetType) {
-            segmented.forEach((segment, key) => {
-                if (segment.startsWith(`{|`)) {
-                    const baredTag = this.bareTag(segment)
-                    const type = baredTag.charAt(0)
-                    const second = baredTag.substr(0, 2)
-                    if (type === targetType) {
-                        segmented[key] = `<span style="color:red;">${segment}</span>`
-                    }
-                    if (second === `/${targetType}`) {
-                        segmented[key] = `<span style="color:red;">${segment}</span>`
-                    }
-                } else {
-                    segmented[key] = this.entityify(segment)
-                }
-            })
-            throw new WavebarError(`"${name}" tag not match!`, segmented)
-        }
-    }
-
     /* in vm functions */
     entityify(string) {
         var chars = {}
@@ -447,7 +473,7 @@ class WavebarError extends Error {
         if (segmented) {
 
             const template = segmented.join(``).replace(/\\n/g, `\n`)
-            this.stack = `${this.name} at \n <pre> ${template} </pre>`
+            this.stack = `${this.name} at \n <pre style="border:1px #ccc solid; padding:0.5rem;"> ${template} </pre>`
         } else {
             this.stack = new Error().stack
         }
