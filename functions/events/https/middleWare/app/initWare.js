@@ -97,7 +97,6 @@ module.exports.getInfo = (req, res, next) => {
 
 module.exports.getPath = (req, res, next) => {
     // Toppage unique get from settings
-    const backendTopUnique = req.vessel.get('settings.backend.topUnique')
     const backendFirstPath = req.vessel.get('settings.backend.firstPath')
 
     if (backendFirstPath == null) {
@@ -260,19 +259,35 @@ module.exports.getThing = (req, res, next) => {
 
     function getBackendThing(req, res, next) {
 
+        // back end top unique
+        const backendTopUnique = req.vessel.get('settings.backend.topUnique', 'index')
+
+        // get paths from vessel
         const paths = req.vessel.get('paths')
+
+        // cat first path becouse "backendpath"
         paths.segments = paths.segments.slice(1)
-        debug(paths.segments.join('/'), __filename, __line)
-        
-        // thing取得
+
+        // get unique
+        let unique = paths.segments.shift()
+
+        // if unique is blank then set backend top unique
+        if (unique === '') {
+            unique = backendTopUnique
+        }
+
+        // set unique to paths
+        paths.unique = unique
+
+        // get thing from thing json
         const thing = backendThings[unique] != null ? backendThings[unique] : null
-        // 「.」があればそのまま、なければ「.html」
-        const filename = unique.indexOf('.') === -1 ? `${unique}.html` : unique
-        const filePath = path.join(system.backendDir, 'contents', filename)
 
         if (!thing) {
             return {}
         }
+
+        // file path
+        const filePath = path.join(system.backendDir, 'contents', thing.content_file)
 
         // キャッシュを取得
         let content = jsonCache.get(`content_${unique}`)

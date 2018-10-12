@@ -10,7 +10,8 @@
             "writer": true,
             "user": true
         },
-        "contentType": "html"
+        "content_type": "html",
+        "content_file": "index.html"
     },
     "signin": {
         "unique": "signin",
@@ -23,7 +24,8 @@
             "writer": false,
             "user": false
         },
-        "contentType": "html"
+        "content_type": "html",
+        "content_file": "signin.html"
     },
     "signin.js": {
         "unique": "signin.js",
@@ -36,7 +38,8 @@
             "writer": false,
             "user": false
         },
-        "contentType": "js"
+        "content_type": "js",
+        "content_file": "signin.js"
     },
     "settings": {
         "unique": "settings",
@@ -49,11 +52,12 @@
             "writer": false,
             "user": false
         },
-        "contentType": "html"
+        "content_type": "html",
+        "content_file": "settings.html"
     },
     "users": {
-        "unique": "settings",
-        "name": "settings",
+        "unique": "users",
+        "name": "users",
         "roles": {
             "owner": true,
             "direct": true,
@@ -62,7 +66,8 @@
             "writer": false,
             "user": false
         },
-        "contentType": "html"
+        "content_type": "html",
+        "content_file": "users.html"
     },
     "divisions": {
         "unique": "divisions",
@@ -75,7 +80,8 @@
             "writer": true,
             "user": true
         },
-        "contentType": "html"
+        "content_type": "html",
+        "content_file": "divisions.html"
     },
     "parts": {
         "unique": "parts",
@@ -88,7 +94,8 @@
             "writer": true,
             "user": true
         },
-        "contentType": "html"
+        "content_type": "html",
+        "content_file": "parts.html"
     },
     "assets": {
         "unique": "assets",
@@ -101,7 +108,8 @@
             "writer": true,
             "user": true
         },
-        "contentType": "html"
+        "content_type": "html",
+        "content_file": "assets.html"
     },
     "things": {
         "unique": "things",
@@ -114,7 +122,8 @@
             "writer": true,
             "user": true
         },
-        "contentType": "html"
+        "content_type": "html",
+        "content_file": "things.html"
     },
     "thing": {
         "unique": "thing",
@@ -127,6 +136,7 @@
             "writer": true,
             "user": true
         },
-        "contentType": "html"
+        "content_type": "html",
+        "content_file": "thing.html"
     }
 }

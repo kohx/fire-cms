@@ -18,6 +18,8 @@ const updateAsset = require('../middleWare/route/backend/updateAsset')
 
 // subRote
 const divisions = require('../middleWare/route/backend/divisions')
+const things = require('../middleWare/route/backend/things')
+const thing = require('../middleWare/route/backend/thing')
 
 /* route get */
 router.get('/*',
@@ -31,6 +33,9 @@ router.get('/*',
 /* sub route */
 // ここで各バックエンドの処理を入れていく
 function subRoute(req, res, next) {
+
+    debug(req.vessel.get('paths'), __filename, __line)
+
     const unique = req.vessel.get('paths.unique')
     const subRoutes = {
         divisions: divisions.index,
@@ -38,7 +43,7 @@ function subRoute(req, res, next) {
     }
 
     const subRoute = subRoutes[unique] != null ? subRoutes[unique] : null
-    if(subRoute) {
+    if (subRoute) {
         subRoute(req, res, next)
     } else {
         next()
