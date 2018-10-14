@@ -1,16 +1,8 @@
 {|@ wrapper |}
 {|> header |}
 
-{|# divisions |}
-<ul>
-    {|* divisions : division |}
-    <li>
-        <a href="/{| backendFirstpath |}/divisions/">
-            {| division.name |}
-        </a>
-    </li>
-    {|/*|} 
-    <ul>
-        {|/#|}
-
-        <div id="list"></div>
+<p>{| target.name |}</p>
+<p>{| target.unique |}</p>
+<textarea style="width: 100%;height:20vh;">
+{|& target.content |}
+</textarea>

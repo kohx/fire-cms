@@ -226,7 +226,8 @@ module.exports = class wavebar {
                         break
 
                     case `&`:
-                        body = this.buildText(body, false)
+                        body = this.bodyTag(baredTag)
+                        builded += this.buildText(body, false)
                         break
 
                     default:
@@ -336,6 +337,7 @@ module.exports = class wavebar {
         if (doEntityify) {
             text += `builded += entityify(variable);\n`
         } else {
+            debug('in!', __filename, __line)
             text += `builded += variable\n`
         }
         text += `}\n}\n`

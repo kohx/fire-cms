@@ -138,5 +138,33 @@
         },
         "content_type": "html",
         "content_file": "thing.html"
+    },
+    "thing-content": {
+        "unique": "thing-content",
+        "name": "thing-content",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "content_type": "html",
+        "content_file": "thing-content.html"
+    },
+    "thing-assets": {
+        "unique": "thing-assets",
+        "name": "thing-assets",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "content_type": "html",
+        "content_file": "thing-assets.html"
     }
 }

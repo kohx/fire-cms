@@ -33,18 +33,17 @@ router.get('/*',
 /* sub route */
 // ここで各バックエンドの処理を入れていく
 function subRoute(req, res, next) {
-
-    debug(req.vessel.get('paths'), __filename, __line)
-
+    
     const unique = req.vessel.get('paths.unique')
     const subRoutes = {
         divisions: divisions.index,
-        'division-edit': divisions.edit,
+        things: things.index,
+        thing: thing.index,
     }
 
-    const subRoute = subRoutes[unique] != null ? subRoutes[unique] : null
-    if (subRoute) {
-        subRoute(req, res, next)
+    const callSubRxoute = subRoutes[unique] != null ? subRoutes[unique] : null
+    if (callSubRxoute) {
+        callSubRxoute(req, res, next)
     } else {
         next()
     }
