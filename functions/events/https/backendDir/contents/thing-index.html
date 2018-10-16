@@ -1,0 +1,20 @@
+{|@ wrapper |}
+{|> header |}
+
+<div class="col12 grid12 gap1 rig">
+    <a class="col2" href="/{| backendFirstPath |}/thing-create">create new thing</a>
+</div>
+
+{|# targets |}
+<ul class="col12 grid3 gap1">
+    {|* targets : target |}
+    <li class="col1 row2">
+        <a class="cen mid" href="/{| backendFirstPath |}/thing-edit/{| target.unique |}">
+            {| target.name |}: [{| target.unique |}]
+        </a>
+    </li>
+    {|/*|}
+</ul>
+{|/# targets |}
+
+{|> footer |}

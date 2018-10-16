@@ -107,6 +107,6 @@ module.exports.renderPage = (req, res, next) => {
     data.params.csrfToken = req.vessel.get('csrfToken')
     data.params.frontendBase = req.vessel.get('frontendBase')
     data.params.backendBase = req.vessel.get('backendBase')
-    data.params.backendFirstpath = req.vessel.get('settings.backend.firstPath')
+    data.params.backendFirstPath = req.vessel.get('settings.backend.firstPath')
     res.wbRender(data)
 }

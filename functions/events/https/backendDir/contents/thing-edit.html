@@ -1,23 +1,32 @@
 {|@ wrapper |}
 {|> header |}
 
-<p>{| target.name |}</p>
-<p>{| target.unique |}</p>
-<textarea id="content" data-unique="{| target.unique |}" style="width: 100%;height:20vh;">
-{|& target.content |}
-</textarea>
-<button id="update">update</button>
+<div class="col12 grid12 gap1">
+    <div class="col6">name <input type="text" id="name" value="{| target.name |}"></div>
+    <div class="col6">description <input type="text" id="description" value="{| target.description |}"></div>
+    <div class="col6">keywords <input type="text" id="keywords" value="{| target.keywords |}"></div>
+    <div class="col6">
+        {|* target.roles: role |}
+        <div><input type="checkbox" {|# role |} checked{|/# role |}>{| key |}</div>
+        {|/* target.roles |}
+    </div>
+    <div class="col6"></div>
+    <button class="col6" type="button" id="update">update</button>
+</div>
+
+{|> footer |}
 
 <script>
     const updateBtn = document.querySelector('#update')
-    const contentBox = document.querySelector('#content')
+
+    const name = document.querySelector('#name').value
 
     updateBtn.addEventListener('click', event => {
         event.target.textContent = '...'
         const content = contentBox.value
         const unique = contentBox.dataset.unique
 
-        const url = `http://localhost:5000/backend/thing-update`
+        const url = `/backend/thing-update`
 
         const headers = {
             // 'Access-Control-Allow-Credentials': 'true',
@@ -26,8 +35,7 @@
         }
 
         const body = {
-            content,
-            unique,
+            name,
         }
 
         fetch(url, {

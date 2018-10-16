@@ -61,7 +61,7 @@
         "roles": {
             "owner": true,
             "direct": true,
-            "admin": false,
+            "admin": true,
             "editor": false,
             "writer": false,
             "user": false
@@ -83,9 +83,9 @@
         "content_type": "html",
         "content_file": "divisions.html"
     },
-    "parts": {
-        "unique": "parts",
-        "name": "parts",
+    "template": {
+        "unique": "template",
+        "name": "template",
         "roles": {
             "owner": true,
             "direct": true,
@@ -95,7 +95,7 @@
             "user": true
         },
         "content_type": "html",
-        "content_file": "parts.html"
+        "content_file": "template.html"
     },
     "assets": {
         "unique": "assets",
@@ -111,9 +111,9 @@
         "content_type": "html",
         "content_file": "assets.html"
     },
-    "things": {
-        "unique": "things",
-        "name": "things",
+    "thing-index": {
+        "unique": "thing-index",
+        "name": "thing-index",
         "roles": {
             "owner": true,
             "direct": true,
@@ -123,11 +123,11 @@
             "user": true
         },
         "content_type": "html",
-        "content_file": "things.html"
+        "content_file": "thing-index.html"
     },
-    "thing": {
-        "unique": "thing",
-        "name": "thing",
+    "thing-create": {
+        "unique": "thing-create",
+        "name": "thing-create",
         "roles": {
             "owner": true,
             "direct": true,
@@ -137,7 +137,21 @@
             "user": true
         },
         "content_type": "html",
-        "content_file": "thing.html"
+        "content_file": "thing-create.html"
+    },
+    "thing-edit": {
+        "unique": "thing-edit",
+        "name": "thing-edit",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "content_type": "html",
+        "content_file": "thing-edit.html"
     },
     "thing-content": {
         "unique": "thing-content",

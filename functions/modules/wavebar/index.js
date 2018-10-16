@@ -31,16 +31,20 @@ module.exports = class wavebar {
         const instance = new wavebar()
 
         res.wbRender = (data) => {
-            return instance.render(res, data)
+            return instance.render(req, res, data)
         }
 
         next()
     }
 
     /* render */
-    render(res, data) {
+    render(req, res, data) {
         // console.log(`===>`, `in render!`)
         console.time(`[time] wavebar render`)
+        
+        // console.log('@@@', req.__('Hello {{name}}', { name: 'kohei' }))
+
+        this.__ = req.__
 
         this.content = (data.content != null) ? data.content : ``
         this.templates = (data.templates != null) ? data.templates : {}
@@ -337,7 +341,6 @@ module.exports = class wavebar {
         if (doEntityify) {
             text += `builded += entityify(variable);\n`
         } else {
-            debug('in!', __filename, __line)
             text += `builded += variable\n`
         }
         text += `}\n}\n`
@@ -393,6 +396,7 @@ module.exports = class wavebar {
             isCorrect: this.isCorrect,
             isText: this.isText,
             isObject: this.isObject,
+            __: this.__,
         }
 
         // expand params then assign to context

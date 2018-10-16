@@ -5,10 +5,32 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{| name |}</title>
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/std-grid.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <script src="/__/firebase/5.5.3/firebase-app.js"></script>
+    <script src="/__/firebase/5.5.3/firebase-auth.js"></script>
+    <script src="/__/firebase/5.5.3/firebase-firestore.js"></script>
+    <script src="/__/firebase/5.5.3/firebase-storage.js"></script>
+    <script src="/__/firebase/5.5.3/firebase-messaging.js"></script>
+    <script src="/__/firebase/5.5.3/firebase-functions.js"></script>
+    <script src="/__/firebase/init.js"></script>
+
+    <script>
+        const firestore = firebase.firestore();
+        const settings = {
+            timestampsInSnapshots: true
+        };
+        firestore.settings(settings);
+    </script>
 </head>
 
 <body>
-    {|@ wrapper |}
+    <div class="grid12 gap1">
+        {|@ wrapper |}
+    </div>
+    <script src="/{|backendFirstPath|}/signin.js"></script>
 </body>
 
 </html>

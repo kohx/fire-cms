@@ -34,10 +34,14 @@ router.get('/*',
 function subGetRoute(req, res, next) {
 
     const unique = req.vessel.get('paths.unique')
+
+    debug(unique, __filename, __line)
     const subRoutes = {
+        'thing-index': thing.index,
+        'thing-create': thing.create,
+        'thing-edit': thing.edit,
+        'thing-content': thing.content,
         divisions: divisions.index,
-        things: thing.index,
-        thing: thing.edit,
     }
 
     const callSubRoute = subRoutes[unique] != null ? subRoutes[unique] : null

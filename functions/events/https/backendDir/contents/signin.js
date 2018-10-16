@@ -25,7 +25,7 @@ const signin = event => {
         })
         .then(result => {
             if (result.status) {
-                window.location.assign('/{|backendFirstpath|}')
+                window.location.assign('/{|backendFirstPath|}')
                 // ui
                 // console.log(result)
                 // document.querySelector('#signin').disabled = true

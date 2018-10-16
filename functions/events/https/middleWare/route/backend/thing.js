@@ -9,19 +9,44 @@ const debug = require('../../../../../modules/debug').debug
 
 module.exports.index = (req, res, next) => {
 
-    admin.firestore().collection('divisions').get()
+    admin.firestore().collection('things').get()
         .then(docs => {
-            const divisions = []
+            const targets = []
             docs.forEach(doc => {
-                divisions.push(doc.data())
+                targets.push(doc.data())
             })
-            req.vessel.thing.divisions = divisions
+            req.vessel.thing.targets = targets
             next()
         })
         .catch(err => {
-            debug(err, __filename, __line)
             next(err)
         })
+}
+
+module.exports.content = (req, res, next) => {
+
+    const segments = req.vessel.get('paths.segments')
+    const target = segments.shift()
+    const thing = req.vessel.get('thing')
+
+    if (!target) {
+        next()
+    } else {
+
+        admin.firestore().collection('things').doc(target).get()
+            .then(doc => {
+                const target = doc.data()
+
+                target.content = target.content.replace(/\\n/g, '&#13;')
+
+                thing.target = target
+                next()
+            })
+            .catch(err => {
+                debug(err, __filename, __line)
+                next(err)
+            })
+    }
 }
 
 module.exports.edit = (req, res, next) => {

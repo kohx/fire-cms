@@ -1,6 +1,6 @@
-<header class="grid12">
+<header class="col12 grid12 gap1">
     <div class="col5">backend {| unique |}</div>
-    <div class="col6">
+    <div class="col7">
         <div>signin: {| sign.status |} </div>
         <div>uid: {| user.uid |}</div>
         <div>name: {| user.name |}</div>
@@ -8,5 +8,16 @@
     </div>
     <div class="col12 grid2 rig mid">
         <button class="col2" id="signout">sign out</button>
-    </div> 
+    </div>
+
+    <ul class="col12 grid8 gap1">
+        <li class="col1 cen"><a href="/{|backendFirstPath|}/settings">settings</a></li>
+        <li class="col1 cen"><a href="/{|backendFirstPath|}/users">users</a></li>
+        <li class="col1 cen"><a href="/{|backendFirstPath|}/divisions">divisions</a></li>
+        <li class="col1 cen"><a href="/{|backendFirstPath|}/template">template</a></li>
+        <li class="col1 cen"><a href="/{|backendFirstPath|}/thing-index">things</a></li>
+        <li class="col1 cen"><a href="/{|backendFirstPath|}/assets">assets</a></li>
+    </ul>
+
+   {|~ __(unique) |}
 </header>

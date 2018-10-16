@@ -1,0 +1,32 @@
+html {
+  font-size: 62.5%;
+}
+body {
+  font-size: 1.2rem;
+  padding: 0;
+  margin: 0;
+}
+.wrapper {
+  margin: 0 auto;
+  min-width: 20vw;
+  padding: 1rem;
+}
+h2 {
+  padding: 2rem 1rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+h3 {
+  padding: 2rem 1rem 2rem;
+}
+[class*="grid"] {
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 0.2rem;
+  position: relative;
+}
+[class*="grid"] > [class*=col]
+{
+  border-radius: 3px;
+  padding: 1rem;
+  border: 1px solid #bae1ff;
+  box-shadow: inset 0px 0px 10px #bae1ff;
+}
