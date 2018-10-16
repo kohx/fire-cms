@@ -9,10 +9,27 @@ const debug = require('../../../../../modules/debug').debug
 
 module.exports.index = (req, res, next) => {
 
+    admin.firestore().collection('divisions').get()
+        .then(docs => {
+            const divisions = []
+            docs.forEach(doc => {
+                divisions.push(doc.data())
+            })
+            req.vessel.thing.divisions = divisions
+            next()
+        })
+        .catch(err => {
+            debug(err, __filename, __line)
+            next(err)
+        })
+}
+
+module.exports.edit = (req, res, next) => {
+
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
     const thing = req.vessel.get('thing')
-    
+
     if (!target) {
         next()
     } else {
@@ -31,4 +48,29 @@ module.exports.index = (req, res, next) => {
                 next(err)
             })
     }
+}
+
+module.exports.update = (req, res, next) => {
+
+    let content = req.body.content != null ? req.body.content : ''
+    content = content.replace(/\n/g, '\\n')
+    let unique = req.body.unique != null ? req.body.unique : ''
+
+    return admin.firestore().collection('things').doc(unique)
+        .update({
+            content
+        })
+        .then(result => {
+            res.json({
+                status: true,
+                message: `ok.`
+            })
+        })
+        .catch(err => {
+            debug('in', __filename, __line)
+            res.json({
+                status: false,
+                message: err.message
+            })
+        })
 }

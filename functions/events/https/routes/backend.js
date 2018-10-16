@@ -18,7 +18,6 @@ const updateAsset = require('../middleWare/route/backend/updateAsset')
 
 // subRote
 const divisions = require('../middleWare/route/backend/divisions')
-const things = require('../middleWare/route/backend/things')
 const thing = require('../middleWare/route/backend/thing')
 
 /* route get */
@@ -26,24 +25,24 @@ router.get('/*',
     generalMethod.checkPath,
     generalMethod.checkThing,
     generalMethod.checkSingIn,
-    subRoute,
+    subGetRoute,
     generalMethod.renderPage
 )
 
-/* sub route */
+/* sub get route */
 // ここで各バックエンドの処理を入れていく
-function subRoute(req, res, next) {
-    
+function subGetRoute(req, res, next) {
+
     const unique = req.vessel.get('paths.unique')
     const subRoutes = {
         divisions: divisions.index,
-        things: things.index,
-        thing: thing.index,
+        things: thing.index,
+        thing: thing.edit,
     }
 
-    const callSubRxoute = subRoutes[unique] != null ? subRoutes[unique] : null
-    if (callSubRxoute) {
-        callSubRxoute(req, res, next)
+    const callSubRoute = subRoutes[unique] != null ? subRoutes[unique] : null
+    if (callSubRoute) {
+        callSubRoute(req, res, next)
     } else {
         next()
     }
@@ -54,26 +53,23 @@ router.post('/*',
     generalMethod.checkPath,
     generalMethod.checkThing,
     generalMethod.checkSingIn,
-    postBack
+    subPostRoute
 )
 
-function postBack(req, res, next) {
-    const unique = req.vessel.back.unique
-    // render backend page
-    const func = backendPostRoutes(unique)
-    if (func) {
-        func(req, res, next)
-    } else {
-        next('route')
-    }
-}
+function subPostRoute(req, res, next) {
 
-function backendPostRoutes(unique) {
-    const routes = {
-        updateAsset: updateAsset
+    const unique = req.vessel.get('paths.unique')
+    const subRoutes = {
+        'thing-update': thing.update,
+        'thing-delete': thing.delete,
     }
-    const func = (routes[unique] != null) ? routes[unique] : false
-    return func
+
+    const callSubRoute = subRoutes[unique] != null ? subRoutes[unique] : null
+    if (callSubRoute) {
+        callSubRoute(req, res, next)
+    } else {
+        next()
+    }
 }
 
 module.exports = router

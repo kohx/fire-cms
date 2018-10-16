@@ -166,5 +166,19 @@
         },
         "content_type": "html",
         "content_file": "thing-assets.html"
+    },
+    "thing-update": {
+        "unique": "thing-update",
+        "name": "thing-update",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "content_type": "json",
+        "content_file": null
     }
 }

@@ -286,22 +286,26 @@ module.exports.getThing = (req, res, next) => {
             return {}
         }
 
-        // file path
-        const filePath = path.join(system.backendDir, 'contents', thing.content_file)
+        // if has content file\
+        let content = ''
+        if (thing.content_file) {
+            // file path
+            const filePath = path.join(system.backendDir, 'contents', thing.content_file)
 
-        // キャッシュを取得
-        let content = jsonCache.get(`content_${unique}`)
+            // キャッシュを取得
+            content = jsonCache.get(`content_${unique}`)
 
-        // キャッシュが空のとき
-        if (content === null) {
-            try {
-                content = fs.readFileSync(filePath, 'utf8')
-            } catch (err) {
-                // ない場合
-                content = ''
+            // キャッシュが空のとき
+            if (content === null) {
+                try {
+                    content = fs.readFileSync(filePath, 'utf8')
+                } catch (err) {
+                    // ない場合
+                    content = ''
+                }
+                // キャッシュに入れる
+                jsonCache.set(`content_${unique}`, content)
             }
-            // キャッシュに入れる
-            jsonCache.set(`content_${unique}`, content)
         }
 
         thing.content = content
