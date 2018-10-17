@@ -288,9 +288,9 @@ module.exports.getThing = (req, res, next) => {
 
         // if has content file\
         let content = ''
-        if (thing.content_file) {
+        if (thing.contentFile) {
             // file path
-            const filePath = path.join(system.backendDir, 'contents', thing.content_file)
+            const filePath = path.join(system.backendDir, 'contents', thing.contentFile)
 
             // キャッシュを取得
             content = jsonCache.get(`content_${unique}`)

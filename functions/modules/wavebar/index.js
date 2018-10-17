@@ -39,9 +39,10 @@ module.exports = class wavebar {
 
     /* render */
     render(req, res, data) {
+        
         // console.log(`===>`, `in render!`)
         console.time(`[time] wavebar render`)
-        
+
         // console.log('@@@', req.__('Hello {{name}}', { name: 'kohei' }))
 
         this.__ = req.__
@@ -143,7 +144,7 @@ module.exports = class wavebar {
         const matches = this.merged.match(this.templateTagReg)
 
         if (matches === null) {
-            
+
             this.segmented = [this.merged]
         } else {
 

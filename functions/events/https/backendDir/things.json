@@ -10,8 +10,8 @@
             "writer": true,
             "user": true
         },
-        "content_type": "html",
-        "content_file": "index.html"
+        "contentType": "html",
+        "contentFile": "index.html"
     },
     "signin": {
         "unique": "signin",
@@ -24,8 +24,8 @@
             "writer": false,
             "user": false
         },
-        "content_type": "html",
-        "content_file": "signin.html"
+        "contentType": "html",
+        "contentFile": "signin.html"
     },
     "signin.js": {
         "unique": "signin.js",
@@ -38,8 +38,8 @@
             "writer": false,
             "user": false
         },
-        "content_type": "js",
-        "content_file": "signin.js"
+        "contentType": "js",
+        "contentFile": "signin.js"
     },
     "settings": {
         "unique": "settings",
@@ -52,8 +52,8 @@
             "writer": false,
             "user": false
         },
-        "content_type": "html",
-        "content_file": "settings.html"
+        "contentType": "html",
+        "contentFile": "settings.html"
     },
     "users": {
         "unique": "users",
@@ -66,8 +66,8 @@
             "writer": false,
             "user": false
         },
-        "content_type": "html",
-        "content_file": "users.html"
+        "contentType": "html",
+        "contentFile": "users.html"
     },
     "divisions": {
         "unique": "divisions",
@@ -80,8 +80,8 @@
             "writer": true,
             "user": true
         },
-        "content_type": "html",
-        "content_file": "divisions.html"
+        "contentType": "html",
+        "contentFile": "divisions.html"
     },
     "template": {
         "unique": "template",
@@ -94,8 +94,8 @@
             "writer": true,
             "user": true
         },
-        "content_type": "html",
-        "content_file": "template.html"
+        "contentType": "html",
+        "contentFile": "template.html"
     },
     "assets": {
         "unique": "assets",
@@ -108,8 +108,8 @@
             "writer": true,
             "user": true
         },
-        "content_type": "html",
-        "content_file": "assets.html"
+        "contentType": "html",
+        "contentFile": "assets.html"
     },
     "thing-index": {
         "unique": "thing-index",
@@ -122,8 +122,8 @@
             "writer": true,
             "user": true
         },
-        "content_type": "html",
-        "content_file": "thing-index.html"
+        "contentType": "html",
+        "contentFile": "thing-index.html"
     },
     "thing-create": {
         "unique": "thing-create",
@@ -136,8 +136,8 @@
             "writer": true,
             "user": true
         },
-        "content_type": "html",
-        "content_file": "thing-create.html"
+        "contentType": "html",
+        "contentFile": "thing-create.html"
     },
     "thing-edit": {
         "unique": "thing-edit",
@@ -150,8 +150,8 @@
             "writer": true,
             "user": true
         },
-        "content_type": "html",
-        "content_file": "thing-edit.html"
+        "contentType": "html",
+        "contentFile": "thing-edit.html"
     },
     "thing-content": {
         "unique": "thing-content",
@@ -164,8 +164,8 @@
             "writer": true,
             "user": true
         },
-        "content_type": "html",
-        "content_file": "thing-content.html"
+        "contentType": "html",
+        "contentFile": "thing-content.html"
     },
     "thing-assets": {
         "unique": "thing-assets",
@@ -178,8 +178,8 @@
             "writer": true,
             "user": true
         },
-        "content_type": "html",
-        "content_file": "thing-assets.html"
+        "contentType": "html",
+        "contentFile": "thing-assets.html"
     },
     "thing-update": {
         "unique": "thing-update",
@@ -192,7 +192,21 @@
             "writer": true,
             "user": true
         },
-        "content_type": "json",
-        "content_file": null
+        "contentType": "json",
+        "contentFile": null
+    },
+    "reset.css": {
+        "unique": "reset.css",
+        "name": "reset.css",
+        "roles": {
+            "owner": true,
+            "direct": true,
+            "admin": true,
+            "editor": true,
+            "writer": true,
+            "user": true
+        },
+        "contentType": "css",
+        "contentFile": "reset.css"
     }
 }

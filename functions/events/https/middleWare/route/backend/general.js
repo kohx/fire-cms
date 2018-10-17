@@ -92,11 +92,17 @@ module.exports.checkSingIn = (req, res, next) => {
 }
 
 module.exports.renderPage = (req, res, next) => {
+
     const thing = req.vessel.get('thing', {})
     const content = (thing.content != null) ? thing.content : ''
+    const contentType = (thing.contentType != null) ? thing.contentType : 'html'
     delete thing.content
+    delete thing.contentFile
+    delete thing.contentType
+
     const data = {
         content: content,
+        contentType: contentType,
         params: thing,
         templates: req.vessel.get('templates'),
     }

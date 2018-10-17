@@ -1,60 +1,9 @@
-<!DOCTYPE html><html><head>    <meta charset="utf-8">    <meta name="viewport" content="width=device-width, initial-scale=1">    <title>'
-    if (isExist('name', params)) {
-        builded += entityify(name);
-    } else {
-        builded += '[ "name" is not defined! ]'
-    }
-    builded += '</title>    <link rel="apple-touch-icon" href="./images/favicon.png">    <script src="/__/firebase/5.5.1/firebase-app.js"></script>
-<script src="/__/firebase/5.5.1/firebase-auth.js"></script>
-<script src="/__/firebase/5.5.1/firebase-firestore.js"></script>
-<script src="/__/firebase/5.5.1/firebase-storage.js"></script>
-<script src="/__/firebase/5.5.1/firebase-messaging.js"></script>
-<script src="/__/firebase/5.5.1/firebase-functions.js"></script>
-<script src="/__/firebase/init.js"></script>
-<script>
-const firestore = firebase.firestore();        
- const settings = {
-                  timestampsInSnapshots: true };  
-                         firestore.settings(settings);     </script>
-                         </head>
-<body> <header> <div>backend</div> <div>signin: ';
-            if(isExist('sign.status', params)){
-            builded += entityify(sign.status);
-            } else {
-            builded += '[ "sign.status" is not defined! ]'
-            }
-            builded += ' '
-            if(isExist('sign.user.uid', params)){
-            builded += entityify(sign.user.uid);
-            } else {
-            builded += '[ "sign.user.uid" is not defined! ]'
-            }
-            builded += '</div> <div></div><button id="signout">sign out</button></div>
-        <hr></header><h2>divisions!</h2>'
-    builded += de(divisions)
-    builded += ''
-    if(isExist('division', params, true)){
-    for(let key in divisions) {
-    division = divisions[key]
-    }
-    builded += ''
-    if(isExist('division.name', params)){
-    builded += entityify(division.name);
-    } else {
-    builded += '[ "division.name" is not defined! ]'
-    }
-    builded += ''
-    }
-    builded += '<div id="list"></div><footer>
-        <hr> &copy; fire cms</footer>
-    <!-- <script src="/'
-if(isExist('backendFirstpath', params)){
-builded += entityify(backendFirstpath);
-} else {
-builded += '[ "backendFirstpath" is not defined! ]'
-}
-builded += '/signin.js"></script> --></body>
-
-</html>'
-
-</script>
+{"content":"/* http://meyerweb.com/eric/tools/css/reset/ \r\n   v2.0 | 20110126\r\n   License: none (public domain)\r\n*/\r\n\r\nhtml, body, div, span, applet, object, iframe,\r\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\r\na, abbr, acronym, address, big, cite, code,\r\ndel, dfn, em, img, ins, kbd, q, s, samp,\r\nsmall, strike, strong, sub, sup, tt, var,\r\nb, u, i, center,\r\ndl, dt, dd, ol, ul, li,\r\nfieldset, form, label, legend,\r\ntable, caption, tbody, tfoot, thead, tr, th, td,\r\narticle, aside, canvas, details, embed, \r\nfigure, figcaption, footer, header, hgroup, \r\nmenu, nav, output, ruby, section, summary,\r\ntime, mark, audio, video {\r\n\tmargin: 0;\r\n\tpadding: 0;\r\n\tborder: 0;\r\n\tfont-size: 100%;\r\n\tfont: inherit;\r\n\tvertical-align: baseline;\r\n}\r\n/* HTML5 display-role reset for older browsers */\r\narticle, aside, details, figcaption,
+figure, \r\nfooter, header, hgroup, menu, nav, section
+{\r\n\tdisplay: block;\r\n}\r\nbody {\r\n\tline-height: 1;\r\n}\r\nol, ul {\r\n\tlist-style: none;\r\n}\r\nblockquote, q {\r\n\tquotes: none;\r\n}\r\nblockquote:before, blockquote:after,\r\nq:before, q:after {\r\n\tcontent: '';\r\n\tcontent: none;\r\n}\r\ntable {\r\n\tborder-collapse: collapse;\r\n\tborder-spacing: 0;\r\n}","params":{"unique":"reset.css","name":"reset.css","roles":{"owner":true,"direct":true,"admin":true,"editor":true,"writer":true,"user":true},"content_type":"css","content_file":"reset.css","sign":{"status":true,"message":"sign in success."},"user":{"uid":"TFHZ4VowjVbtcxPnrvNzM1LtlNv1","email":"kohei0728@gmail.com","name":"kohei","role":"admin"},"csrfToken":"","frontendBase":"http/localhost:5000/","backendBase":"http/localhost:5000/backend/","backendFirstPath":"backend"},"templates":{"footer":"<footer class=\"col12 grid3 gap1 cen mid\">\r\n    <div class=\"col1\">&copy; fire cms</div>\r\n</footer>","header":"<header class=\"col12 grid12 gap1\">\r\n    <div class=\"col5\">backend {| unique |}</div>\r\n    <div class=\"col7\">\r\n        <div>signin: {| sign.status |} </div>\r\n        <div>uid: {| user.uid |}</div>\r\n
+      <div>name: {| user.name |}</div>\r\n        <div>email: {| user.email |}</div>\r\n    </div>\r\n    <div class=\"col12 grid2 rig mid\">\r\n        <button class=\"col2\" id=\"signout\">sign out</button>\r\n    </div>\r\n\r\n    <ul class=\"col12 grid8 gap1\">\r\n
+  <li class=\"col1 cen\"><a href=\"/{|backendFirstPath|}/settings\">settings</a></li>\r\n        <li class=\"col1 cen\"><a href=\"/{|backendFirstPath|}/users\">users</a></li>\r\n        <li class=\"col1 cen\"><a href=\"/{|backendFirstPath|}/divisions\">divisions</a></li>\r\n        <li class=\"col1 cen\"><a href=\"/{|backendFirstPath|}/template\">template</a></li>\r\n        <li class=\"col1 cen\"><a href=\"/{|backendFirstPath|}/thing-index\">things</a></li>\r\n        <li class=\"col1 cen\"><a href=\"/{|backendFirstPath|}/assets\">assets</a></li>\r\n    </ul>\r\n\r\n   {|~ __(unique) |}\r\n</header>","wrapper":"<!DOCTYPE html>\r\n<html>\r\n\r\n<head>\r\n    <meta charset=\"utf-8\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <title>{| name |}</title>\r\n    <link rel=\"apple-touch-icon\" href=\"/images/favicon.png\">\r\n
+<link rel=\"stylesheet\" href=\"/css/reset.css\">\r\n
+  <link rel=\"stylesheet\" href=\"/css/std-grid.css\">\r\n    <link rel=\"stylesheet\" href=\"/css/base.css\">\r\n    <script src=\"/__/firebase/5.5.3/firebase-app.js\"></script>\r\n    <script src=\"/__/firebase/5.5.3/firebase-auth.js\"></script>\r\n    <script src=\"/__/firebase/5.5.3/firebase-firestore.js\"></script>\r\n    <script src=\"/__/firebase/5.5.3/firebase-storage.js\"></script>\r\n    <script src=\"/__/firebase/5.5.3/firebase-messaging.js\"></script>\r\n    <script src=\"/__/firebase/5.5.3/firebase-functions.js\"></script>\r\n    <script src=\"/__/firebase/init.js\"></script>\r\n\r\n
+  <script>\r\n        const firestore = firebase.firestore();\r\n        const settings = {\r\n            timestampsInSnapshots: true\r\n        };\r\n        firestore.settings(settings);\r\n    </script>\r\n</head>\r\n\r\n<body>\r\n    <div class=\"grid12 gap1\">\r\n
+   {|@ wrapper |}\r\n    </div>\r\n    <script src=\"/{|backendFirstPath|}/signin.js\"></script>\r\n</body>\r\n\r\n</html>","wrapper2":"<!DOCTYPE html>\r\n<html>\r\n\r\n<head>\r\n    <meta charset=\"utf-8\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <title>{| name |}</title>\r\n</head>\r\n\r\n<body>\r\n    {|@ wrapper |}\r\n</body>\r\n\r\n</html>"}}
