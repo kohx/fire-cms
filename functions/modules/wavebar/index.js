@@ -54,10 +54,11 @@ module.exports = class wavebar {
         // debug(this.params.divisions, __filename, __line)
 
         // isDebug === 1は「is not defined!」を出す
-        this.merge()
+        const merged = this.merge()
         if (this.isDebug === 2) {
-            res.send(this.merged)
+            res.send(merged)
         }
+        
         this.segmentate()
         if (this.isDebug === 3) {
             res.send(this.segmented)
@@ -135,6 +136,7 @@ module.exports = class wavebar {
         content = content.replace(/'/g, '\\\'')
 
         this.merged = content
+        return content
     }
 
     /* segmentate */

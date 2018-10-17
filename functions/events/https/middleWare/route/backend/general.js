@@ -114,5 +114,8 @@ module.exports.renderPage = (req, res, next) => {
     data.params.frontendBase = req.vessel.get('frontendBase')
     data.params.backendBase = req.vessel.get('backendBase')
     data.params.backendFirstPath = req.vessel.get('settings.backend.firstPath')
+    const is = thing.unique.charAt(0).toUpperCase() + thing.unique.slice(1)
+    // data.params[`is${is}`] = true
+ 
     res.wbRender(data)
 }

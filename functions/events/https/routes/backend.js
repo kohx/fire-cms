@@ -19,6 +19,7 @@ const updateAsset = require('../middleWare/route/backend/updateAsset')
 // subRote
 const divisions = require('../middleWare/route/backend/divisions')
 const thing = require('../middleWare/route/backend/thing')
+const template = require('../middleWare/route/backend/template')
 
 /* route get */
 router.get('/*',
@@ -36,10 +37,15 @@ function subGetRoute(req, res, next) {
     const unique = req.vessel.get('paths.unique')
 
     const subRoutes = {
-        'thing-index': thing.index,
-        'thing-create': thing.create,
-        'thing-edit': thing.edit,
-        'thing-content': thing.content,
+        // thing
+        'things': thing.index,
+        'thing-add': thing.add,
+        'thingEdit': thing.edit,
+        'thingContent': thing.content,
+        // template
+        'templateIndex': template.index,
+        'templateContent': template.content,
+        // division
         divisions: divisions.index,
     }
 
@@ -63,8 +69,9 @@ function subPostRoute(req, res, next) {
 
     const unique = req.vessel.get('paths.unique')
     const subRoutes = {
-        'thing-update': thing.update,
-        'thing-delete': thing.delete,
+        'thingUpdate': thing.update,
+        'thingDelete': thing.delete,
+        'templateUpdate': template.update,
     }
 
     const callSubRoute = subRoutes[unique] != null ? subRoutes[unique] : null

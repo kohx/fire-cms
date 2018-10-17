@@ -1,0 +1,105 @@
+/**
+std-grid
+Copyright (c) 2018 kohei okuda
+This software is released under the MIT License.
+http://opensource.org/licenses/mit-license.php
+*/
+
+/* set default height and gap */
+:root {
+  --grid-height: 4rem;
+  --grid-gap: 1rem;
+}
+
+/* core */
+
+/* common grid */
+.grid1, .grid2, .grid3, .grid4, .grid5, .grid6, .grid7, .grid8, .grid9, .grid10, .grid11, .grid12 {
+  display: grid;
+  grid-template-columns: max-content;
+  grid-template-rows: max-content;
+  grid-auto-flow: dense;
+}
+
+/* common col and row */
+.col1, .col2,  .col3,  .col4,  .col5,  .col6,  .col7,  .col8,  .col9,  .col10,  .col11,  .col12,
+.row1, .row2,  .row3,  .row4,  .row5,  .row6,  .row7,  .row8,  .row9,  .row10,  .row11,  .row12 {
+  display: grid;
+  word-break : break-all;
+}
+
+/* grid */
+.grid1{grid-template-columns: repeat(1, 1fr);}
+.grid2{grid-template-columns: repeat(2, 1fr);}
+.grid3{grid-template-columns: repeat(3, 1fr);}
+.grid4{grid-template-columns: repeat(4, 1fr);}
+.grid5{grid-template-columns: repeat(5, 1fr);}
+.grid6{grid-template-columns: repeat(6, 1fr);}
+.grid7{grid-template-columns: repeat(7, 1fr);}
+.grid8{grid-template-columns: repeat(8, 1fr);}
+.grid9{grid-template-columns: repeat(9, 1fr);}
+.grid10{grid-template-columns: repeat(10, 1fr);}
+.grid11{grid-template-columns: repeat(11, 1fr);}
+.grid12{grid-template-columns: repeat(12, 1fr);}
+
+/* col */
+.col1 {grid-column: span 1;}
+.col2 {grid-column: span 2;}
+.col3 {grid-column: span 3;}
+.col4 {grid-column: span 4;}
+.col5 {grid-column: span 5;}
+.col6 {grid-column: span 6;}
+.col7 {grid-column: span 7;}
+.col8 {grid-column: span 8;}
+.col9 {grid-column: span 9;}
+.col10 {grid-column: span 10;}
+.col11 {grid-column: span 11;}
+.col12 {grid-column: span 12;}
+
+/* row */
+.row1 {grid-row: span 1; min-height: calc(var(--grid-height) * 1);}
+.row2 {grid-row: span 2; min-height: calc(var(--grid-height) * 2);}
+.row3 {grid-row: span 3; min-height: calc(var(--grid-height) * 3);}
+.row4 {grid-row: span 4; min-height: calc(var(--grid-height) * 4);}
+.row5 {grid-row: span 5; min-height: calc(var(--grid-height) * 5);}
+.row6 {grid-row: span 6; min-height: calc(var(--grid-height) * 6);}
+
+/* gap */
+.gap0 {grid-gap: 0;}
+.gap1 {grid-gap: calc(var(--grid-gap)* 1);}
+.gap2 {grid-gap: calc(var(--grid-gap)* 2);}
+.gap3 {grid-gap: calc(var(--grid-gap)* 3);}
+
+/* padding */
+.pad0 {padding: 0;}
+.pad1 {padding: calc(var(--grid-gap)* 1);}
+.pad2 {padding: calc(var(--grid-gap)* 2);}
+.pad3 {padding: calc(var(--grid-gap)* 3);}
+
+/* posision */
+.lef, .cen, .rig,
+.top, .mid, .bot {
+  display: flex;
+}
+
+.lef {
+  justify-content: flex-start;
+  text-align: left;
+}
+.cen {
+  justify-content: center;
+  text-align: center;
+}
+.rig {
+  justify-content: flex-end;
+  text-align: right;
+}
+.top {
+  align-items: flex-start;
+}
+.mid {
+  align-items: center;
+}
+.bot {
+  align-items: flex-end;
+}

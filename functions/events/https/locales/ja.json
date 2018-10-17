@@ -23,5 +23,18 @@
 	"{{param1}} is not alphanumeric and underscore.": "{{param1}} is not alphanumeric and underscore.",
 	"update success!": "update success!",
 	"{{param1}} is equals {{param2}}.": "{{param1}} is equals {{param2}}.",
-	"thing-content": "ほんやく"
+	"thing-content": "ほんやく",
+	"thing-edit": "thing-edit",
+	"thing-index": "thing-index",
+	"index": "index",
+	"template": "template",
+	"template-index": "template-index",
+	"template-content": "template-content",
+	"templateIndex": "templateIndex",
+	"templateContent": "templateContent",
+	"settings": "settings",
+	"users": "users",
+	"divisions": "divisions",
+	"assets": "assets",
+	"things": "things"
 }

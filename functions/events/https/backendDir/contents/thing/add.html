@@ -1,0 +1,18 @@
+{|@ wrapper |}
+{|> header |}
+
+{|# targets |}
+<ul>
+    {|* targets : target |}
+    <li>
+        <a href="/{| backendFirstPath |}/thing/{| target.unique |}/">
+            {| target.name |}
+        </a>
+    </li>
+    {|/* targets |} 
+<ul>
+{|/# targets |}
+
+<div id="list"></div>
+        
+{|> footer |}

@@ -13,7 +13,7 @@ const jsonCache = require('../../../../modules/jsonCache')
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
-const backendThings = require('../../backendDir/things.json')
+const backendThings = require('../../backendDir/backendThings')
 
 module.exports.getInfo = (req, res, next) => {
     console.log('\n\n\n<<<<<<<<<< app start >>>>>>>>>>\n\n')
@@ -268,19 +268,17 @@ module.exports.getThing = (req, res, next) => {
         // cat first path becouse "backendpath"
         paths.segments = paths.segments.slice(1)
 
-        // get unique
+        // get segments top path
         let unique = paths.segments.shift()
 
-        // if unique is blank then set backend top unique
-        if (unique === '') {
-            unique = backendTopUnique
-        }
+        // if unique is null or undefined then set backend top unique
+        unique = unique != null ? unique : backendTopUnique
 
         // set unique to paths
         paths.unique = unique
-
+        
         // get thing from thing json
-        const thing = backendThings[unique] != null ? backendThings[unique] : null
+        const thing = backendThings.get(unique)
 
         if (!thing) {
             return {}
