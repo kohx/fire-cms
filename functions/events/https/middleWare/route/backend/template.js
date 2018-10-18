@@ -23,7 +23,7 @@ module.exports.index = (req, res, next) => {
 }
 
 module.exports.content = (req, res, next) => {
-
+debug('!@!@', __filename, __line)
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
     const thing = req.vessel.get('thing')
@@ -32,11 +32,11 @@ module.exports.content = (req, res, next) => {
         next()
     } else {
 
-        admin.firestore().collection('things').doc(target).get()
+        admin.firestore().collection('templates').doc(target).get()
             .then(doc => {
                 const target = doc.data()
 
-                target.content = target.content.replace(/\\n/g, '&#13;')
+                target.content = target.content.replace(/\\n/g, '\n')
 
                 thing.target = target
                 next()
@@ -58,11 +58,11 @@ module.exports.edit = (req, res, next) => {
         next()
     } else {
 
-        admin.firestore().collection('things').doc(target).get()
+        admin.firestore().collection('templates').doc(target).get()
             .then(doc => {
                 const target = doc.data()
 
-                target.content = target.content.replace(/\\n/g, '&#13;')
+                target.content = target.content.replace(/\n/g, '\\n')
 
                 thing.target = target
                 next()
@@ -80,7 +80,7 @@ module.exports.update = (req, res, next) => {
     content = content.replace(/\n/g, '\\n')
     let unique = req.body.unique != null ? req.body.unique : ''
 
-    return admin.firestore().collection('things').doc(unique)
+    return admin.firestore().collection('templates').doc(unique)
         .update({
             content
         })

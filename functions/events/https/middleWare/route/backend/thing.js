@@ -24,7 +24,7 @@ module.exports.index = (req, res, next) => {
 }
 
 module.exports.content = (req, res, next) => {
-
+    
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
     const thing = req.vessel.get('thing')
@@ -37,13 +37,12 @@ module.exports.content = (req, res, next) => {
             .then(doc => {
                 const target = doc.data()
 
-                target.content = target.content.replace(/\\n/g, '&#13;')
+                target.content = target.content.replace(/\\n/g, '\n')
 
                 thing.target = target
                 next()
             })
             .catch(err => {
-                debug(err, __filename, __line)
                 next(err)
             })
     }
@@ -63,7 +62,7 @@ module.exports.edit = (req, res, next) => {
             .then(doc => {
                 const target = doc.data()
 
-                target.content = target.content.replace(/\\n/g, '&#13;')
+                target.content = target.content.replace(/\n/g, '\\n')
 
                 thing.target = target
                 next()
@@ -92,7 +91,6 @@ module.exports.update = (req, res, next) => {
             })
         })
         .catch(err => {
-            debug('in', __filename, __line)
             res.json({
                 status: false,
                 message: err.message

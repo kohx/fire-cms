@@ -307,7 +307,7 @@ module.exports.getThing = (req, res, next) => {
         }
 
         thing.content = content
+        console.timeEnd('[time] init app')
         return thing
     }
-    console.timeEnd('[time] init app')
 }

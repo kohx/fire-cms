@@ -33,18 +33,16 @@ router.get('/*',
 /* sub get route */
 // ここで各バックエンドの処理を入れていく
 function subGetRoute(req, res, next) {
-
+    
     const unique = req.vessel.get('paths.unique')
-
     const subRoutes = {
         // thing
         'things': thing.index,
-        'thing-add': thing.add,
-        'thingEdit': thing.edit,
-        'thingContent': thing.content,
+        'thing': thing.edit,
+        'thing-content': thing.content,
         // template
-        'templateIndex': template.index,
-        'templateContent': template.content,
+        'templates': template.index,
+        'template-content': template.content,
         // division
         divisions: divisions.index,
     }
@@ -69,9 +67,12 @@ function subPostRoute(req, res, next) {
 
     const unique = req.vessel.get('paths.unique')
     const subRoutes = {
-        'thingUpdate': thing.update,
-        'thingDelete': thing.delete,
-        'templateUpdate': template.update,
+        'thing-cleate': thing.cleate,
+        'thing-update': thing.update,
+        'thing-delete': thing.delete,
+        'template-cleate': template.cleate,
+        'template-update': template.update,
+        'template-delete': template.delete,
     }
 
     const callSubRoute = subRoutes[unique] != null ? subRoutes[unique] : null

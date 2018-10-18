@@ -8,7 +8,8 @@ module.exports = class wavebar {
         this.isDebug = 0
 
         this.templateTagReg = /\{\|.*?\|\}/g
-        this.bareReg = /\{\||\|\}|\s/g
+        this.bareReg = /\{\||\|\}/g
+
         this.wrapReg = /\{\|\@.*?\|\}/g
         this.partReg = /\{\|\>.*?\|\}/g
         this.bodyReg = /^[>&#^*@~]*/
@@ -39,7 +40,7 @@ module.exports = class wavebar {
 
     /* render */
     render(req, res, data) {
-        
+
         // console.log(`===>`, `in render!`)
         console.time(`[time] wavebar render`)
 
@@ -58,7 +59,7 @@ module.exports = class wavebar {
         if (this.isDebug === 2) {
             res.send(merged)
         }
-        
+
         this.segmentate()
         if (this.isDebug === 3) {
             res.send(this.segmented)
@@ -192,22 +193,26 @@ module.exports = class wavebar {
                 let body = ``
                 switch (type) {
 
+                    case `!`:
+                        builded += ''
+                        break
+
                     case `*`:
                         counter.for.open++
                         body = this.bodyTag(baredTag)
-                        builded += this.BuildFor(body)
+                        builded += this.buildFor(body)
                         break
 
                     case `#`:
                         counter.if.open++
                         body = this.bodyTag(baredTag)
-                        builded += this.BuildIf(body)
+                        builded += this.buildIf(body)
                         break
 
                     case `^`:
                         counter.not.open++
                         body = this.bodyTag(baredTag)
-                        builded += this.BuildElse(body)
+                        builded += this.buildElse(body)
                         break
 
                     case `/`:
@@ -229,7 +234,8 @@ module.exports = class wavebar {
 
                     case `~`:
                         body = this.bodyTag(baredTag)
-                        builded += `builded += ${body}\n`
+                        // builded += `builded += ${body}\n`
+                        builded += this.buildFunc(body)
                         break
 
                     case `&`:
@@ -283,9 +289,32 @@ module.exports = class wavebar {
     }
 
     /* build funcitons */
+    // func
+    buildFunc(body) {
+        const valiableFunc = body.split(`=`)
+        const valiable = valiableFunc.shift().trim()
+        let func = valiableFunc.shift()
+        valiable = valiable != null ? func.trim() : valiable
+
+        debug(valiable, __filename, __line)
+        debug(func, __filename, __line)
+
+        let text = `\n`
+        if(valiable){
+            text += `const ${valiable} = ${func};\n`
+        } else {
+            text += `builded += ${func};\n`
+        }
+        // text += `}\n`
+        return text
+    }
     // for
-    BuildFor(body) {
-        var [object, variable] = body.split(`:`)
+    buildFor(body) {
+        const objectVariable = body.split(`:`)
+        const object = objectVariable.shift().trim()
+        let variable = objectVariable.shift()
+        variable = variable != null ? variable.trim() : 'value'
+
         let text = `{\n`
         text += `let object = false;\n`
         text += `try{\n`
@@ -295,16 +324,16 @@ module.exports = class wavebar {
 
         text += `if(object !== false){\n`
         text += `for(let key in object) {\n`
-        if (variable) {
-            text += `const ${variable} = object[key];\n`
-        } else {
-            text += `value = object[key];\n`
-        }
+        text += `const ${variable} = object[key];\n`
         return text
     }
     // if
-    BuildIf(body) {
-        let [variable, alias] = body.split(`:`)
+    buildIf(body) {
+        const variableAlias = body.split(`:`)
+        const variable = variableAlias.shift().trim()
+        let alias = variableAlias.shift()
+        alias = alias != null ? alias.trim() : false
+
         let text = `{\n`
         text += `let variable = false;\n`
         text += `try{\n`
@@ -318,7 +347,7 @@ module.exports = class wavebar {
         return text
     }
     // else
-    BuildElse(body) {
+    buildElse(body) {
         let variable = body
         let text = `{\n`
         text += `let variable = false;\n`
@@ -421,7 +450,7 @@ module.exports = class wavebar {
             return compiled
         } catch (err) {
             // TODO:: スタック変更できるかな？
-            console.log(context)
+            // console.log(context)
             console.log(`vm error! ${err.message}`)
             // throw new Error()
             throw err
@@ -443,11 +472,11 @@ module.exports = class wavebar {
 
     /* tag control functions */
     bareTag(str) {
-        return str.replace(this.bareReg, ``)
+        return str.replace(this.bareReg, ``).trim()
     }
 
     bodyTag(str) {
-        return str.replace(this.bodyReg, ``)
+        return str.replace(this.bodyReg, ``).trim()
     }
 
     cleanTag(str) {

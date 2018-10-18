@@ -1,0 +1,63 @@
+{|@ wrapper0 |}
+{|> header |}
+
+<div class="col12 grid1 gap1">
+    <textarea id="content" class="col1 row3">{| target.content |}</textarea>
+    <button class="col1" type="button" id="updateBtn" data-unique="{| target.unique |}" data-url="/{| backendFirstPath |}/thing-update">update</button>
+</div>
+
+<div class="col12 grid1 gap1 rig">
+    <a class="col1" href="/{| target.unique |}" target="_blank">{|~ asdf = __(`How are you?`)|} /{| target.unique |}</a>
+</div>
+
+{|> footer |}
+
+<script>
+    const contentElement = document.querySelector('#content')
+    const updateBtnElement = document.querySelector('#updateBtn')
+
+    updateBtnElement.addEventListener('click', event => {
+
+        const url = event.target.dataset.url
+        const unique = event.target.dataset.unique
+        const content = contentElement.value
+
+        fetchServer(url, {unique, content})
+            .then(result => {
+                console.log(result)
+            })
+            .catch(err => console.log(err))
+    })
+
+    function fetchServer(url, body) {
+
+        const headers = {
+            // 'Access-Control-Allow-Credentials': 'true',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: 'post',
+                mode: 'cors',
+                credentials: 'include',
+                cache: 'no-cache',
+                headers: headers,
+                body: JSON.stringify(body)
+            })
+                .then(data => {
+                    return data.json()
+                })
+                .then(json => {
+                    resolve(json)
+                })
+                .catch(err => {
+                    reject({
+                        status: true,
+                        message: "network err."
+                    })
+                })
+        })
+    }
+</script>

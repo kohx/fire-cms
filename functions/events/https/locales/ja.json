@@ -1,5 +1,6 @@
 {
 	"Hello": "こんにちは",
+	"How are you?": "ご機嫌いかがですか？",
 	"yes": "はい",
 	"Hello %s": "こんにちは %s",
 	"Hello {{name}}": "こんにちは！ {{name}}",
@@ -36,5 +37,10 @@
 	"users": "users",
 	"divisions": "divisions",
 	"assets": "assets",
-	"things": "things"
+	"things": "things",
+	"thing-add": "thing-add",
+	"thing": "thing",
+	"templates": "templates",
+	"checkthing": "checkthing",
+	"Howareyou?": "Howareyou?"
 }
