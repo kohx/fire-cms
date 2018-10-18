@@ -7,11 +7,11 @@ module.exports = class wavebar {
     constructor() {
         this.isDebug = 0
 
-        this.templateTagReg = /\{\|.*?\|\}/g
-        this.bareReg = /\{\||\|\}/g
+        this.templateTagReg = /(\{\|).*?(\|\})/g
+        this.bareReg = /(\{\|)|(\|\})/g
 
-        this.wrapReg = /\{\|\@.*?\|\}/g
-        this.partReg = /\{\|\>.*?\|\}/g
+        this.wrapReg = /(\{\|\@).*?(\|\})/g
+        this.partReg = /(\{\|\>).*?(\|\})/g
         this.bodyReg = /^[>&#^*@~]*/
         this.replaceMarke = `<|||>`
 
@@ -52,7 +52,6 @@ module.exports = class wavebar {
         this.templates = (data.templates != null) ? data.templates : {}
         this.params = (data.params != null) ? data.params : {}
         this.contentType = data.contentType != null ? data.contentType : `html`
-        // debug(this.params.divisions, __filename, __line)
 
         // isDebug === 1は「is not defined!」を出す
         const merged = this.merge()
@@ -292,12 +291,14 @@ module.exports = class wavebar {
     // func
     buildFunc(body) {
         const valiableFunc = body.split(`=`)
-        const valiable = valiableFunc.shift().trim()
+        let valiable = valiableFunc.shift().trim()
         let func = valiableFunc.shift()
-        valiable = valiable != null ? func.trim() : valiable
-
-        debug(valiable, __filename, __line)
-        debug(func, __filename, __line)
+        if(func == null){
+            func = valiable
+            valiable = false
+        } else {
+            func = func.trim() 
+        }
 
         let text = `\n`
         if(valiable){
@@ -435,6 +436,9 @@ module.exports = class wavebar {
         for (const key in this.params) {
             context[key] = this.params[key]
         }
+
+        const asdf = wbFunctions.init(this.params.unique)
+        debug(asdf.de, __filename, __line)
 
         // assign function of wbfunctions file
         for (const key in wbFunctions.funcs) {

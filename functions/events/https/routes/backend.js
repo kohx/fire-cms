@@ -42,6 +42,7 @@ function subGetRoute(req, res, next) {
         'thing-content': thing.content,
         // template
         'templates': template.index,
+        'template': template.edit,
         'template-content': template.content,
         // division
         divisions: divisions.index,

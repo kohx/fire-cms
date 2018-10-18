@@ -1,13 +1,16 @@
 {|@ wrapper0 |}
 {|> header |}
 
+{|# is(true)|}
+aaa
+{|/#|}
 <div class="col12 grid1 gap1">
     <textarea id="content" class="col1 row3">{| target.content |}</textarea>
     <button class="col1" type="button" id="updateBtn" data-unique="{| target.unique |}" data-url="/{| backendFirstPath |}/thing-update">update</button>
 </div>
 
 <div class="col12 grid1 gap1 rig">
-    <a class="col1" href="/{| target.unique |}" target="_blank">{|~ asdf = __(`How are you?`)|} /{| target.unique |}</a>
+    <a class="col1" href="/{| target.unique |}" target="_blank">{|~ __(`check {{thing}}.`, {thing: target.unique}) |}</a>
 </div>
 
 {|> footer |}

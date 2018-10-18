@@ -1,5 +1,19 @@
-module.exports.funcs = {
-    de: value => {
+const debug = require('../../modules/debug').debug
+
+
+module.exports = class wbFunctions {
+
+    constructor(unique) {
+        this.unique = unique
+        
+    }
+
+    static init(unique) {
+        const instance = new wbFunctions(unique)
+        return instance
+    }
+
+    de(value) {
         const type = typeof (value)
         const result = '';
         switch (type) {
@@ -8,12 +22,13 @@ module.exports.funcs = {
                 break;
 
             default:
-                result = `${ type } -> ${ value } `
+                result = `${type} -> ${value} `
                 break
         }
         return result
-    },
-    is: value => {
-        console.log('is function')
+    }
+
+    is(value){
+
     }
 }

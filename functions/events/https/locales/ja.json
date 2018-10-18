@@ -1,6 +1,6 @@
 {
 	"Hello": "こんにちは",
-	"How are you?": "ご機嫌いかがですか？",
+	"check {{thing}}.": "{{thing}}を確認。",
 	"yes": "はい",
 	"Hello %s": "こんにちは %s",
 	"Hello {{name}}": "こんにちは！ {{name}}",
