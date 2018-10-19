@@ -17,9 +17,10 @@ const generalMethod = require('../middleWare/route/backend/general')
 const updateAsset = require('../middleWare/route/backend/updateAsset')
 
 // subRote
-const divisions = require('../middleWare/route/backend/divisions')
+const setting = require('../middleWare/route/backend/setting')
 const thing = require('../middleWare/route/backend/thing')
 const template = require('../middleWare/route/backend/template')
+const division = require('../middleWare/route/backend/division')
 
 /* route get */
 router.get('/*',
@@ -35,7 +36,10 @@ router.get('/*',
 function subGetRoute(req, res, next) {
     
     const unique = req.vessel.get('paths.unique')
+    
     const subRoutes = {
+        // settings
+        'settings': setting.index,
         // thing
         'things': thing.index,
         'thing': thing.edit,
@@ -45,7 +49,7 @@ function subGetRoute(req, res, next) {
         'template': template.edit,
         'template-content': template.content,
         // division
-        divisions: divisions.index,
+        division: division.index,
     }
 
     const callSubRoute = subRoutes[unique] != null ? subRoutes[unique] : null

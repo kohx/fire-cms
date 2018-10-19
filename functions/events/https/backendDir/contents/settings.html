@@ -1,7 +1,13 @@
-{|@ wrapper |} 
+{|@ wrapper0 |}
 {|> header |}
 
-<h2>settings</h2>
-<div id="list"></div>
+<div class="col0 grid3 gap1">
+
+    <ul class="col0 grid1">
+    {|* settings: setting |}
+    <li class="col1">{| setting.backend.firstPath |}</li>
+    {|/*|}
+    </ul>
+</div>
 {|> footer |}
 <script src="{|backendBase|}settings.js"></script>

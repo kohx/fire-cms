@@ -43,6 +43,7 @@ http://opensource.org/licenses/mit-license.php
 .grid12{grid-template-columns: repeat(12, 1fr);}
 
 /* col */
+.col0 {grid-column: 1 / -1;}
 .col1 {grid-column: span 1;}
 .col2 {grid-column: span 2;}
 .col3 {grid-column: span 3;}
