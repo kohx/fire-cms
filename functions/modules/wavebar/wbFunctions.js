@@ -1,21 +1,11 @@
 const debug = require('../../modules/debug').debug
 
 
-module.exports = class wbFunctions {
+module.exports.funcs = {
 
-    constructor(unique) {
-        this.unique = unique
-        
-    }
-
-    static init(unique) {
-        const instance = new wbFunctions(unique)
-        return instance
-    }
-
-    de(value) {
+    de: (value) => {
         const type = typeof (value)
-        const result = '';
+        let result = '';
         switch (type) {
             case 'object':
                 result = `${type} -> ${JSON.stringify(value, null, '<br>')}`
@@ -26,9 +16,9 @@ module.exports = class wbFunctions {
                 break
         }
         return result
-    }
+    },
 
-    is(value){
-
+    test: () => {
+        return 'test'
     }
 }

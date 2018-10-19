@@ -119,6 +119,7 @@ module.exports.get = (unique) => {
         'thing': {
             unique: 'thing',
             name: 'thing',
+            parents: ['things'],
             roles: {
                 owner: true,
                 direct: true,
@@ -133,6 +134,7 @@ module.exports.get = (unique) => {
         'thing-add': {
             unique: 'thing-add',
             name: 'thing-add',
+            parents: ['things'],
             roles: {
                 owner: true,
                 direct: true,
@@ -147,6 +149,7 @@ module.exports.get = (unique) => {
         'thing-content': {
             unique: 'thing-content',
             name: 'thing-content',
+            parents: ['things'],
             roles: {
                 owner: true,
                 direct: true,
@@ -161,6 +164,7 @@ module.exports.get = (unique) => {
         'thing-assets': {
             unique: 'thing-assets',
             name: 'thing-assets',
+            parents: ['things'],
             roles: {
                 owner: true,
                 direct: true,
@@ -226,6 +230,7 @@ module.exports.get = (unique) => {
         'template-add': {
             unique: 'template-add',
             name: 'template-add',
+            parents: ['templates'],
             roles: {
                 owner: true,
                 direct: true,
@@ -240,6 +245,7 @@ module.exports.get = (unique) => {
         'template': {
             unique: 'template-edit',
             name: 'template-edit',
+            parents: ['templates'],
             roles: {
                 owner: true,
                 direct: true,
@@ -254,6 +260,7 @@ module.exports.get = (unique) => {
         'template-content': {
             unique: 'template-content',
             name: 'template-content',
+            parents: ['templates'],
             roles: {
                 owner: true,
                 direct: true,

@@ -293,15 +293,15 @@ module.exports = class wavebar {
         const valiableFunc = body.split(`=`)
         let valiable = valiableFunc.shift().trim()
         let func = valiableFunc.shift()
-        if(func == null){
+        if (func == null) {
             func = valiable
             valiable = false
         } else {
-            func = func.trim() 
+            func = func.trim()
         }
 
         let text = `\n`
-        if(valiable){
+        if (valiable) {
             text += `const ${valiable} = ${func};\n`
         } else {
             text += `builded += ${func};\n`
@@ -430,15 +430,21 @@ module.exports = class wavebar {
             isText: this.isText,
             isObject: this.isObject,
             __: this.__,
+            is: (value) => {
+                return this.params.unique === value
+            },
+            inParents: (value) => {
+                let uniques = this.params.parents.slice()
+                uniques = uniques != null ? uniques : []
+                uniques.push(this.params.unique)
+                return uniques.includes(value)
+            },
         }
 
         // expand params then assign to context
         for (const key in this.params) {
             context[key] = this.params[key]
         }
-
-        const asdf = wbFunctions.init(this.params.unique)
-        debug(asdf.de, __filename, __line)
 
         // assign function of wbfunctions file
         for (const key in wbFunctions.funcs) {

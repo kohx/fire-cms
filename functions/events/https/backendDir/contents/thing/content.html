@@ -1,9 +1,7 @@
-{|@ wrapper0 |}
+{|@ wrapper |}
 {|> header |}
+{|> thingMenu |}
 
-{|# is(true)|}
-aaa
-{|/#|}
 <div class="col12 grid1 gap1">
     <textarea id="content" class="col1 row3">{| target.content |}</textarea>
     <button class="col1" type="button" id="updateBtn" data-unique="{| target.unique |}" data-url="/{| backendFirstPath |}/thing-update">update</button>
@@ -25,7 +23,7 @@ aaa
         const unique = event.target.dataset.unique
         const content = contentElement.value
 
-        fetchServer(url, {unique, content})
+        fetchServer(url, { unique, content })
             .then(result => {
                 console.log(result)
             })
