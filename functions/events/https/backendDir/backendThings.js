@@ -45,6 +45,7 @@ module.exports.get = (unique) => {
             contentType: 'js',
             contentFile: 'signin.js'
         },
+        /* settings */
         'settings': {
             unique: 'settings',
             name: 'settings',
@@ -57,8 +58,9 @@ module.exports.get = (unique) => {
                 user: false
             },
             contentType: 'html',
-            contentFile: 'settings.html'
+            contentFile: 'setting/index.html'
         },
+        /* users */
         'users': {
             unique: 'users',
             name: 'users',
@@ -71,8 +73,75 @@ module.exports.get = (unique) => {
                 user: false
             },
             contentType: 'html',
-            contentFile: 'users.html'
+            contentFile: 'user/index.html'
         },
+        'user': {
+            unique: 'user',
+            name: 'user',
+            parents: ['users'],
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: false,
+                writer: false,
+                user: false
+            },
+            contentType: 'html',
+            contentFile: 'user/edit.html'
+        },
+        'user-add': {
+            unique: 'user-add',
+            name: 'user-add',
+            parents: ['users'],
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: false,
+                writer: false,
+                user: false
+            },
+            contentType: 'html',
+            contentFile: 'user/add.html'
+        },
+        'user-create': {
+            unique: 'user-create',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'html',
+        },
+        'user-update': {
+            unique: 'user-update',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'json',
+        },
+        'user-delete': {
+            unique: 'thing-delete',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'json',
+        },
+        /* divisions */
         'divisions': {
             unique: 'divisions',
             name: 'divisions',
@@ -85,8 +154,156 @@ module.exports.get = (unique) => {
                 user: true
             },
             contentType: 'html',
-            contentFile: 'divisions.html'
+            contentFile: 'division/index.html'
         },
+        'division': {
+            unique: 'division',
+            name: 'division',
+            parents: ['divisions'],
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'html',
+            contentFile: 'division/edit.html'
+        },
+        'division-add': {
+            unique: 'division-add',
+            name: 'division-add',
+            parents: ['divisions'],
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'html',
+            contentFile: 'division/add.html'
+        },
+        'division-create': {
+            unique: 'division-create',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'html',
+        },
+        'division-update': {
+            unique: 'division-update',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'json',
+        },
+        'division-delete': {
+            unique: 'division-delete',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'json',
+        },
+        /* template */
+        'templates': {
+            unique: 'templates',
+            name: 'templates',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'html',
+            contentFile: 'template/index.html'
+        },
+        'template': {
+            unique: 'template',
+            name: 'template',
+            parents: ['templates'],
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'html',
+            contentFile: 'template/edit.html'
+        },
+        'template-add': {
+            unique: 'template-add',
+            name: 'template-add',
+            parents: ['templates'],
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'html',
+            contentFile: 'template/add.html'
+        },
+        'template-create': {
+            unique: 'template-create',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'json',
+        },
+        'template-update': {
+            unique: 'template-update',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'json',
+        },
+        'template-delete': {
+            unique: 'template-delete',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'json',
+        },
+        /* assets */
         'assets': {
             unique: 'assets',
             name: 'assets',
@@ -99,7 +316,23 @@ module.exports.get = (unique) => {
                 user: true
             },
             contentType: 'html',
-            contentFile: 'assets.html'
+            // contentFile: 'asset/index.html'
+            contentFile: 'asset/assets.html'
+        },
+        'asset': {
+            unique: 'asset',
+            name: 'asset',
+            parents: ['assets'],
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'html',
+            contentFile: 'asset/edit.html'
         },
         /* thing */
         'things': {
@@ -212,102 +445,6 @@ module.exports.get = (unique) => {
             },
             contentType: 'json',
         },
-        /* template */
-        'templates': {
-            unique: 'templates',
-            name: 'templates',
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
-            contentType: 'html',
-            contentFile: 'template/index.html'
-        },
-        'template-add': {
-            unique: 'template-add',
-            name: 'template-add',
-            parents: ['templates'],
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
-            contentType: 'html',
-            contentFile: 'template-add.html'
-        },
-        'template': {
-            unique: 'template-edit',
-            name: 'template-edit',
-            parents: ['templates'],
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
-            contentType: 'html',
-            contentFile: 'template-edit.html'
-        },
-        'template-content': {
-            unique: 'template-content',
-            name: 'template-content',
-            parents: ['templates'],
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
-            contentType: 'html',
-            contentFile: 'template/content.html'
-        },
-        'template-create': {
-            unique: 'template-create',
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
-            contentType: 'json',
-        },
-        'template-update': {
-            unique: 'template-update',
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
-            contentType: 'json',
-        },
-        'template-delete': {
-            unique: 'template-delete',
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
-            contentType: 'json',
-        },
         /* css */
         'reset.css': {
             unique: 'reset.css',
@@ -347,6 +484,19 @@ module.exports.get = (unique) => {
             },
             contentType: 'css',
             contentFile: 'css/std-grid.css'
+        },
+        'std-grid-mq.css': {
+            unique: 'std-grid-mq.css',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
+            },
+            contentType: 'css',
+            contentFile: 'css/std-grid-mq.css'
         }
     }
 

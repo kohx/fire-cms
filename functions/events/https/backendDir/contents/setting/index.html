@@ -1,0 +1,33 @@
+{|@ wrapper |}
+{|> header |}
+
+<div class="col0 grid1 gap1">
+
+    <ul class="col1">
+        {|* targets: target |}
+        {|# target |}
+        <li>
+            <h2>{| key |}</h2>
+            <ul>
+                {|* target: value |}
+                <li class="grid3">
+                    <label class="col1 cen mid" for="{| key |}">{| key |}</label>
+                    <input class="col2" type="text" id="{| key |}" value="{| value |}">
+                </li>
+                {|/*|}
+                {|^ target |}
+                <li class="grid3">
+                    <span class="col1"></span>
+                    <span class="col2">no content</span>
+                </li>
+                {|/^|}
+            </ul>
+        </li>
+        {|/#|}
+        {|/*|}
+    </ul>
+
+    <button class="col1" type="button" id="create">update</button>
+
+</div>
+{|> footer |}

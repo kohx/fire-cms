@@ -1,4 +1,4 @@
-<header class="col12 grid12 gap1">
+<header class="col0 grid12 gap1">
     <div class="col3">backend {| unique |}</div>
     <div class="col6 grid1">
         <div>signin: {| sign.status |} </div>
@@ -6,17 +6,10 @@
         <div>name: {| user.name |}</div>
         <div>email: {| user.email |}</div>
     </div>
-    <div class="col12 grid2 rig mid">
-        <button class="col2" id="signout">sign out</button>
-    </div>
+    <button class="col3" id="signout">sign out</button>
 
-    <h2 class="col3">unique: {| unique |}</h2>
-    <h3 class="col3">name: {| name |}</h3>
-    <h3 class="col3">-</h3>
-    <h3 class="col3">{|!~ __(unique) |}</h3>
-    
     <ul class="col12 grid8 gap1">
-        <li class="col1 cen">
+        <li class="col1 cen mid">
             {|# is(`index`) |}
             <span>index</span>
             {|/#|}
@@ -69,8 +62,12 @@
             <span>assets</span>
             {|/#|}
             {|^ is(`assets`) |}
-            <a href="/{|backendFirstPath|}/things">assets</a>
+            <a href="/{|backendFirstPath|}/assets">assets</a>
             {|/^|}
         </li>
     </ul>
+
+    <h1 class="col6">unique: {| unique |}</h1>
+    <div class="col3">name: {| name |}</div>
+    <div class="col3">{|!~ __(unique) |}</div>
 </header>

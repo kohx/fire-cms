@@ -1,0 +1,109 @@
+/**
+css grid small
+Copyright (c) 2018 kohei okuda
+This software is released under the MIT License.
+http://opensource.org/licenses/mit-license.php
+*/
+
+@media (max-width: 992px) {
+
+    .mgrid1{grid-template-columns: repeat(1, 1fr);}
+    .mgrid2{grid-template-columns: repeat(2, 1fr);}
+    .mgrid3{grid-template-columns: repeat(3, 1fr);}
+    .mgrid4{grid-template-columns: repeat(4, 1fr);}
+    .mgrid5{grid-template-columns: repeat(5, 1fr);}
+    .mgrid6{grid-template-columns: repeat(6, 1fr);}
+    .mgrid7{grid-template-columns: repeat(7, 1fr);}
+    .mgrid8{grid-template-columns: repeat(8, 1fr);}
+    .mgrid9{grid-template-columns: repeat(9, 1fr);}
+    .mgrid10{grid-template-columns: repeat(10, 1fr);}
+    .mgrid11{grid-template-columns: repeat(11, 1fr);}
+    .mgrid12{grid-template-columns: repeat(12, 1fr);}
+
+    .mcol1 {grid-column: span 1;}
+    .mcol2 {grid-column: span 2;}
+    .mcol3 {grid-column: span 3;}
+    .mcol4 {grid-column: span 4;}
+    .mcol5 {grid-column: span 5;}
+    .mcol6 {grid-column: span 6;}
+    .mcol7 {grid-column: span 7;}
+    .mcol8 {grid-column: span 8;}
+    .mcol9 {grid-column: span 9;}
+    .mcol10 {grid-column: span 10;}
+    .mcol11 {grid-column: span 11;}
+    .mcol12 {grid-column: span 12;}
+
+    .mrow1 {grid-row: span 1; min-height: calc(var(--grid-height) * 1);}
+    .mrow2 {grid-row: span 2; min-height: calc(var(--grid-height) * 2);}
+    .mrow3 {grid-row: span 3; min-height: calc(var(--grid-height) * 3);}
+    .mrow4 {grid-row: span 4; min-height: calc(var(--grid-height) * 4);}
+    .mrow5 {grid-row: span 5; min-height: calc(var(--grid-height) * 5);}
+    .mrow6 {grid-row: span 6; min-height: calc(var(--grid-height) * 6);}
+
+    /* gap */
+    .mgap0 {grid-gap: 0;}
+    .mgap1 {grid-gap: calc(var(--grid-gap)* 1);}
+    .mgap2 {grid-gap: calc(var(--grid-gap)* 2);}
+    .mgap3 {grid-gap: calc(var(--grid-gap)* 3);}
+
+    /* padding */
+    .mpad0 {padding: 0;}
+    .mpad1 {padding: calc(var(--grid-gap)* 1);}
+    .mpad2 {padding: calc(var(--grid-gap)* 2);}
+    .mpad3 {padding: calc(var(--grid-gap)* 3);}
+}
+
+@media (max-width: 768px) {
+
+    /* grid */
+    .sgrid1{grid-template-columns: repeat(1, 1fr);}
+    .sgrid2{grid-template-columns: repeat(2, 1fr);}
+    .sgrid3{grid-template-columns: repeat(3, 1fr);}
+    .sgrid4{grid-template-columns: repeat(4, 1fr);}
+    .sgrid5{grid-template-columns: repeat(5, 1fr);}
+    .sgrid6{grid-template-columns: repeat(6, 1fr);}
+    .sgrid7{grid-template-columns: repeat(7, 1fr);}
+    .sgrid8{grid-template-columns: repeat(8, 1fr);}
+    .sgrid9{grid-template-columns: repeat(9, 1fr);}
+    .sgrid10{grid-template-columns: repeat(10, 1fr);}
+    .sgrid11{grid-template-columns: repeat(11, 1fr);}
+    .sgrid12{grid-template-columns: repeat(12, 1fr);}
+
+    /* col */
+    .scol1 {grid-column: span 1;}
+    .scol2 {grid-column: span 2;}
+    .scol3 {grid-column: span 3;}
+    .scol4 {grid-column: span 4;}
+    .scol5 {grid-column: span 5;}
+    .scol6 {grid-column: span 6;}
+    .scol7 {grid-column: span 7;}
+    .scol8 {grid-column: span 8;}
+    .scol9 {grid-column: span 9;}
+    .scol10 {grid-column: span 10;}
+    .scol11 {grid-column: span 11;}
+    .scol12 {grid-column: span 12;}
+
+    /* row */
+    .srow1 {grid-row: span 1; min-height: calc(var(--grid-height) * 1);}
+    .srow2 {grid-row: span 2; min-height: calc(var(--grid-height) * 2);}
+    .srow3 {grid-row: span 3; min-height: calc(var(--grid-height) * 3);}
+    .srow4 {grid-row: span 4; min-height: calc(var(--grid-height) * 4);}
+    .srow5 {grid-row: span 5; min-height: calc(var(--grid-height) * 5);}
+    .srow6 {grid-row: span 6; min-height: calc(var(--grid-height) * 6);}
+
+    .sgap1 {grid-gap: calc(var(--grid-gap)* 1);}
+    .sgap2 {grid-gap: calc(var(--grid-gap)* 2);}
+    .sgap3 {grid-gap: calc(var(--grid-gap)* 3);}
+
+    /* gap */
+    .sgap0 {grid-gap: 0;}
+    .sgap1 {grid-gap: calc(var(--grid-gap)* 1);}
+    .sgap2 {grid-gap: calc(var(--grid-gap)* 2);}
+    .sgap3 {grid-gap: calc(var(--grid-gap)* 3);}
+
+    /* padding */
+    .mpad0 {padding: 0;}
+    .mpad1 {padding: calc(var(--grid-gap)* 1);}
+    .mpad2 {padding: calc(var(--grid-gap)* 2);}
+    .mpad3 {padding: calc(var(--grid-gap)* 3);}
+}

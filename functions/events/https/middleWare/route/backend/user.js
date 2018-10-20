@@ -9,7 +9,7 @@ const debug = require('../../../../../modules/debug').debug
 
 module.exports.index = (req, res, next) => {
 
-    admin.firestore().collection('settings').get()
+    admin.firestore().collection('users').get()
         .then(docs => {
             const targets = {}
             docs.forEach(doc => {

@@ -18,9 +18,11 @@ const updateAsset = require('../middleWare/route/backend/updateAsset')
 
 // subRote
 const setting = require('../middleWare/route/backend/setting')
+const user = require('../middleWare/route/backend/user')
 const thing = require('../middleWare/route/backend/thing')
 const template = require('../middleWare/route/backend/template')
 const division = require('../middleWare/route/backend/division')
+const asset = require('../middleWare/route/backend/asset')
 
 /* route get */
 router.get('/*',
@@ -40,16 +42,22 @@ function subGetRoute(req, res, next) {
     const subRoutes = {
         // settings
         'settings': setting.index,
+        // users
+        'users': user.index,
+        'user': user.edit,
+        // divisions
+        'divisions': division.index,
+        'division': division.edit,
+        // template
+        'templates': template.index,
+        'template': template.edit,
         // thing
         'things': thing.index,
         'thing': thing.edit,
         'thing-content': thing.content,
-        // template
-        'templates': template.index,
-        'template': template.edit,
-        'template-content': template.content,
-        // division
-        division: division.index,
+        'thing-assets': thing.assets,
+        // assets
+        'assets': asset.assets,
     }
 
     const callSubRoute = subRoutes[unique] != null ? subRoutes[unique] : null
