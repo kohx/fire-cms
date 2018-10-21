@@ -15,6 +15,8 @@ module.exports.csrf = (req, res, next) => {
     // Get unique
     const unique = req.vessel.get('paths.unique')
 
+    const unique = req.vessel.get('thing.unique')
+
     // signin Uniques
     const signinUniques = [
         req.vessel.get('settings.frontend.signinUnique', []),
@@ -22,6 +24,12 @@ module.exports.csrf = (req, res, next) => {
     ]
 
     // サインインページの場合
+    debug(unique, __filename, __line)
+    debug(signinUniques, __filename, __line)
+    debug(signinUniques.includes(unique), __filename, __line)
+    process.exit()
+
+
     if (signinUniques.includes(unique)) {
 
         // セッションクッキーを取得

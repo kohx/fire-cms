@@ -33,6 +33,8 @@ module.exports.checkSingIn = (req, res, next) => {
     let isSigned = req.vessel.get('sign.status')
     // thingのユニーク
     const unique = req.vessel.get('paths.unique')
+    debug(unique, __filename, __line)
+
     // バックエンドのサインインページ
     const backendSigninUnique = req.vessel.get('settings.backend.signinUnique')
     // バックエンドの最初のパス
@@ -50,10 +52,14 @@ module.exports.checkSingIn = (req, res, next) => {
 
     // ロールが必要かどうか
     const thingRoles = req.vessel.get('thing.roles')
+    debug(thingRoles, __filename, __line)
+
     const activeThingRoles = Object.keys(thingRoles).filter((key) => {
         return thingRoles[key] === true
     })
     const freeRole = activeThingRoles.length === 0 ? true : false
+
+    debug(freeRole, __filename, __line)
 
     // ユーザのロール
     const userRole = req.vessel.get('user.role')
