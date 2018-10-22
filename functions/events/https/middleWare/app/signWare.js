@@ -106,7 +106,7 @@ module.exports.user = (req, res, next) => {
             .then(res => {
                 const data = res.data()
                 req.vessel.user.name = data.name
-                req.vessel.user.roles = data.roles
+                req.vessel.user.role = data.role
             })
     }
 

@@ -28,6 +28,7 @@ const asset = require('../middleWare/route/backend/asset')
 router.get('/*',
     generalMethod.checkPath,
     generalMethod.checkThing,
+    generalMethod.getFlags,
     generalMethod.checkSingIn,
     subGetRoute,
     generalMethod.renderPage

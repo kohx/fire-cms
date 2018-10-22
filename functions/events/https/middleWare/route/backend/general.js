@@ -27,28 +27,19 @@ module.exports.checkThing = (req, res, next) => {
     }
 }
 
-module.exports.checkSingIn = (req, res, next) => {
+module.exports.getFlags = (req, res, next) => {
 
-    // サインインしているかチェック
-    let isSigned = req.vessel.get('sign.status')
-
-    // thingのユニーク
-    const unique = req.vessel.get('paths.unique')
-
-    // バックエンドのサインインページ
-    const backendSigninUnique = req.vessel.get('settings.backend.signinUnique')
-    // バックエンドの最初のパス
-    const backendFirstPath = req.vessel.get('settings.backend.firstPath')
-    // バックエンドのインデックスページ
-    const backendTopUnique = req.vessel.get('settings.backend.topUnique')
+    // thing
+    const thing = req.vessel.get('thing')
 
     // signin Uniques
     const signinUniques = [
         req.vessel.get('settings.frontend.signinUnique', []),
         req.vessel.get('settings.backend.signinUnique', [])
     ]
+
     // サインインページかチェック
-    const isSigninPage = signinUniques.includes(unique)
+    thing.isSigninPage = signinUniques.includes(thing.unique)
 
     // ロールが必要かどうか
     const thingRoles = req.vessel.get('thing.roles')
@@ -60,39 +51,60 @@ module.exports.checkSingIn = (req, res, next) => {
     })
     // active role length
     const activeThingRoleLength = activeThingRoles.length
-
     // if role length equal active role length then
-    const freeRole = thingRoleLength === activeThingRoleLength ? true : false
-    
+    thing.isFreeRole = thingRoleLength === activeThingRoleLength ? true : false
+
     // ユーザのロール
     const userRole = req.vessel.get('user.role')
-    const hasRole = thingRoles[userRole] != null ? thingRoles[userRole] : false
+    thing.hasRole = thingRoles[userRole] != null ? thingRoles[userRole] : false
 
-    // サインインが必要ない場合
-    if (freeRole) {
+    next()
+}
+
+module.exports.checkSingIn = (req, res, next) => {
+
+    // thing
+    const thing = req.vessel.get('thing')
+
+    // サインインしているかチェック
+    let isSigned = req.vessel.get('sign.status')
+
+    // thing
+    const backend = req.vessel.get('settings.backend')
+    
+    // サインインが必要なく、サインインページでない場合
+    if (thing.isFreeRole && !thing.isSigninPage) {
+
+        debug(`@ ${thing.unique} is free page.`, __filename, __line, true)
         next()
     }
+
     // サインインページでなく、サインインしてない場合
-    else if (!isSigninPage && !isSigned) {
-        const redirectPath = `/${backendFirstPath}/${backendSigninUnique}`
-        debug(`@ not sigin in. redirect to ${redirectPath}`, __filename, __line, true)
+    else if (!thing.isSigninPage && !isSigned) {
+
+        const redirectPath = `/${backend.firstPath}/${backend.signinUnique}`
+        debug(`@ ${thing.unique} not sigin in. redirect to ${redirectPath}`, __filename, __line, true)
         res.redirect(`${redirectPath}`)
     }
+
     // サインインページで、サインインしている場合
-    else if (isSigninPage && isSigned) {
+    else if (thing.isSigninPage && isSigned) {
 
         const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
         let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
 
         if (referer === '' || referer === backendSigninUnique) {
-            referer = `/${backendFirstPath}/${backendTopUnique}`
+
+            referer = `/${backend.firstPath}/${backend.topUnique}`
         }
+
         debug(`@ already sigin in. redirect to ${referer}`, __filename, __line)
-        res.redirect(referer)
+        res.redirectC(referer)
     }
+
     // ロールが一致しない場合
-    else if (!hasRole) {
-        debug(`@ can not access ${userRole}.`, __filename, __line)
+    else if (!thing.hasRole) {
+        debug(`@  ${thing.unique} can not access.`, __filename, __line)
         next('route')
     }
     else {
@@ -100,15 +112,31 @@ module.exports.checkSingIn = (req, res, next) => {
     }
 }
 
+module.exports.checkHasRole = (req, res, next) => {
+
+    // ユーザのロール
+    const userRole = req.vessel.get('user.role')
+    const hasRole = thingRoles[userRole] != null ? thingRoles[userRole] : false
+
+    if (!hasRole) {
+        debug(`@  ${unique} can not access ${userRole}.`, __filename, __line)
+        next('route')
+    }
+    else {
+        next()
+    }
+
+}
+
 module.exports.renderPage = (req, res, next) => {
-    
+
     const thing = req.vessel.get('thing', {})
     const content = (thing.content != null) ? thing.content : ''
     const contentType = (thing.contentType != null) ? thing.contentType : 'html'
     delete thing.content
     delete thing.contentFile
     delete thing.contentType
-    
+
     const data = {
         content: content,
         contentType: contentType,
@@ -123,6 +151,6 @@ module.exports.renderPage = (req, res, next) => {
     data.params.frontendBase = req.vessel.get('frontendBase')
     data.params.backendBase = req.vessel.get('backendBase')
     data.params.backendFirstPath = req.vessel.get('settings.backend.firstPath')
- 
+
     res.wbRender(data)
 }

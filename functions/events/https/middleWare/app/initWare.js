@@ -276,7 +276,7 @@ module.exports.getThing = (req, res, next) => {
 
         // set unique to paths
         paths.unique = unique
-        
+
         // get thing from thing json
         const thing = backendThings.get(unique)
 
@@ -306,6 +306,7 @@ module.exports.getThing = (req, res, next) => {
             }
         }
 
+        // set thing content
         thing.content = content
         console.timeEnd('[time] init app')
         return thing

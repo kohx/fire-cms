@@ -12,7 +12,7 @@ module.exports.get = (unique) => {
                 admin: true,
                 editor: true,
                 writer: true,
-                user: true
+                user: false
             },
             contentType: 'html',
             contentFile: 'index.html'
@@ -21,12 +21,12 @@ module.exports.get = (unique) => {
             unique: 'signin',
             name: 'signin',
             roles: {
-                owner: false,
-                direct: false,
-                admin: false,
-                editor: false,
-                writer: false,
-                user: false
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
             },
             contentType: 'html',
             contentFile: 'signin.html'
@@ -35,12 +35,12 @@ module.exports.get = (unique) => {
             unique: 'signin.js',
             name: 'signin.js',
             roles: {
-                owner: false,
-                direct: false,
-                admin: false,
-                editor: false,
-                writer: false,
-                user: false
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: true,
+                user: true
             },
             contentType: 'js',
             contentFile: 'signin.js'
