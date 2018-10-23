@@ -17,6 +17,7 @@ http://opensource.org/licenses/mit-license.php
 .grid1, .grid2, .grid3, .grid4, .grid5, .grid6, .grid7, .grid8, .grid9, .grid10, .grid11, .grid12 {
   display: grid;
   grid-template-columns: max-content;
+  
   grid-template-rows: max-content;
   grid-auto-flow: dense;
 }
@@ -84,7 +85,7 @@ http://opensource.org/licenses/mit-license.php
 } */
 
 .lef {
-  justify-content: flex-start;
+  justify-content: start;
   text-align: left;
 }
 .cen {
@@ -92,15 +93,15 @@ http://opensource.org/licenses/mit-license.php
   text-align: center;
 }
 .rig {
-  justify-content: flex-end;
+  justify-content: end;
   text-align: right;
 }
 .top {
-  align-items: flex-start;
+  align-items: start;
 }
 .mid {
   align-items: center;
 }
 .bot {
-  align-items: flex-end;
+  align-items: end;
 }

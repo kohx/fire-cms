@@ -1,20 +1,20 @@
 {|@ wrapper |}
 {|> header |}
 
-<div class="col12 grid12 gap1 rig">
-<a class="col2" href="/{| backendFirstPath |}/template-add">add template</a>
+<div class="col0 grid12">
+    <a class="col3 pad1 cen" href="/{| backendFirstPath |}/template-add">add template</a>
 </div>
 
 {|# targets |}
 <ul class="col12 grid3 gap1">
     {|* targets : target |}
-    <li class="col1 row2">
+    <li class="col1 row2 pad1 cen mid">
         <a href="/{| backendFirstPath |}/template/{| target.unique |}">
             {| target.name |}
         </a>
     </li>
-    {|/* targets |} 
+    {|/* targets |}
 </ul>
 {|/# targets |}
-        
+
 {|> footer |}

@@ -1,14 +1,36 @@
 {|@ wrapper |}
 {|> header |}
 
-<div class="col12 grid1 gap1">
-    <div class="col1"> <label>name</label> <input id="name" type="text" value="{| name |}"></div>
-    <div class="col1"> <label>description</label> <input id="description" type="text" value="{| description |}"></div>
-    <div class="col1"> <label>keywords</label> <input id="keywords" type="text" value="{| keywords |}"></div>
-    <div class="col1"> <label>summary</label> <input id="summary" type="text" value="{| summary |}"></div>
-    <div class="col1"> <label>order</label> <input id="order" type="text" value="{| order |}"></div>
-    <div class="col1"> <label>date of issue</label> <input id="date_of_issue" type="date" value="{| dateOfIssue |}"></div>
+<div class="col12 grid1 gap1 pad1">
+    <div class="col1">
+        <h2><label for="name">name</label></h2>
+        <input id="name" type="text" value="{| target.name |}">
+    </div>
+    <div class="col1">
+        <h2><label for="description">description</label></h2>
+        <input id="description" type="text" value="{| target.description |}">
+    </div>
+    <div class="col1">
+        <h2><label for="keywords">keywords</label></h2>
+        <input id="keywords" type="text" value="{| target.keywords |}">
+    </div>
+    <div class="col1">
+        <h2> <label for="summary">summary</label></h2>
+        <input id="summary" type="text" value="{| target.summary |}">
+    </div>
+    <div class="col1">
+        <h2> <label for="order">order</label></h2>
+        <input id="order" type="text" value="{| order |}">
+    </div>
+    <div class="col1">
+        <h2> <label for="date_of_issue">date of issue</label></h2>
+        <input id="date_of_issue" type="date" value="{| target.dateOfIssue |}">
+    </div>
+    <div class="col1">
+        <h2><label for="content">content</label></h2>
+        <textarea id="content" class="col1 row5">{| target.content |}</textarea>
+    </div>
     <button class="col1" type="button" id="create">create</button>
 </div>
-        
+
 {|> footer |}

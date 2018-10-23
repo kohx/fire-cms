@@ -22,32 +22,6 @@ module.exports.index = (req, res, next) => {
         })
 }
 
-module.exports.content = (req, res, next) => {
-debug('!@!@', __filename, __line)
-    const segments = req.vessel.get('paths.segments')
-    const target = segments.shift()
-    const thing = req.vessel.get('thing')
-
-    if (!target) {
-        next()
-    } else {
-
-        admin.firestore().collection('templates').doc(target).get()
-            .then(doc => {
-                const target = doc.data()
-
-                target.content = target.content.replace(/\\n/g, '\n')
-
-                thing.target = target
-                next()
-            })
-            .catch(err => {
-                debug(err, __filename, __line)
-                next(err)
-            })
-    }
-}
-
 module.exports.edit = (req, res, next) => {
 
     const segments = req.vessel.get('paths.segments')
@@ -62,7 +36,7 @@ module.exports.edit = (req, res, next) => {
             .then(doc => {
                 const target = doc.data()
 
-                target.content = target.content.replace(/\n/g, '\\n')
+                target.content = target.content.replace(/\\n/g, '\n')
 
                 thing.target = target
                 next()

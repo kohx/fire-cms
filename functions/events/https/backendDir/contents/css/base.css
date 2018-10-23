@@ -50,7 +50,9 @@ button {
     padding: 1rem;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="date"],
+textarea {
     border: none;
     background-color: rgba(0, 0, 0, 0.1);
     padding: .6rem;
