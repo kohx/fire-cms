@@ -105,33 +105,34 @@ module.exports.user = (req, res, next) => {
     // サインインしているかチェック
     let isSigned = req.vessel.get('sign.status')
 
-    // ユーザの詳細を追加
-    if (isSigned) {
-        const uid = req.vessel.get('user.uid')
-        admin.firestore().collection('users').doc(uid).get()
-            .then(res => {
-                const data = res.data()
-                if (data.name != null) { req.vessel.user.name = data.name }
-                if (data.role != null) { req.vessel.user.role = data.role }
-                next()
-            })
-    } else {
+    // ローカルでバグ用
+    if (system.debugSinin) {
+
+        debug(`@ line: ${__line}`, __filename, __line, true)
+        isSigned = true
+        req.vessel.sign.status = true
+        req.vessel.sign.message = `sign in success.`
+        req.vessel.user.uid = `TFHZ4VowjVbtcxPnrvNzM1LtlNv1`
+        req.vessel.user.email = `kohei0728@gmail.com`
+        req.vessel.user.name = `kohei`
+        req.vessel.user.role = `admin`
         next()
+    } else {
+        
+        // ユーザの詳細を追加
+        if (isSigned) {
+            const uid = req.vessel.get('user.uid')
+            admin.firestore().collection('users').doc(uid).get()
+                .then(res => {
+                    const data = res.data()
+                    if (data.name != null) { req.vessel.user.name = data.name }
+                    if (data.role != null) { req.vessel.user.role = data.role }
+                    next()
+                })
+        } else {
+            next()
+        }
     }
-
-    // // ローカルでバグ用
-    // if (system.debugSinin) {
-    //     debug(`@ line: ${__line}`, __filename, __line, true)
-    //     isSigned = true
-    //     req.vessel.sign.status = true
-    //     req.vessel.sign.message = `sign in success.`
-    //     req.vessel.user.uid = `TFHZ4VowjVbtcxPnrvNzM1LtlNv1`
-    //     req.vessel.user.email = `kohei0728@gmail.com`
-    //     req.vessel.user.name = `kohei`
-    //     req.vessel.user.role = `admin`
-    // }
-
-    // next()
 }
 
 /* in function */

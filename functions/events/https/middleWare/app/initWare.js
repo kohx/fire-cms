@@ -260,13 +260,10 @@ module.exports.getThing = (req, res, next) => {
 
         // back end top unique
         const backendTopUnique = req.vessel.get('settings.backend.topUnique', 'index')
-
         // get paths from vessel
         const paths = req.vessel.get('paths')
-
         // cat first path becouse "backendpath"
         paths.segments = paths.segments.slice(1)
-
         // get segments top path
         let unique = paths.segments.shift()
 
@@ -280,7 +277,10 @@ module.exports.getThing = (req, res, next) => {
         const thing = backendThings.get(unique)
 
         if (!thing) {
-            return {}
+            let err = new Error('Thing Not Found!')
+            err.status = 404
+            next(err)
+            return
         }
 
         // if has content file\

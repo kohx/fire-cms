@@ -26,7 +26,11 @@ module.exports.checkThing = (req, res, next) => {
     if (thing.unique) {
         next()
     } else {
-        next('route')
+        
+        let err = new Error('Thing unique Not Found!')
+        err.status = 404
+        next(err)
+        return
     }
 }
 
