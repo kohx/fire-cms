@@ -66,7 +66,7 @@ module.exports.checkSingIn = (req, res, next) => {
     // thing
     const thing = req.vessel.get('thing')
 
-    // サインインしているかチェック
+    // サインインフラッグ
     let isSigned = req.vessel.get('sign.status')
 
     // thing
@@ -75,8 +75,9 @@ module.exports.checkSingIn = (req, res, next) => {
     // is signed
     if (isSigned) {
 
-        // サインインページで、サインインしている場合
-        if (thing.isSigninPage) {
+        // サインインしていてサインインページの場合
+        // サインインしていてロールが一致しない場合 401?
+        if (thing.isSigninPage || !thing.hasRole) {
             const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
             let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
 
@@ -86,33 +87,27 @@ module.exports.checkSingIn = (req, res, next) => {
             }
 
             debug(`@ already sigin in. redirect to ${referer}`, __filename, __line)
-            res.redirectC(referer)
+            // res.redirectC(referer)
         }
         else {
-            // ロールが一致しない場合
-            if (!thing.hasRole) {
-                debug(`@ [ ${thithing.uniqueng} ] can not access.`, __filename, __line)
-                next('route')
-            }
-            else {
-                debug(`@@@ [ ${thithing.uniqueng} ]`, __filename, __line); process.exit()
-                next()
-            }
+            debug(`@@@ [ ${thing}.uniqueng} ]`, __filename, __line); process.exit()
+            next()
         }
     }
     // not signed
     else {
-
-        if (thing.isFreeRole || thing.isSigninPage) {
+        // サインインしていなくてフリーページの場合
+        if (thing.isFreeRole) {
 
             debug(`@ ${thing.unique} is free page.`, __filename, __line)
             next()
         }
+        // サインインしていない場合
         else {
 
             const redirectPath = `/${backend.firstPath}/${backend.signinUnique}`
             debug(`@ [ ${thing.uniqueng} ] not sigin in. redirect to ${redirectPath}`, __filename, __line)
-            res.redirect(`${redirectPath}`)
+            // res.redirect(`${redirectPath}`)
         }
     }
 }
@@ -141,5 +136,6 @@ module.exports.renderPage = (req, res, next) => {
     data.params.backendBase = req.vessel.get('backendBase')
     data.params.backendFirstPath = req.vessel.get('settings.backend.firstPath')
 
+    console.log(`========== ${thing.unique} ==========`)
     res.wbRender(data)
 }

@@ -29,7 +29,7 @@ router.get('/*',
     generalMethod.checkPath,
     generalMethod.checkThing,
     generalMethod.getFlags,
-    // generalMethod.checkSingIn,
+    generalMethod.checkSingIn,
     subGetRoute,
     generalMethod.renderPage
 )

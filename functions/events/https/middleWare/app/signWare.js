@@ -50,8 +50,14 @@ module.exports.check = (req, res, next) => {
         status: false,
         message: ``,
     }
+
     // user object
-    req.vessel.user = {}
+    req.vessel.user = {
+        uid: null,
+        name: null,
+        email: null,
+        role: null,
+    }
 
 
     // セッション Cookie を確認して権限をチェック
@@ -105,9 +111,8 @@ module.exports.user = (req, res, next) => {
         admin.firestore().collection('users').doc(uid).get()
             .then(res => {
                 const data = res.data()
-                debug(data.name, __filename, __line)
-                req.vessel.user.name = data.name
-                req.vessel.user.role = data.role
+                if (data.name != null) { req.vessel.user.name = data.name }
+                if (data.role != null) { req.vessel.user.role = data.role }
                 next()
             })
     } else {

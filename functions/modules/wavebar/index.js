@@ -42,7 +42,7 @@ module.exports = class wavebar {
     render(req, res, data) {
 
         // console.log(`===>`, `in render!`)
-        console.time(`[time] wavebar render`)
+        // console.time(`[time] wavebar render`)
 
         // console.log('@@@', req.__('Hello {{name}}', { name: 'kohei' }))
 
@@ -76,7 +76,7 @@ module.exports = class wavebar {
         // http://expressjs.com/ja/api.html#res.type
         res.type(this.contentType)
 
-        console.timeEnd(`[time] wavebar render`)
+        // console.timeEnd(`[time] wavebar render`)
         return res.send(compiled)
     }
 

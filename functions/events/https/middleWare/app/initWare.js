@@ -16,7 +16,7 @@ jsonCache.isActive(system.cache)
 const backendThings = require('../../backendDir/backendThings')
 
 module.exports.getInfo = (req, res, next) => {
-    console.time('[time] init app')
+    // console.time('[time] init app')
 
     // const parse = {
     //   'headers.hosts': [
@@ -307,7 +307,7 @@ module.exports.getThing = (req, res, next) => {
 
         // set thing content
         thing.content = content
-        console.timeEnd('[time] init app')
+        // console.timeEnd('[time] init app')
         return thing
     }
 }
