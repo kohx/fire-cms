@@ -77,7 +77,6 @@ module.exports = class wavebar {
         res.type(this.contentType)
 
         console.timeEnd(`[time] wavebar render`)
-        console.log(`\n\n\n>>>>>>>>>> app end ${data.params.unique} <<<<<<<<<<\n\n`)
         return res.send(compiled)
     }
 

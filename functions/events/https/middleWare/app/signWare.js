@@ -82,8 +82,8 @@ module.exports.check = (req, res, next) => {
 
                     req.vessel.sign.status = true
                     req.vessel.sign.message = `sign in success.`
-                    sign.user.uid = decodedClaims.uid
-                    sign.user.email = decodedClaims.email
+                    req.vessel.user.uid = decodedClaims.uid
+                    req.vessel.user.email = decodedClaims.email
                     next()
                 }
             })
@@ -105,24 +105,28 @@ module.exports.user = (req, res, next) => {
         admin.firestore().collection('users').doc(uid).get()
             .then(res => {
                 const data = res.data()
+                debug(data.name, __filename, __line)
                 req.vessel.user.name = data.name
                 req.vessel.user.role = data.role
+                next()
             })
+    } else {
+        next()
     }
 
-    // ローカルでバグ用
-    if (system.debugSinin) {
-        debug(`@ line: ${__line}`, __filename, __line, true)
-        isSigned = true
-        req.vessel.sign.status = true
-        req.vessel.sign.message = `sign in success.`
-        req.vessel.user.uid = `TFHZ4VowjVbtcxPnrvNzM1LtlNv1`
-        req.vessel.user.email = `kohei0728@gmail.com`
-        req.vessel.user.name = `kohei`
-        req.vessel.user.role = `admin`
-    }
+    // // ローカルでバグ用
+    // if (system.debugSinin) {
+    //     debug(`@ line: ${__line}`, __filename, __line, true)
+    //     isSigned = true
+    //     req.vessel.sign.status = true
+    //     req.vessel.sign.message = `sign in success.`
+    //     req.vessel.user.uid = `TFHZ4VowjVbtcxPnrvNzM1LtlNv1`
+    //     req.vessel.user.email = `kohei0728@gmail.com`
+    //     req.vessel.user.name = `kohei`
+    //     req.vessel.user.role = `admin`
+    // }
 
-    next()
+    // next()
 }
 
 /* in function */
@@ -160,8 +164,6 @@ module.exports.in = (req, res, next) => {
 
     // Guard against CSRF attacks
     if (bodyCsrfToken !== cookieCsrfToken) {
-        debug(bodyCsrfToken, __filename, __line)
-        debug(cookieCsrfToken, __filename, __line)
 
         res.json({
             status: false,
@@ -186,9 +188,7 @@ module.exports.in = (req, res, next) => {
     // セッションCookieを作成、これにより、プロセス内のIDトークンも検証
     // セッションクッキーは、IDトークンと同じ要求を持つ
 
-    admin.auth().createSessionCookie(idToken, {
-        expiresIn
-    })
+    admin.auth().createSessionCookie(idToken, { expiresIn })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {

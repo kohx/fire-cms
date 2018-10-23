@@ -8,7 +8,6 @@ const validation = require('../../../../../modules/validation')
 const uploadBase64 = require('../../../../../modules/uploadBase64')
 
 module.exports = (req, res, next) => {
-    console.log('<<<<<<<<<< start backend updateAsset >>>>>>>>>>\n\n')
     //     // console.log('@@@', res.__('Hello'))
     //     // console.log('@@@', res.__('yes'))
     //     // console.log('@@@', req.__('Hello {{name}}', { name: 'kohei' }))
@@ -155,7 +154,6 @@ module.exports = (req, res, next) => {
         //             })
 
     } catch (err) {
-        console.log('<<<<<<<<<< error backend updateAsset >>>>>>>>>>\n\n')
         console.log(err)
         res.json({
             status: false,

@@ -26,5 +26,4 @@ module.exports.internalServerError = (err, req, res, next) => {
                               ${err.stack}
                               </body>
                           </html>`)
-    console.log('\n\n\n<<<<<<<<<< app end error >>>>>>>>>>\n\n')
 }

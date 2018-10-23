@@ -16,7 +16,6 @@ jsonCache.isActive(system.cache)
 const backendThings = require('../../backendDir/backendThings')
 
 module.exports.getInfo = (req, res, next) => {
-    console.log('\n\n\n<<<<<<<<<< app start >>>>>>>>>>\n\n')
     console.time('[time] init app')
 
     // const parse = {
