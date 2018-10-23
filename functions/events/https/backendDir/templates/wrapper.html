@@ -7,6 +7,12 @@
     <title>{| name |}</title>
     <link rel="apple-touch-icon" href="/images/favicon.png">
 
+    <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
+    <link href="/{|backendFirstPath|}/reset.css" rel="stylesheet">
+    <link href="/{|backendFirstPath|}/std-grid.css" rel="stylesheet">
+    <link href="/{|backendFirstPath|}/std-grid-mq.css" rel="stylesheet">
+    <link href="/{|backendFirstPath|}/base.css" rel="stylesheet">
+
     <script src="/__/firebase/5.5.4/firebase-app.js"></script>
     <script src="/__/firebase/5.5.4/firebase-auth.js"></script>
     <script src="/__/firebase/5.5.4/firebase-firestore.js"></script>
@@ -14,6 +20,12 @@
     <script src="/__/firebase/5.5.4/firebase-messaging.js"></script>
     <script src="/__/firebase/5.5.4/firebase-functions.js"></script>
     <script src="/__/firebase/init.js"></script>
+
+    <script>
+        const firestore = firebase.firestore()
+        const settings = { timestampsInSnapshots: true }
+        firestore.settings(settings);
+    </script>
 </head>
 
 <body>

@@ -19,8 +19,11 @@ module.exports.checkPath = (req, res, next) => {
 
 module.exports.checkThing = (req, res, next) => {
 
-    const isExist = req.vessel.get('thing.unique')
-    if (isExist) {
+    const thing = req.vessel.get('thing')
+
+    console.log(`┗━━━━━ ${thing.unique} ━━━━━┛`)
+
+    if (thing.unique) {
         next()
     } else {
         next('route')
@@ -45,14 +48,8 @@ module.exports.getFlags = (req, res, next) => {
     const thingRoles = req.vessel.get('thing.roles')
     // role length
     const thingRoleLength = Object.keys(thingRoles).length
-    // get active role
-    const activeThingRoles = Object.keys(thingRoles).filter((key) => {
-        return thingRoles[key] === true
-    })
-    // active role length
-    const activeThingRoleLength = activeThingRoles.length
     // if role length equal active role length then
-    thing.isFreeRole = thingRoleLength === activeThingRoleLength ? true : false
+    thing.isFreeRole = thingRoleLength === 0 ? true : false
 
     // ユーザのロール
     const userRole = req.vessel.get('user.role')
@@ -72,34 +69,51 @@ module.exports.checkSingIn = (req, res, next) => {
     // thing
     const backend = req.vessel.get('settings.backend')
 
-    // is signed
     if (isSigned) {
-
+    
         // サインインしていてサインインページの場合
-        // サインインしていてロールが一致しない場合 401?
-        if (thing.isSigninPage || !thing.hasRole) {
+        if (thing.isSigninPage) {
+
             const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
             let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
 
-            if (referer === '' || referer === backendSigninUnique) {
-
+            if (referer === '' || referer === backend.signinUnique) {
                 referer = `/${backend.firstPath}/${backend.topUnique}`
             }
 
             debug(`@ already sigin in. redirect to ${referer}`, __filename, __line)
-            // res.redirectC(referer)
+            res.redirect(referer)
         }
-        else {
-            debug(`@@@ [ ${thing}.uniqueng} ]`, __filename, __line); process.exit()
+        // サインインしていてフリーロールの場合
+        else if (thing.isFreeRole) {
+
+            debug(`@ [ ${thing.unique} ] is free page.`, __filename, __line)
             next()
         }
-    }
-    // not signed
-    else {
+        // サインインしていてロールが一致しない場合 401?
+        else if (!thing.hasRole) {
+
+            const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
+            let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
+
+            if (referer === '' || referer === backend.signinUnique) {
+                referer = `/${backend.firstPath}/${backend.topUnique}`
+            }
+
+            debug(`@ [ ${thing.unique} ] not has role. redirect to ${referer}`, __filename, __line)
+            res.redirect(referer)
+        }
+        else {
+
+            debug(`@ [ ${thing.unique} ]`, __filename, __line)
+            next()
+        }
+    } else {
+
         // サインインしていなくてフリーページの場合
         if (thing.isFreeRole) {
-
-            debug(`@ ${thing.unique} is free page.`, __filename, __line)
+ 
+            debug(`@ [ ${thing.unique} ] is free page.`, __filename, __line)
             next()
         }
         // サインインしていない場合
@@ -107,7 +121,7 @@ module.exports.checkSingIn = (req, res, next) => {
 
             const redirectPath = `/${backend.firstPath}/${backend.signinUnique}`
             debug(`@ [ ${thing.uniqueng} ] not sigin in. redirect to ${redirectPath}`, __filename, __line)
-            // res.redirect(`${redirectPath}`)
+            res.redirect(`${redirectPath}`)
         }
     }
 }
@@ -136,6 +150,6 @@ module.exports.renderPage = (req, res, next) => {
     data.params.backendBase = req.vessel.get('backendBase')
     data.params.backendFirstPath = req.vessel.get('settings.backend.firstPath')
 
-    console.log(`========== ${thing.unique} ==========`)
+    console.log(`┏━━━━━ ${thing.unique} ━━━━━┓`)
     res.wbRender(data)
 }

@@ -1,15 +1,29 @@
 <header class="col0 grid12 gap1">
-    <div class="col3">backend {| unique |}</div>
-    <div class="col6 grid1">
-        <div>signin: {| sign.status |} </div>
+    <div class="col3 row1 mid cen pad1">
+        <h1>backend</h1>
+        <div>unique: {| unique |}</div>
+        <div>name: {| name |}</div>
+    </div>
+
+    {|# sign.status |}
+    <div class="col6 row1 mid pad1">
         <div>uid: {| user.uid |}</div>
         <div>name: {| user.name |}</div>
         <div>email: {| user.email |}</div>
     </div>
-    <button class="col3" id="signout">sign out</button>
+    {|/#|}
+    {|^ sign.status |}
+    <div class="col9 row1 mid pad1">
+            <div>not sign in.</div>
+    </div>
+    {|/^|}
 
-    <ul class="col12 grid8 gap1">
-        <li class="col1 cen mid">
+    {|# sign.status |}
+    <button class="col3 row1 mid cen" id="signout">sign out</button>
+    {|/#|}
+
+    <ul class="col12 grid7 gap1">
+        <li class="col1 row1 cen mid">
             {|# is(`index`) |}
             <span>index</span>
             {|/#|}
@@ -17,7 +31,7 @@
             <a href="/{|backendFirstPath|}/index">index</a>
             {|/^|}
         </li>
-        <li class="col1 cen">
+        <li class="col1 row1 cen mid">
             {|# is(`settings`) |}
             <span>settings</span>
             {|/#|}
@@ -25,7 +39,7 @@
             <a href="/{|backendFirstPath|}/settings">settings</a>
             {|/^|}
         </li>
-        <li class="col1 cen">
+        <li class="col1 row1 cen mid">
             {|# is(`users`) |}
             <span>users</span>
             {|/#|}
@@ -33,7 +47,7 @@
             <a href="/{|backendFirstPath|}/users">users</a>
             {|/^|}
         </li>
-        <li class="col1 cen">
+        <li class="col1 row1 cen mid">
             {|# is(`divisions`) |}
             <span>divisions</span>
             {|/#|}
@@ -41,7 +55,7 @@
             <a href="/{|backendFirstPath|}/divisions">divisions</a>
             {|/^|}
         </li>
-        <li class="col1 cen">
+        <li class="col1 row1 cen mid">
             {|# is(`templates`) |}
             <span>templates</span>
             {|/#|}
@@ -49,7 +63,7 @@
             <a href="/{|backendFirstPath|}/templates">templates</a>
             {|/^|}
         </li>
-        <li class="col1 cen">
+        <li class="col1 row1 cen mid">
             {|# is(`things`) |}
             <span>things</span>
             {|/#|}
@@ -57,7 +71,7 @@
             <a href="/{|backendFirstPath|}/things">things</a>
             {|/^|}
         </li>
-        <li class="col1 cen">
+        <li class="col1 row1 cen mid">
             {|# is(`assets`) |}
             <span>assets</span>
             {|/#|}
@@ -66,8 +80,4 @@
             {|/^|}
         </li>
     </ul>
-
-    <h1 class="col6">unique: {| unique |}</h1>
-    <div class="col3">name: {| name |}</div>
-    <div class="col3">{|!~ __(unique) |}</div>
 </header>

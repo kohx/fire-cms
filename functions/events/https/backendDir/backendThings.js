@@ -20,28 +20,14 @@ module.exports.get = (unique) => {
         'signin': {
             unique: 'signin',
             name: 'signin',
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
+            roles: {},
             contentType: 'html',
             contentFile: 'signin.html'
         },
         'signin.js': {
             unique: 'signin.js',
             name: 'signin.js',
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
+            roles: {},
             contentType: 'js',
             contentFile: 'signin.js'
         },
@@ -448,53 +434,25 @@ module.exports.get = (unique) => {
         /* css */
         'reset.css': {
             unique: 'reset.css',
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
+            roles: {},
             contentType: 'css',
             contentFile: 'css/reset.css'
         },
         'base.css': {
             unique: 'base.css',
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
+            roles: {},
             contentType: 'css',
             contentFile: 'css/base.css'
         },
         'std-grid.css': {
             unique: 'std-grid.css',
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
+            roles: {},
             contentType: 'css',
             contentFile: 'css/std-grid.css'
         },
         'std-grid-mq.css': {
             unique: 'std-grid-mq.css',
-            roles: {
-                owner: true,
-                direct: true,
-                admin: true,
-                editor: true,
-                writer: true,
-                user: true
-            },
+            roles: {},
             contentType: 'css',
             contentFile: 'css/std-grid-mq.css'
         }
