@@ -7,6 +7,7 @@ const system = parent.system
 const debug = require('../../../../modules/debug').debug
 
 // サインインしてからのリミット
+// get from setting
 const limit = 60 * 60 * 24
 
 /* csrf function */
@@ -115,7 +116,8 @@ module.exports.user = (req, res, next) => {
         req.vessel.user.uid = `TFHZ4VowjVbtcxPnrvNzM1LtlNv1`
         req.vessel.user.email = `kohei0728@gmail.com`
         req.vessel.user.name = `kohei`
-        req.vessel.user.role = `admin`
+        // req.vessel.user.role = `admin`
+        req.vessel.user.role = `editor`
         next()
     } else {
         

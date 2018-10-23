@@ -26,7 +26,7 @@ module.exports.checkThing = (req, res, next) => {
     if (thing.unique) {
         next()
     } else {
-        
+
         let err = new Error('Thing unique Not Found!')
         err.status = 404
         next(err)
@@ -74,7 +74,7 @@ module.exports.checkSingIn = (req, res, next) => {
     const backend = req.vessel.get('settings.backend')
 
     if (isSigned) {
-    
+
         // サインインしていてサインインページの場合
         if (thing.isSigninPage) {
 
@@ -97,15 +97,9 @@ module.exports.checkSingIn = (req, res, next) => {
         // サインインしていてロールが一致しない場合 401?
         else if (!thing.hasRole) {
 
-            const refererUrl = (req.header('Referer') != null) ? req.header('Referer') : null
-            let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
-
-            if (referer === '' || referer === backend.signinUnique) {
-                referer = `/${backend.firstPath}/${backend.topUnique}`
-            }
-
-            debug(`@ [ ${thing.unique} ] not has role. redirect to ${referer}`, __filename, __line)
-            res.redirect(referer)
+            let err = new Error('Unauthorized.')
+            err.status = 401
+            next(err)
         }
         else {
 
@@ -116,7 +110,7 @@ module.exports.checkSingIn = (req, res, next) => {
 
         // サインインしていなくてフリーページの場合
         if (thing.isFreeRole) {
- 
+
             debug(`@ [ ${thing.unique} ] is free page.`, __filename, __line)
             next()
         }
