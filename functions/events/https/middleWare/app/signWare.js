@@ -6,10 +6,6 @@ const system = parent.system
 
 const debug = require('../../../../modules/debug').debug
 
-// サインインしてからのリミット
-// get from setting
-const limit = 60 * 60 * 24
-
 /* csrf function */
 module.exports.csrf = (req, res, next) => {
 
@@ -60,6 +56,9 @@ module.exports.check = (req, res, next) => {
         role: null,
     }
 
+    // get from settings
+    // 60 * 60 * 24 1日を設定
+    const signinLImit = req.vessel.get('settings.backend.signinLImit')
 
     // セッション Cookie を確認して権限をチェック
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
@@ -80,10 +79,10 @@ module.exports.check = (req, res, next) => {
 
                 // ユーザーが過去limit秒間以上サインインしていない場合はリサインイン
                 const now = new Date().getTime() / 1000 - decodedClaims.auth_time
-                if (now >= limit) {
+                if (now >= signinLImit) {
 
                     req.vessel.sign.status = false
-                    req.vessel.sign.message = `sign in failed. recent sign in required. limit: ${limit}`
+                    req.vessel.sign.message = `sign in failed. recent sign in required. limit: ${signinLImit}`
                     next()
                 } else {
 
@@ -106,7 +105,7 @@ module.exports.user = (req, res, next) => {
     // サインインしているかチェック
     let isSigned = req.vessel.get('sign.status')
 
-    // ローカルでバグ用
+    // ローカルデバグ用
     if (system.debugSinin) {
 
         debug(`@ line: ${__line}`, __filename, __line, true)
@@ -120,15 +119,19 @@ module.exports.user = (req, res, next) => {
         req.vessel.user.role = `editor`
         next()
     } else {
-        
+
         // ユーザの詳細を追加
         if (isSigned) {
             const uid = req.vessel.get('user.uid')
             admin.firestore().collection('users').doc(uid).get()
                 .then(res => {
                     const data = res.data()
-                    if (data.name != null) { req.vessel.user.name = data.name }
-                    if (data.role != null) { req.vessel.user.role = data.role }
+                    if (data.name != null) {
+                        req.vessel.user.name = data.name
+                    }
+                    if (data.role != null) {
+                        req.vessel.user.role = data.role
+                    }
                     next()
                 })
         } else {
@@ -192,16 +195,20 @@ module.exports.in = (req, res, next) => {
         return
     }
 
-    const expiresIn = 60 * 60 * 24 * 5 * 1000;
+    // get from settings
+    // 60 * 60 * 24 * 5 * 1000 有効期限を5日に設定
+    const expiresIn = req.vessel.get('settings.backend.expiresIn')
+
     // セッションCookieを作成、これにより、プロセス内のIDトークンも検証
     // セッションクッキーは、IDトークンと同じ要求を持つ
-
-    admin.auth().createSessionCookie(idToken, { expiresIn })
+    admin.auth().createSessionCookie(idToken, {
+            expiresIn
+        })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {
                 // 有効期限を5日に設定
-                maxAge: 60 * 60 * 24 * 5 * 1000,
+                maxAge: expiresIn,
                 httpOnly: true,
                 secure: true
             };
