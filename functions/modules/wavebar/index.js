@@ -310,10 +310,14 @@ module.exports = class wavebar {
     }
     // for
     buildFor(body) {
-        const objectVariable = body.split(`:`)
-        const object = objectVariable.shift().trim()
-        let variable = objectVariable.shift()
+        const objectKeyVariable = body.split(`:`)
+        const object = objectKeyVariable.shift().trim()
+
+        let variable = objectKeyVariable.pop()
         variable = variable != null ? variable.trim() : 'value'
+
+        let key = objectKeyVariable.pop()
+        key = key != null ? key.trim() : 'key'
 
         let text = `{\n`
         text += `let object = false;\n`
@@ -323,8 +327,8 @@ module.exports = class wavebar {
         text += `}catch(e){}\n`
 
         text += `if(object !== false){\n`
-        text += `for(let key in object) {\n`
-        text += `const ${variable} = object[key];\n`
+        text += `for(let ${key} in object) {\n`
+        text += `const ${variable} = object[${key}];\n`
         return text
     }
     // if

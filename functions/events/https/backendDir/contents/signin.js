@@ -159,3 +159,4 @@ const signoutBtn = document.querySelector('#signout')
 if (signoutBtn) {
     signoutBtn.addEventListener('click', signout)
 }
+

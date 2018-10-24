@@ -15,6 +15,9 @@ module.exports.index = (req, res, next) => {
             docs.forEach(doc => {
                 targets[doc.id] = doc.data()
             })
+
+            targets.lang.locales = targets.lang.locales.join(',')
+
             req.vessel.thing.targets = targets
             next()
         })

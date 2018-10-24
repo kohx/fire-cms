@@ -4,30 +4,75 @@
 <div class="col0 grid1 gap1">
 
     <ul>
-        {|* targets: target |}
-        {|# target |}
+        {|* targets: targetName: targetValue |}
+        {|# targetValue |}
         <li>
-            <h2>{| key |}</h2>
+            <h2>{| targetName |}</h2>
             <ul class="grid1 gap1 pad1">
-                {|* target: value |}
+                {|* targetValue: itemName: itemValue |}
                 <li class="grid3 gap1">
-                    <label class="col1 cen mid" for="{| key |}">{| key |}</label>
-                    <input class="col2" type="text" id="{| key |}" value="{| value |}">
+                    <label class="col1 cen mid" for="{| itemName |}">{| itemName |}</label>
+                    <input class="setting_item col2" type="text" data-default="{| itemValue |}" data-target="{| targetName |}"
+                        data-item="{| itemName |}" value="{| itemValue |}">
                 </li>
                 {|/*|}
-                {|^ target |}
-                <li class="grid3 gap1">
-                    <span class="col1"></span>
-                    <span class="col2">no content</span>
-                </li>
-                {|/^|}
             </ul>
         </li>
         {|/#|}
         {|/*|}
     </ul>
 
-    <button class="col1" type="button" id="create">update</button>
+    <button class="col1" type="button" id="updateBtn" data-url="/{| backendFirstPath |}/setting-update">update</button>
 
 </div>
 {|> footer |}
+
+<script type="module">
+
+    import { Base } from '/{| backendFirstPath |}/base.js';
+    const base = Base.init()
+
+    const updateBtnElement = document.querySelector('#updateBtn')
+    const targetItems = document.querySelectorAll('.setting_item')
+
+    const itemValues = {}
+    Object.keys(targetItems).forEach(key => {
+        const element = targetItems[key]
+        element.addEventListener('keyup', event => {
+
+            // クライアント側 validation
+            const result = v8n()
+                .string()
+                .test("My string!"); //true
+                console.log(result)
+
+            if (event.target.dataset.default != event.target.value) {
+                event.target.classList.add('modifed')
+            } else {
+                event.target.classList.remove('modifed')
+            }
+        })
+    })
+
+    updateBtnElement.addEventListener('click', event => {
+
+        const url = event.target.dataset.url
+        const unique = event.target.dataset.unique
+        const updateItems = document.querySelectorAll('.modifed')
+
+        const body = {}
+        Object.keys(updateItems).forEach(key => {
+            const element = updateItems[key]
+            if (!body.hasOwnProperty(element.dataset.target)) {
+                body[element.dataset.target] = {}
+            }
+            body[element.dataset.target][element.dataset.item] = element.value
+        })
+
+        base.fetchPost(url, body)
+            .then(result => {
+                console.log(result)
+            })
+            .catch(err => console.log(err))
+    })
+</script>

@@ -73,6 +73,7 @@ function subGetRoute(req, res, next) {
 router.post('/*',
     generalMethod.checkPath,
     generalMethod.checkThing,
+    generalMethod.getFlags,
     generalMethod.checkSingIn,
     subPostRoute
 )

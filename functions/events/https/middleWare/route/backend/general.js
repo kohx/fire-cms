@@ -21,7 +21,7 @@ module.exports.checkThing = (req, res, next) => {
 
     const thing = req.vessel.get('thing')
 
-    console.log(`┗━━━━━ ${thing.unique} ━━━━━┛`)
+    console.log(`\n=============== ${thing.unique} ===============`)
 
     if (thing.unique) {
         next()
@@ -97,7 +97,7 @@ module.exports.checkSingIn = (req, res, next) => {
         // サインインしていてロールが一致しない場合 401?
         else if (!thing.hasRole) {
 
-            let err = new Error('Unauthorized.')
+            let err = new Error('Role Unauthorized.')
             err.status = 401
             next(err)
         }
@@ -148,6 +148,6 @@ module.exports.renderPage = (req, res, next) => {
     data.params.backendBase = req.vessel.get('backendBase')
     data.params.backendFirstPath = req.vessel.get('settings.backend.firstPath')
 
-    console.log(`┏━━━━━ ${thing.unique} ━━━━━┓`)
+    console.log(`=============== ${thing.unique} ===============\n`)
     res.wbRender(data)
 }

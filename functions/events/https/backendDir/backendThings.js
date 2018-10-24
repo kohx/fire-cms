@@ -24,13 +24,6 @@ module.exports.get = (unique) => {
             contentType: 'html',
             contentFile: 'signin.html'
         },
-        'signin.js': {
-            unique: 'signin.js',
-            name: 'signin.js',
-            roles: {},
-            contentType: 'js',
-            contentFile: 'signin.js'
-        },
         /* settings */
         'settings': {
             unique: 'settings',
@@ -45,6 +38,18 @@ module.exports.get = (unique) => {
             },
             contentType: 'html',
             contentFile: 'setting/index.html'
+        },
+        'setting-update': {
+            unique: 'setting-update',
+            roles: {
+                owner: true,
+                direct: true,
+                admin: true,
+                editor: true,
+                writer: false,
+                user: false
+            },
+            contentType: 'json',
         },
         /* users */
         'users': {
@@ -455,6 +460,20 @@ module.exports.get = (unique) => {
             roles: {},
             contentType: 'css',
             contentFile: 'css/std-grid-mq.css'
+        },
+        'base.js': {
+            unique: 'base.js',
+            name: 'base.js',
+            roles: {},
+            contentType: 'js',
+            contentFile: 'base.js'
+        },
+        'signin.js': {
+            unique: 'signin.js',
+            name: 'signin.js',
+            roles: {},
+            contentType: 'js',
+            contentFile: 'signin.js'
         }
     }
 
