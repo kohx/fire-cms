@@ -29,7 +29,8 @@ module.exports.index = (req, res, next) => {
 
 module.exports.update = (req, res, next) => {
 
-    debug('update', __filename, __line)
-
-    next()
+    res.json({
+        status: true,
+        message: 'ok'
+    })
 }
