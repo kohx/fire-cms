@@ -37,9 +37,9 @@ router.get('/*',
 /* sub get route */
 // ここで各バックエンドの処理を入れていく
 function subGetRoute(req, res, next) {
-    
+
     const unique = req.vessel.get('paths.unique')
-    
+
     const subRoutes = {
         // settings
         'settings': setting.index,
@@ -82,6 +82,8 @@ function subPostRoute(req, res, next) {
 
     const unique = req.vessel.get('paths.unique')
     const subRoutes = {
+        // settings
+        'setting-update': setting.update,
         'thing-cleate': thing.cleate,
         'thing-update': thing.update,
         'thing-delete': thing.delete,

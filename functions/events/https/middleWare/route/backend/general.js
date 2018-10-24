@@ -50,6 +50,7 @@ module.exports.getFlags = (req, res, next) => {
 
     // ロールが必要かどうか
     const thingRoles = req.vessel.get('thing.roles')
+    
     // role length
     const thingRoleLength = Object.keys(thingRoles).length
     // if role length equal active role length then
@@ -58,7 +59,6 @@ module.exports.getFlags = (req, res, next) => {
     // ユーザのロール
     const userRole = req.vessel.get('user.role')
     thing.hasRole = thingRoles[userRole] != null ? thingRoles[userRole] : false
-
     next()
 }
 
