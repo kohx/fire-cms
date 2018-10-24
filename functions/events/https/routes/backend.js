@@ -84,12 +84,17 @@ function subPostRoute(req, res, next) {
     const subRoutes = {
         // settings
         'setting-update': setting.update,
+        // users
+        // divisions
+        // template
+        // thing
         'thing-cleate': thing.cleate,
         'thing-update': thing.update,
         'thing-delete': thing.delete,
         'template-cleate': template.cleate,
         'template-update': template.update,
         'template-delete': template.delete,
+        // assets
     }
 
     const callSubRoute = subRoutes[unique] != null ? subRoutes[unique] : null
