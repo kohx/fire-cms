@@ -1,5 +1,6 @@
 // https://www.npmjs.com/package/validator
 const validator = require('validator')
+const debug = require('../debug').debug
 
 module.exports = class validation {
 
@@ -12,10 +13,8 @@ module.exports = class validation {
 
         this.validity = true
         this.errors = {}
-        this.values = {}
-        Object.keys(list).forEach(key => {
-            this.values[key] = list[key]
-        })
+        this.values = Object.assign({}, list)
+
         this.sanitaizeTypes = [
             'blacklist',
             'escape',
@@ -55,17 +54,17 @@ module.exports = class validation {
         return instance
     }
 
-    test(key, type, ...args) {
+    test(path, type, ...args) {
 
-        if (!Object.keys(this.list).includes(key)) {
-            throw new Error(`error at validation module: list has not key ${key}.`)
+        if (!this.existProp(path)) {
+            throw new Error(`error at validation module: list has not key ${path}.`)
         }
 
-        if (!Object.keys(this.validationTypes).includes(type)) {
-            throw new Error(`error at validation module: validation type ${type} is not ture.`)
+        if (!this.existProp(path)) {
+            throw new Error(`error at validation module: validation type ${path} is not ture.`)
         }
 
-        const value = this.list[key]
+        const value = this.list[path]
         let flag = true
 
         try {
@@ -76,8 +75,8 @@ module.exports = class validation {
                     break
 
                 case 'notEquals':
-                flag = !validator.equals(value, ...args)
-                break
+                    flag = !validator.equals(value, ...args)
+                    break
 
                 case 'notUse':
                     flag = !validator.equals(value, ...args)
@@ -105,7 +104,6 @@ module.exports = class validation {
             throw new Error(`error at validation module: ${err.message}`)
         }
 
-
         if (!flag) {
             this.validity = false
             if (!this.errors[key]) {
@@ -128,19 +126,19 @@ module.exports = class validation {
         return this
     }
 
-    sanitize(key, type, ...arg) {
+    sanitize(path, type, ...arg) {
 
-        if (!Object.keys(this.list).includes(key)) {
-            throw new Error(`error at validation module: list has not key ${key}.`)
+        if (!this.existProp(path)) {
+            throw new Error(`error at validation module: list has not key ${path}.`)
         }
 
-        if (!Object.keys(this.sanitaizeTypes).includes(type)) {
-            throw new Error(`error at validation module: sanitaize type ${type} is not ture.`)
+        if (!this.existProp(path)) {
+            throw new Error(`error at validation module: sanitaize type ${path} is not ture.`)
         }
 
-        const value = this.list[key]
+        const value = this.list[path]
         const snitized = validator[type](value, ...args)
-        this.values[key] = snitized
+        this.values[path] = snitized
         return this
     }
 
@@ -149,6 +147,31 @@ module.exports = class validation {
             status: this.validity,
             errors: this.errors,
             values: this.values,
+        }
+    }
+
+    existProp(str) {
+        let exist = this.list
+        const paths = str.split('.')
+
+        for (let index in paths) {
+            const path = paths[index]
+            if (exist.hasOwnProperty(path)) {
+                exist = exist[path]
+            } else {
+                return false
+            }
+        }
+        return true
+    }
+
+    // TODO:: ------------- 20181025
+    setValue(str) {
+        let target = this.list
+        const paths = str.split('.')
+        for (let index in paths) {
+            const path = paths[index]
+            target = target[path]
         }
     }
 }

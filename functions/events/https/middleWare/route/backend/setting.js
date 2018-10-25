@@ -5,6 +5,7 @@ const system = parent.system
 
 const url = require('url')
 
+const validation = require('../../../../../modules/validation')
 const debug = require('../../../../../modules/debug').debug
 
 module.exports.index = (req, res, next) => {
@@ -29,8 +30,46 @@ module.exports.index = (req, res, next) => {
 
 module.exports.update = (req, res, next) => {
 
+    const settings = req.body
+    
+    const validate = validation.list(req.body)
+        .test('asset.landscapePrefix', 'isRequired')
+
+    valid = validate.check()
+    debug(valid, __filename, __line)
+
+    // landscapePrefix
+    // "l_"
+    // landscapeSize
+    // "800x640"
+    // portraitPrefix
+    // "p_"
+    // portraitSize
+    // "640x800"
+    // squarePrefix
+    // "s_"
+    // squareSize
+    // "640x640"
+    // thumbPrefix
+    // "t_"
+    // thumbSize
+    // "100x100"
+
+    // set validations
+
+    // const settings = req.body
+    // Object.keys(settings).forEach(docKey => {
+    //     doc = settings[docKey]
+
+    //     Object.keys(doc).forEach(valueKey => {
+    //         value = doc[valueKey]
+    //         debug(value, __filename, __line)
+    //     })
+    // })
+
     res.json({
         status: true,
-        message: 'ok'
+        message: 'ok',
+        value: req.body
     })
 }
