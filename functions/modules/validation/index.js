@@ -57,15 +57,15 @@ module.exports = class validation {
 
     test(path, type, ...args) {
 
-        if (!this.existProp(path)) {
+        if (!this.existValue(path)) {
             throw new Error(`error at validation module: list has not key ${path}.`)
         }
 
-        if (!this.existProp(path)) {
-            throw new Error(`error at validation module: validation type ${path} is not ture.`)
+        if (!Object.keys(this.validationTypes).includes(type)) {
+            throw new Error(`error at validation module: validation type ${type} is not ture.`)
         }
 
-        const value = this.list[path]
+        const value = this.getValue(path)
         let flag = true
 
         try {
@@ -127,19 +127,25 @@ module.exports = class validation {
         return this
     }
 
-    sanitize(path, type, ...arg) {
+    sanitize(path, type, ...args) {
 
-        if (!this.existProp(path)) {
+        if (!this.existValue(path)) {
             throw new Error(`error at validation module: list has not key ${path}.`)
         }
 
-        if (!this.existProp(path)) {
-            throw new Error(`error at validation module: sanitaize type ${path} is not ture.`)
+        if (!this.sanitaizeTypes.includes(type)) {
+            throw new Error(`error at validation module: sanitaize type ${type} is not ture.`)
         }
 
-        const value = this.list[path]
-        const snitized = validator[type](value, ...args)
-        this.values[path] = snitized
+        try {
+            const value = this.getValue(path)
+            const snitized = validator[type](value, ...args)
+            this.setValue(this.values, path, snitized)
+        } catch (err) {
+
+            throw new Error(`error at validation module: ${err.message}`)
+        }
+
         return this
     }
 
@@ -151,7 +157,7 @@ module.exports = class validation {
         }
     }
 
-    existProp(str) {
+    existValue(str) {
         let exist = this.list
         const paths = str.split('.')
 
@@ -166,29 +172,32 @@ module.exports = class validation {
         return true
     }
 
-    // TODO:: ------------- 20181025
-    setValue(str) {
-        let target = this.list
+    getValue(str) {
+        let value = this.list
         const paths = str.split('.')
+
         for (let index in paths) {
             const path = paths[index]
-            target = target[path]
+            value = value[path]
         }
+        return value
     }
 
-    // console.log(JSON.stringify(test))
+    // TODO:: ------------- 20181025
     setValue(obj, str, value) {
-        if (typeof str == 'string')
-            return index(obj, str.split('.'), value);
 
-        else if (str.length == 1 && value !== undefined)
-            return obj[str[0]] = value;
-
-        else if (str.length == 0)
-            return obj;
-
-        else
-            return index(obj[str[0]], str.slice(1), value);
+        if (typeof str == 'string') {
+            return this.setValue(obj, str.split('.'), value)
+        }
+        else if (str.length == 1 && value !== undefined) {
+            return obj[str[0]] = value
+        }
+        else if (str.length == 0) {
+            return obj
+        }
+        else {
+            return this.setValue(obj[str[0]], str.slice(1), value)
+        }
     }
 
     setValue2(obj, path, value) {

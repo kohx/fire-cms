@@ -31,9 +31,14 @@ module.exports.index = (req, res, next) => {
 module.exports.update = (req, res, next) => {
 
     const settings = req.body
-    
     const validate = validation.list(req.body)
-        .test('asset.landscapePrefix', 'isRequired')
+    
+    if (req.body.asset != null) {
+        if(req.body.asset.landscapePrefix != null){
+            validate.test('asset.landscapePrefix', 'isRequired')
+            validate.sanitize('asset.landscapePrefix', 'trim')
+        }
+    }
 
     valid = validate.check()
     debug(valid, __filename, __line)
