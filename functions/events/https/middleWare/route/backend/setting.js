@@ -33,12 +33,63 @@ module.exports.update = (req, res, next) => {
     const settings = req.body
     const validate = validation.list(req.body)
     
-    if (req.body.asset != null) {
-        if(req.body.asset.landscapePrefix != null){
+    /* assets */
+    if (settings.asset != null) {
+        const asset = settings.asset
+
+        if(asset.landscapePrefix != null){
             validate.test('asset.landscapePrefix', 'isRequired')
             validate.sanitize('asset.landscapePrefix', 'trim')
         }
+        if(asset.landscapeSize != null){
+            validate.test('asset.landscapeSize', 'isRequired')
+            validate.sanitize('asset.landscapeSize', 'trim')
+        }
+        if(asset.portraitPrefix != null){
+            validate.test('asset.portraitPrefix', 'isRequired')
+            validate.sanitize('asset.portraitPrefix', 'trim')
+        }
+        if(asset.portraitSize != null){
+            validate.test('asset.portraitSize', 'isRequired')
+            validate.sanitize('asset.portraitSize', 'trim')
+        }
+        if(asset.squarePrefix != null){
+            validate.test('asset.squarePrefix', 'isRequired')
+            validate.sanitize('asset.squarePrefix', 'trim')
+        }
+        if(asset.squareSize != null){
+            validate.test('asset.squareSize', 'isRequired')
+            validate.sanitize('asset.squareSize', 'trim')
+        }
+        if(asset.thumbPrefix != null){
+            validate.test('asset.thumbPrefix', 'isRequired')
+            validate.sanitize('asset.thumbPrefix', 'trim')
+        }
+        if(asset.thumbSize != null){
+            validate.test('asset.thumbSize', 'isRequired')
+            validate.sanitize('asset.thumbSize', 'trim')
+        }
     }
+    /* frontend */
+    if (settings.frontend != null) {
+        const frontend = settings.frontend
+
+        if(frontend.lang != null){
+            validate.test('frontend.lang', 'isRequired')
+            validate.sanitize('frontend.lang', 'trim')
+        }
+    }
+    /* backend */
+    if (settings.backend != null) {
+        const backend = settings.backend
+        
+        if(backend.lang != null){
+            validate.test('backend.lang', 'isRequired')
+            validate.sanitize('backend.lang', 'trim')
+        }
+    }
+    /* lang */
+
 
     valid = validate.check()
     debug(valid, __filename, __line)
