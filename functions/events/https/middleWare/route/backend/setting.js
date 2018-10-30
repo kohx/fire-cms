@@ -32,41 +32,49 @@ module.exports.update = (req, res, next) => {
 
     const settings = req.body
     const validate = validation.list(req.body)
-    
+
     /* assets */
     if (settings.asset != null) {
         const asset = settings.asset
 
-        if(asset.landscapePrefix != null){
+        if (asset.landscapePrefix != null) {
             validate.test('asset.landscapePrefix', 'isRequired')
+            validate.test('asset.landscapePrefix', 'isAlnumunder')
             validate.sanitize('asset.landscapePrefix', 'trim')
         }
-        if(asset.landscapeSize != null){
+        if (asset.landscapeSize != null) {
             validate.test('asset.landscapeSize', 'isRequired')
+            validate.test('asset.landscapeSize', 'isAlphanumeric')
             validate.sanitize('asset.landscapeSize', 'trim')
         }
-        if(asset.portraitPrefix != null){
+        if (asset.portraitPrefix != null) {
             validate.test('asset.portraitPrefix', 'isRequired')
+            validate.test('asset.portraitPrefix', 'isAlnumunder')
             validate.sanitize('asset.portraitPrefix', 'trim')
         }
-        if(asset.portraitSize != null){
+        if (asset.portraitSize != null) {
             validate.test('asset.portraitSize', 'isRequired')
+            validate.test('asset.portraitSize', 'isAlphanumeric')
             validate.sanitize('asset.portraitSize', 'trim')
         }
-        if(asset.squarePrefix != null){
+        if (asset.squarePrefix != null) {
             validate.test('asset.squarePrefix', 'isRequired')
+            validate.test('asset.squarePrefix', 'isAlnumunder')
             validate.sanitize('asset.squarePrefix', 'trim')
         }
-        if(asset.squareSize != null){
+        if (asset.squareSize != null) {
             validate.test('asset.squareSize', 'isRequired')
+            validate.test('asset.squareSize', 'isAlphanumeric')
             validate.sanitize('asset.squareSize', 'trim')
         }
-        if(asset.thumbPrefix != null){
+        if (asset.thumbPrefix != null) {
             validate.test('asset.thumbPrefix', 'isRequired')
+            validate.test('asset.thumbPrefix', 'isAlnumunder')
             validate.sanitize('asset.thumbPrefix', 'trim')
         }
-        if(asset.thumbSize != null){
+        if (asset.thumbSize != null) {
             validate.test('asset.thumbSize', 'isRequired')
+            validate.test('asset.thumbSize', 'isAlphanumeric')
             validate.sanitize('asset.thumbSize', 'trim')
         }
     }
@@ -74,58 +82,102 @@ module.exports.update = (req, res, next) => {
     if (settings.frontend != null) {
         const frontend = settings.frontend
 
-        if(frontend.lang != null){
+        if (frontend.lang != null) {
             validate.test('frontend.lang', 'isRequired')
             validate.sanitize('frontend.lang', 'trim')
+        }
+        if (frontend.signinUnique != null) {
+            validate.test('frontend.signinUnique', 'isRequired')
+            validate.sanitize('frontend.signinUnique', 'trim')
+        }
+        if (frontend.topUnique != null) {
+            validate.test('frontend.topUnique', 'isRequired')
+            validate.sanitize('frontend.topUnique', 'trim')
         }
     }
     /* backend */
     if (settings.backend != null) {
         const backend = settings.backend
-        
-        if(backend.lang != null){
+
+        if (backend.lang != null) {
             validate.test('backend.lang', 'isRequired')
             validate.sanitize('backend.lang', 'trim')
         }
+        if (backend.signinUnique != null) {
+            validate.test('backend.signinUnique', 'isRequired')
+            validate.sanitize('backend.signinUnique', 'trim')
+        }
+        if (backend.topUnique != null) {
+            validate.test('backend.topUnique', 'isRequired')
+            validate.sanitize('backend.topUnique', 'trim')
+        }
+        if (backend.firstPath != null) {
+            validate.test('backend.firstPath', 'isRequired')
+            validate.sanitize('backend.firstPath', 'trim')
+        }
+        if (backend.expiresIn != null) {
+            validate.test('backend.expiresIn', 'isRequired')
+            validate.sanitize('backend.expiresIn', 'trim')
+        }
+        if (backend.signinLImit != null) {
+            validate.test('backend.signinLImit', 'isRequired')
+            validate.sanitize('backend.signinLImit', 'trim')
+        }
     }
     /* lang */
+    if (settings.lang != null) {
+        const lang = settings.lang
 
+        if (lang.default != null) {
+            validate.test('lang.default', 'isRequired')
+            validate.sanitize('lang.default', 'trim')
+        }
+        if (lang.dirname != null) {
+            validate.test('lang.dirname', 'isRequired')
+            validate.sanitize('lang.dirname', 'trim')
+        }
+        if (lang.locales != null) {
+        }
+    }
 
     valid = validate.check()
-    debug(valid, __filename, __line)
+    let messages = []
+    // validation not passed
+    if (!valid.status) {
 
-    // landscapePrefix
-    // "l_"
-    // landscapeSize
-    // "800x640"
-    // portraitPrefix
-    // "p_"
-    // portraitSize
-    // "640x800"
-    // squarePrefix
-    // "s_"
-    // squareSize
-    // "640x640"
-    // thumbPrefix
-    // "t_"
-    // thumbSize
-    // "100x100"
+        // translate validation message
+        Object.keys(valid.errors).forEach(key => {
+            valid.errors[key].forEach(error => {
+                messages.push({ key: error.path, message: req.__(error.message, error.params) })
+            })
+        })
+        res.json({
+            status: valid.status,
+            title: req.__('chack this!'),
+            messages: messages,
+            value: valid.values
+        })
+    } else {
 
-    // set validations
+        /* update */
+        const values = valid.values
+        Object.keys(values).forEach(docKey => {
+            doc = values[docKey]
 
-    // const settings = req.body
-    // Object.keys(settings).forEach(docKey => {
-    //     doc = settings[docKey]
+            Object.keys(doc).forEach(valueKey => {
+                value = doc[valueKey]
+                debug(docKey, __filename, __line)
+                debug(valueKey, __filename, __line)
+                debug(value, __filename, __line)
+            })
+        })
 
-    //     Object.keys(doc).forEach(valueKey => {
-    //         value = doc[valueKey]
-    //         debug(value, __filename, __line)
-    //     })
-    // })
+        res.json({
+            status: valid.status,
+            title: req.__('ok!'),
+            messages: [],
+            value: valid.values
+        })
+    }
 
-    res.json({
-        status: true,
-        message: 'ok',
-        value: req.body
-    })
 }

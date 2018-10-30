@@ -46,6 +46,7 @@ module.exports = class validation {
             isLength: `{{param1}} length is min {{param2}}, max {{param3}}.`,
             isByteLength: `{{param1}} byte is min {{param2}}, max {{param3}}.`,
             isAlnumunder: `{{param1}} is not alphanumeric and underscore.`,
+            isNumunder: `{{param1}} is not numeric and underscore.`,
             isBase64: `{{param1}} is not base64 encoded.`,
         }
     }
@@ -85,8 +86,11 @@ module.exports = class validation {
                     break
 
                 case 'isAlnumunder':
-                    const regexp = /^[a-zA-Z0-9-_]+$/;
-                    flag = validator.matches(value, regexp)
+                    flag = validator.matches(value, /^[a-zA-Z0-9_]+$/)
+                    break
+
+                case 'isNumunder':
+                    flag = validator.matches(value, /^[0-9_]+$/)
                     break
 
                 case 'isBase64':
@@ -107,18 +111,19 @@ module.exports = class validation {
 
         if (!flag) {
             this.validity = false
-            if (!this.errors[key]) {
-                this.errors[key] = []
+            if (!this.errors[path]) {
+                this.errors[path] = []
             }
 
-            const params = { param1: key }
+            const params = { param1: path }
             let num = 2
-            args.forEach((arg, key) => {
+            args.forEach((arg, path) => {
                 params[`param${num}`] = arg
                 num++
             })
 
-            this.errors[key].push({
+            this.errors[path].push({
+                path: path,
                 type: type,
                 params: params,
                 message: this.validationTypes[type],
@@ -183,7 +188,6 @@ module.exports = class validation {
         return value
     }
 
-    // TODO:: ------------- 20181025
     setValue(obj, str, value) {
 
         if (typeof str == 'string') {
