@@ -32,7 +32,7 @@ h1 {
 
 h2 {
     padding: 1rem 1rem 0;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1)
+    border-bottom: 2px solid gray
 }
 
 h3 {
@@ -42,7 +42,7 @@ h3 {
 [class*="grid"],
 [class*="grid"]>[class*=col] {
     border-radius: 3px;
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 0 1px gray;
 }
 
 button {
@@ -54,6 +54,49 @@ input[type="text"],
 input[type="date"],
 textarea {
     border: none;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: lightgrey;
     padding: .6rem;
+    border: 1px solid grey;
+}
+.wrapper {
+    position: relative;
+}
+.notice {
+    opacity: 0;
+    visibility: hidden;
+    border-width: 1px;
+    border-style: solid;
+    position: sticky;
+    top: 10vh;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    transition: opacity 1s, visibility 0s ease 500ms;
+    pointer-events: none;
+}
+.notice-messages li {
+    word-break: keep-all;
+    white-space: nowrap;
+    padding: 0 2rem
+}
+.notice.__success,
+.notice.__warning,
+.notice.__err {
+    transition-delay: 0s;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+.notice.__success{
+    border-color: olivedrab;
+}
+.notice.__warning{
+    border-color: darkorange
+}
+.notice.__err{
+    border-color: indianred;
+}
+
+input.__modifed {
+    border-color: cornflowerblue;
 }

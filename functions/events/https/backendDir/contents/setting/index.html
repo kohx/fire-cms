@@ -2,7 +2,6 @@
 {|> header |}
 
 <div class="col0 grid1 gap1">
-
     <ul>
         {|* targets: targetName: targetValue |}
         {|# targetValue |}
@@ -34,6 +33,7 @@
 
     const updateBtnElement = document.querySelector('#updateBtn')
     const targetItems = document.querySelectorAll('.setting_item')
+    const notice = document.querySelector('.notice')
 
     const itemValues = {}
     Object.keys(targetItems).forEach(key => {
@@ -44,12 +44,12 @@
             const result = v8n()
                 .string()
                 .test("My string!"); //true
-                console.log(result)
+            console.log(result)
 
             if (event.target.dataset.default != event.target.value) {
-                event.target.classList.add('modifed')
+                event.target.classList.add('__modifed')
             } else {
-                event.target.classList.remove('modifed')
+                event.target.classList.remove('__modifed')
             }
         })
     })
@@ -58,7 +58,12 @@
 
         const url = event.target.dataset.url
         const unique = event.target.dataset.unique
-        const updateItems = document.querySelectorAll('.modifed')
+        const updateItems = document.querySelectorAll('.__modifed')
+
+        if (updateItems.length === 0) {
+            base.setNotice('warning', ['Nothing has changed.'])
+            return
+        }
 
         const body = {}
         Object.keys(updateItems).forEach(key => {
@@ -71,8 +76,16 @@
 
         base.fetchPost(url, body)
             .then(result => {
+                const type = result.status ? 'success' : 'error'
+                base.setNotice(type, result.messages)
+                Object.keys(updateItems).forEach(key =>{
+                   updateItems[key].classList.remove('__modifed')
+                })
                 console.log(result)
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                base.setNotice('error', [err.message])
+                console.log(err)
+            })
     })
 </script>

@@ -159,25 +159,39 @@ module.exports.update = (req, res, next) => {
         })
     } else {
 
-        /* update */
+        const settingsRef = admin.firestore().collection('settings')
         const values = valid.values
-        Object.keys(values).forEach(docKey => {
-            doc = values[docKey]
+        let updates = []
 
-            Object.keys(doc).forEach(valueKey => {
-                value = doc[valueKey]
-                debug(docKey, __filename, __line)
-                debug(valueKey, __filename, __line)
-                debug(value, __filename, __line)
+        Object.keys(values).forEach(docKey => {
+            docValues = values[docKey]
+            const updateDoc = settingsRef.doc(docKey).update(docValues)
+            updates.push(updateDoc)
+
+            Object.keys(docValues).forEach(valueKey => {
+                messages.push(req.__('{{docKey}} {{valueKey}} is updated.', { docKey, valueKey }))
             })
         })
 
-        res.json({
-            status: valid.status,
-            title: req.__('ok!'),
-            messages: [],
-            value: valid.values
-        })
+        Promise.all(updates)
+            .then(results => {
+                debug(results, __filename, __line)
+                res.json({
+                    status: true,
+                    title: req.__('update success!'),
+                    messages: messages,
+                    value: valid.values
+                })
+            })
+            .catch(err => {
+                debug(err, __filename, __line)
+                res.json({
+                    status: false,
+                    title: req.__('update failed!'),
+                    messages: [err.message],
+                    value: valid.values
+                })
+            })
     }
 
 }

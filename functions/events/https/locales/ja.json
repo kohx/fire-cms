@@ -44,5 +44,6 @@
 	"checkthing": "checkthing",
 	"Howareyou?": "Howareyou?",
 	"chack this!": "chack this!",
-	"ok!": "ok!"
+	"ok!": "ok!",
+	"{{docKey}} {{valueKey}} is updated.": "{{docKey}} {{valueKey}} is updated."
 }

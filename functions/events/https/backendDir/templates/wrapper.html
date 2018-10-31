@@ -13,12 +13,12 @@
     <link href="/{|backendFirstPath|}/std-grid-mq.css" rel="stylesheet">
     <link href="/{|backendFirstPath|}/base.css" rel="stylesheet">
 
-    <script src="/__/firebase/5.5.4/firebase-app.js"></script>
-    <script src="/__/firebase/5.5.4/firebase-auth.js"></script>
-    <script src="/__/firebase/5.5.4/firebase-firestore.js"></script>
-    <script src="/__/firebase/5.5.4/firebase-storage.js"></script>
-    <script src="/__/firebase/5.5.4/firebase-messaging.js"></script>
-    <script src="/__/firebase/5.5.4/firebase-functions.js"></script>
+    <script src="/__/firebase/5.5.6/firebase-app.js"></script>
+    <script src="/__/firebase/5.5.6/firebase-auth.js"></script>
+    <script src="/__/firebase/5.5.6/firebase-firestore.js"></script>
+    <script src="/__/firebase/5.5.6/firebase-storage.js"></script>
+    <script src="/__/firebase/5.5.6/firebase-messaging.js"></script>
+    <script src="/__/firebase/5.5.6/firebase-functions.js"></script>
     <script src="/__/firebase/init.js"></script>
 
     <script>
@@ -31,9 +31,14 @@
 </head>
 
 <body>
-    <div class="grid12 gap1 pad1">
+    <div class="wrapper grid12 gap1 pad1">
+        <div class="notice">
+            <h2 class="notice-title"></h2>
+            <ul class="notice-messages"></ul>
+        </div>
         {|@ wrapper |}
     </div>
+
     <script src="/{|backendFirstPath|}/signin.js"></script>
 </body>
 
