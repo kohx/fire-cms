@@ -58,45 +58,57 @@ textarea {
     padding: .6rem;
     border: 1px solid grey;
 }
+
 .wrapper {
     position: relative;
 }
+
+/* notice */
 .notice {
-    opacity: 0;
-    visibility: hidden;
+    bottom: 100%;
     border-width: 1px;
     border-style: solid;
-    position: sticky;
-    top: 10vh;
+    position: fixed;
     left: 50%;
     transform: translateX(-50%);
     background-color: white;
-    transition: opacity 1s, visibility 0s ease 500ms;
-    pointer-events: none;
+    transition: all 0.1s ease-in-out;
+    padding: 0 0 1rem 0;
 }
+
 .notice-messages li {
     word-break: keep-all;
     white-space: nowrap;
     padding: 0 2rem
 }
-.notice.__success,
-.notice.__warning,
-.notice.__err {
-    transition-delay: 0s;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-.notice.__success{
-    border-color: olivedrab;
-}
-.notice.__warning{
-    border-color: darkorange
-}
-.notice.__err{
-    border-color: indianred;
+.notice._active {
+    transform: translateX(-50%) translateY(100%);
 }
 
-input.__modifed {
+.notice.__success {
+    border-color: olivedrab;
+}
+.notice.__success .notice-close {
+    color: olivedrab;
+}
+
+.notice.__warning {
+    border-color: darkorange;
+    color: darkorange;
+}
+
+.notice.__err {
+    border-color: indianred;
+    color: indianred;
+}
+
+.notice-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+
+input._modifed {
     border-color: cornflowerblue;
 }

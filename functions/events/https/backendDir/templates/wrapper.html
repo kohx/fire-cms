@@ -13,6 +13,8 @@
     <link href="/{|backendFirstPath|}/std-grid-mq.css" rel="stylesheet">
     <link href="/{|backendFirstPath|}/base.css" rel="stylesheet">
 
+    <script defer src="https://use.fontawesome.com/releases/v5.5.0/js/all.js" integrity="sha384-GqVMZRt5Gn7tB9D9q7ONtcp4gtHIUEW/yG7h98J7IpE3kpi+srfFyyB/04OV6pG0" crossorigin="anonymous"></script>
+
     <script src="/__/firebase/5.5.6/firebase-app.js"></script>
     <script src="/__/firebase/5.5.6/firebase-auth.js"></script>
     <script src="/__/firebase/5.5.6/firebase-firestore.js"></script>
@@ -23,7 +25,9 @@
 
     <script>
         const firestore = firebase.firestore()
-        const settings = { timestampsInSnapshots: true }
+        const settings = {
+            timestampsInSnapshots: true
+        }
         firestore.settings(settings);
     </script>
 
@@ -32,13 +36,10 @@
 
 <body>
     <div class="wrapper grid12 gap1 pad1">
-        <div class="notice">
-            <h2 class="notice-title"></h2>
-            <ul class="notice-messages"></ul>
-        </div>
         {|@ wrapper |}
+        {|> notice |}
     </div>
-
+    
     <script src="/{|backendFirstPath|}/signin.js"></script>
 </body>
 

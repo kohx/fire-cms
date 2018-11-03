@@ -11,7 +11,7 @@
                 {|* targetValue: itemName: itemValue |}
                 <li class="grid3 gap1">
                     <label class="col1 cen mid" for="{| itemName |}">{| itemName |}</label>
-                    <input class="setting_item col2" type="text" data-default="{| itemValue |}" data-target="{| targetName |}"
+                    <input id="{| itemName |}" class="setting_item col2" type="text" data-default="{| itemValue |}" data-target="{| targetName |}"
                         data-item="{| itemName |}" value="{| itemValue |}">
                 </li>
                 {|/*|}
@@ -47,9 +47,9 @@
             console.log(result)
 
             if (event.target.dataset.default != event.target.value) {
-                event.target.classList.add('__modifed')
+                event.target.classList.add('_modifed')
             } else {
-                event.target.classList.remove('__modifed')
+                event.target.classList.remove('_modifed')
             }
         })
     })
@@ -58,7 +58,7 @@
 
         const url = event.target.dataset.url
         const unique = event.target.dataset.unique
-        const updateItems = document.querySelectorAll('.__modifed')
+        const updateItems = document.querySelectorAll('._modifed')
 
         if (updateItems.length === 0) {
             base.setNotice('warning', ['Nothing has changed.'])
@@ -79,7 +79,7 @@
                 const type = result.status ? 'success' : 'error'
                 base.setNotice(type, result.messages)
                 Object.keys(updateItems).forEach(key =>{
-                   updateItems[key].classList.remove('__modifed')
+                   updateItems[key].classList.remove('_modifed')
                 })
                 console.log(result)
             })
