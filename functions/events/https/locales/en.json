@@ -18,5 +18,7 @@
 	"{{param1}} must be included in {{param2}}": "{{param1}} must be included in {{param2}}",
 	"{{param1}} length is min {{param2}}, max {{param3}}.": "{{param1}} length is min {{param2}}, max {{param3}}.",
 	"{{param1}} byte is min {{param2}}, max {{param3}}.": "{{param1}} byte is min {{param2}}, max {{param3}}.",
-	"update success!": "update success!"
+	"update success!": "update success!",
+	"{{docKey}} {{valueKey}} is updated.": "{{docKey}} {{valueKey}} is updated.",
+	"chack this!": "chack this!"
 }

@@ -31,6 +31,23 @@ module.exports.index = (req, res, next) => {
 module.exports.update = (req, res, next) => {
 
     const settings = req.body
+
+    // setting.lang.locales
+    const locales = req.vessel.get('settings.lang.locales')
+    // debug(settings.lang.locales, __filename, __line)
+
+    // if (settings.lang.locales != null) {
+    //     const locales = []
+    //     lang.locales.split(',').forEach(locale => {
+    //         locales.push(locale.trim())
+    //     })
+    //     settings.lang.locales = locales
+    // }
+    // debug(settings, __filename, __line)
+    // process.exit()
+
+
+
     const validate = validation.list(req.body)
 
     /* assets */
@@ -84,6 +101,7 @@ module.exports.update = (req, res, next) => {
 
         if (frontend.lang != null) {
             validate.test('frontend.lang', 'isRequired')
+            validate.test('frontend.lang', 'isIn', locales)
             validate.sanitize('frontend.lang', 'trim')
         }
         if (frontend.signinUnique != null) {
@@ -101,6 +119,7 @@ module.exports.update = (req, res, next) => {
 
         if (backend.lang != null) {
             validate.test('backend.lang', 'isRequired')
+            validate.test('backend.lang', 'isIn', locales)
             validate.sanitize('backend.lang', 'trim')
         }
         if (backend.signinUnique != null) {
@@ -130,6 +149,7 @@ module.exports.update = (req, res, next) => {
 
         if (lang.default != null) {
             validate.test('lang.default', 'isRequired')
+            validate.test('lang.default', 'isIn', locales)
             validate.sanitize('lang.default', 'trim')
         }
         if (lang.dirname != null) {
@@ -137,12 +157,20 @@ module.exports.update = (req, res, next) => {
             validate.sanitize('lang.dirname', 'trim')
         }
         if (lang.locales != null) {
+            let langLocales = []
+           lang.locales.split(',').forEach(locale => {
+              langLocales.push(locale.trim())
+           })
+           validate.test('lang.locales', 'isArray')
         }
     }
 
+    
+
     valid = validate.check()
     let messages = []
-    // validation not passed
+
+    /* validation not passed */
     if (!valid.status) {
 
         // translate validation message
@@ -155,14 +183,15 @@ module.exports.update = (req, res, next) => {
             status: valid.status,
             title: req.__('chack this!'),
             messages: messages,
-            value: valid.values
+            values: valid.values
         })
     } else {
 
+
         const settingsRef = admin.firestore().collection('settings')
         const values = valid.values
+        
         let updates = []
-
         Object.keys(values).forEach(docKey => {
             docValues = values[docKey]
             const updateDoc = settingsRef.doc(docKey).update(docValues)
@@ -173,25 +202,25 @@ module.exports.update = (req, res, next) => {
             })
         })
 
-        Promise.all(updates)
-            .then(results => {
-                debug(results, __filename, __line)
-                res.json({
-                    status: true,
-                    title: req.__('update success!'),
-                    messages: messages,
-                    value: valid.values
-                })
-            })
-            .catch(err => {
-                debug(err, __filename, __line)
-                res.json({
-                    status: false,
-                    title: req.__('update failed!'),
-                    messages: [err.message],
-                    value: valid.values
-                })
-            })
+        // Promise.all(updates)
+        //     .then(results => {
+        //         debug(results, __filename, __line)
+        //         res.json({
+        //             status: true,
+        //             title: req.__('update success!'),
+        //             messages: messages,
+        //             values: valid.values
+        //         })
+        //     })
+        //     .catch(err => {
+        //         debug(err, __filename, __line)
+        //         res.json({
+        //             status: false,
+        //             title: req.__('update failed!'),
+        //             messages: [err.message],
+        //             values: valid.values
+        //         })
+        //     })
     }
 
 }

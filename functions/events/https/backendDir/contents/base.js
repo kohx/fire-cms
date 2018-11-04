@@ -23,7 +23,8 @@ export class Base {
         this.noticeTitle.textContent = type.toUpperCase()
         Object.keys(messages).forEach(key => {
             const list = document.createElement('li');
-            list.textContent = messages[key]
+            console.log(messages[key].key)
+            list.textContent = messages[key].message
             this.noticeMessages.insertAdjacentElement('beforeend', list)
         });
         this.notice.classList.add(`__${type}`, '_active')

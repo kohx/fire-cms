@@ -7,12 +7,12 @@
         {|# targetValue |}
         <li>
             <h2>{| targetName |}</h2>
-            <ul class="grid1 gap1 pad1">
+            <ul class="grid1 gap1 pad1 {| targetName |}">
                 {|* targetValue: itemName: itemValue |}
                 <li class="grid3 gap1">
-                    <label class="col1 cen mid" for="{| itemName |}">{| itemName |}</label>
-                    <input id="{| itemName |}" class="setting_item col2" type="text" data-default="{| itemValue |}" data-target="{| targetName |}"
-                        data-item="{| itemName |}" value="{| itemValue |}">
+                    <label class="col1 cen mid">{| itemName |}</label>
+                    <input class="setting_item col2 {| itemName |} " type="text" data-default="{| itemValue |}"
+                        data-target="{| targetName |}" data-item="{| itemName |}" value="{| itemValue |}">
                 </li>
                 {|/*|}
             </ul>
@@ -76,11 +76,14 @@
 
         base.fetchPost(url, body)
             .then(result => {
-                const type = result.status ? 'success' : 'error'
+                const type = result.status ? 'success' : 'warning'
                 base.setNotice(type, result.messages)
-                Object.keys(updateItems).forEach(key =>{
-                   updateItems[key].classList.remove('_modifed')
-                })
+
+                if(result.status){
+                    Object.keys(updateItems).forEach(key =>{
+                        updateItems[key].classList.remove('_modifed')
+                    })
+                }
                 console.log(result)
             })
             .catch(err => {

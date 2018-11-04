@@ -48,6 +48,7 @@ module.exports = class validation {
             isAlnumunder: `{{param1}} is not alphanumeric and underscore.`,
             isNumunder: `{{param1}} is not numeric and underscore.`,
             isBase64: `{{param1}} is not base64 encoded.`,
+            isArray: `{{param1}} is not array.`,
         }
     }
 
@@ -94,8 +95,12 @@ module.exports = class validation {
                     break
 
                 case 'isBase64':
-                    const [head, body] = value.split(',');
+                    const [head, body] = value.split(',')
                     flag = validator.isBase64(body)
+                    break
+
+                case 'isArray':
+                    flag = value.isArray()
                     break
 
                 default:

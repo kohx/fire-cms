@@ -11,9 +11,9 @@ module.exports.index = (req, res, next) => {
 
     admin.firestore().collection('divisions').get()
         .then(docs => {
-            const divisions = []
+            const targets = []
             docs.forEach(doc => {
-                divisions.push(doc.data())
+                targets.push(doc.data())
             })
             req.vessel.thing.divisions = divisions
             next()
