@@ -48,7 +48,7 @@ hr {
 
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
 }
 
 p {
@@ -66,7 +66,7 @@ abbr[data-original-title] {
 }
 
 address {
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   font-style: normal;
   line-height: inherit;
 }
@@ -74,15 +74,8 @@ address {
 ol,
 ul,
 dl {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-ol ol,
-ul ul,
-ol ul,
-ul ol {
-  margin-bottom: 0;
+  margin: 0;
+  padding: 0;
 }
 
 dt {
@@ -90,7 +83,7 @@ dt {
 }
 
 dd {
-  margin-bottom: .5rem;
+  margin-bottom: 0;
   margin-left: 0;
 }
 
@@ -162,7 +155,7 @@ samp {
 
 pre {
   margin-top: 0;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   overflow: auto;
   -ms-overflow-style: scrollbar;
 }
@@ -199,7 +192,7 @@ th {
 
 label {
   display: inline-block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
 }
 
 button {
@@ -277,7 +270,7 @@ legend {
   width: 100%;
   max-width: 100%;
   padding: 0;
-  margin-bottom: .5rem;
+  margin-bottom: 0;
   font-size: 1.5rem;
   line-height: inherit;
   color: inherit;
