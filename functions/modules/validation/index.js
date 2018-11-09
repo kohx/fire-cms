@@ -100,8 +100,8 @@ module.exports = class validation {
                     break
 
                 case 'isArray':
-                    flag = value.isArray()
-                    break
+                flag = typeof value === 'object' && Array.isArray(value)
+                break
 
                 default:
                     // There is no error even if there is args!

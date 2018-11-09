@@ -28,26 +28,31 @@ module.exports.index = (req, res, next) => {
         })
 }
 
+/**
+ * setting update
+ * 
+ */
 module.exports.update = (req, res, next) => {
 
     const settings = req.body
 
     // setting.lang.locales
-    const locales = req.vessel.get('settings.lang.locales')
-    // debug(settings.lang.locales, __filename, __line)
+    let locales = req.vessel.get('settings.lang.locales')
 
-    // if (settings.lang.locales != null) {
-    //     const locales = []
-    //     lang.locales.split(',').forEach(locale => {
-    //         locales.push(locale.trim())
-    //     })
-    //     settings.lang.locales = locales
-    // }
-    // debug(settings, __filename, __line)
-    // process.exit()
+    /* modify settings */
+    // if there is lang.locales then change array from string
+    if (settings.lang != null && settings.lang.locales != null) {
+        const newLocals = []
+        settings.lang.locales.split(',').forEach(locale => {
+            newLocals.push(locale.trim())
+        })
 
+        // override
+        settings.lang.locales = newLocals
+        locales = newLocals
+    }
 
-
+    /* set balidation */
     const validate = validation.list(req.body)
 
     /* assets */
@@ -157,10 +162,7 @@ module.exports.update = (req, res, next) => {
             validate.sanitize('lang.dirname', 'trim')
         }
         if (lang.locales != null) {
-            let langLocales = []
-            lang.locales.split(',').forEach(locale => {
-                langLocales.push(locale.trim())
-            })
+            validate.test('lang.locales', 'isRequired')
             validate.test('lang.locales', 'isArray')
         }
     }
@@ -215,7 +217,7 @@ module.exports.update = (req, res, next) => {
                 debug(err, __filename, __line)
                 res.json({
                     status: false,
-                    messages: [{key: 'error', content: err.message}],
+                    messages: [{ key: 'error', content: err.message }],
                     values: valid.values
                 })
             })

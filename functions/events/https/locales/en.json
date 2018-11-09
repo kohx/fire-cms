@@ -20,5 +20,6 @@
 	"{{param1}} byte is min {{param2}}, max {{param3}}.": "{{param1}} byte is min {{param2}}, max {{param3}}.",
 	"update success!": "update success!",
 	"{{docKey}} {{valueKey}} is updated.": "{{docKey}} {{valueKey}} is updated.",
-	"chack this!": "chack this!"
+	"chack this!": "chack this!",
+	"{{param1}} is not array.": "{{param1}} is not array."
 }
