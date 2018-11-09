@@ -158,14 +158,12 @@ module.exports.update = (req, res, next) => {
         }
         if (lang.locales != null) {
             let langLocales = []
-           lang.locales.split(',').forEach(locale => {
-              langLocales.push(locale.trim())
-           })
-           validate.test('lang.locales', 'isArray')
+            lang.locales.split(',').forEach(locale => {
+                langLocales.push(locale.trim())
+            })
+            validate.test('lang.locales', 'isArray')
         }
     }
-
-    
 
     valid = validate.check()
     let messages = []
@@ -173,54 +171,54 @@ module.exports.update = (req, res, next) => {
     /* validation not passed */
     if (!valid.status) {
 
-        // translate validation message
+        // translate validation message and rebuild messages
         Object.keys(valid.errors).forEach(key => {
             valid.errors[key].forEach(error => {
-                messages.push({ key: error.path, message: req.__(error.message, error.params) })
+                // {path: xxx.xxx, message: 'asdf asdf asdf.'}
+                // {key: xxx.xxx, content: 'asdf asdf asdf.'}
+                messages.push({ key: error.path, content: req.__(error.message, error.params) })
             })
         })
         res.json({
             status: valid.status,
-            title: req.__('chack this!'),
             messages: messages,
             values: valid.values
         })
     } else {
 
-
         const settingsRef = admin.firestore().collection('settings')
         const values = valid.values
-        
+
         let updates = []
         Object.keys(values).forEach(docKey => {
             docValues = values[docKey]
             const updateDoc = settingsRef.doc(docKey).update(docValues)
             updates.push(updateDoc)
 
+            // create success message
             Object.keys(docValues).forEach(valueKey => {
-                messages.push(req.__('{{docKey}} {{valueKey}} is updated.', { docKey, valueKey }))
+                // {key: xxx.xxx, content: 'asdf asdf asdf.'}
+                messages.push({ key: `${docKey}.${valueKey}`, message: req.__('{{docKey}} {{valueKey}} is updated.', { docKey, valueKey }) })
             })
         })
 
-        // Promise.all(updates)
-        //     .then(results => {
-        //         debug(results, __filename, __line)
-        //         res.json({
-        //             status: true,
-        //             title: req.__('update success!'),
-        //             messages: messages,
-        //             values: valid.values
-        //         })
-        //     })
-        //     .catch(err => {
-        //         debug(err, __filename, __line)
-        //         res.json({
-        //             status: false,
-        //             title: req.__('update failed!'),
-        //             messages: [err.message],
-        //             values: valid.values
-        //         })
-        //     })
+        Promise.all(updates)
+            .then(results => {
+                debug(results, __filename, __line)
+                res.json({
+                    status: true,
+                    messages: messages,
+                    values: valid.values
+                })
+            })
+            .catch(err => {
+                debug(err, __filename, __line)
+                res.json({
+                    status: false,
+                    messages: [{key: 'error', content: err.message}],
+                    values: valid.values
+                })
+            })
     }
 
 }

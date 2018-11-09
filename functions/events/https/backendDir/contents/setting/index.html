@@ -47,6 +47,7 @@
             console.log(result)
 
             if (event.target.dataset.default != event.target.value) {
+                event.target.classList.remove('__warning', '__success')
                 event.target.classList.add('_modifed')
             } else {
                 event.target.classList.remove('_modifed')
@@ -76,15 +77,32 @@
 
         base.fetchPost(url, body)
             .then(result => {
-                const type = result.status ? 'success' : 'warning'
-                base.setNotice(type, result.messages)
 
-                if(result.status){
-                    Object.keys(updateItems).forEach(key =>{
+                // get type
+                const type = result.status ? 'success' : 'warning'
+                
+                // rebuilg message
+                let messages = []
+                result.messages.forEach(message => {
+                    const selector = message.key =! null ? `.${message.key.replace('.', ' .')}` : false
+                    
+                    if(selector){
+                        const elment = document.querySelector(selector)
+                        elment.classList.remove('__warning', '__success')
+                        elment.classList.add(`__${type}`)
+                    }
+                    
+                    messages.push(message.content)
+                })
+
+                base.setNotice(type, messages)
+
+                // status is success then remove _modifed class
+                if (result.status) {
+                    Object.keys(updateItems).forEach(key => {
                         updateItems[key].classList.remove('_modifed')
                     })
                 }
-                console.log(result)
             })
             .catch(err => {
                 base.setNotice('error', [err.message])

@@ -1,19 +1,15 @@
-*,
-:before,
-:after {
-    box-sizing: inherit;
-}
-
-* {
-    font-size: inherit;
-    line-height: inherit;
-}
-
-:before,
-:after {
-    text-decoration: inherit;
-    vertical-align: inherit;
-}
+:root {
+    --default-color: rgb(140, 140, 140);
+    --default-bg-color: rgb(240, 240, 240);
+    --info-color: rgb(100, 150, 240);
+    --info-bg-color: rgb(200, 200, 240);
+    --success-color: rgb(100, 140, 40);
+    --success-bg-color: rgb(235, 245, 217);
+    --warning-color: rgb(220, 120, 0);
+    --warning-bg-color: rgb(255, 240, 200);
+    --error-color: rgb(200, 100, 100);
+    --error-bg-color: rgb(255, 235, 235);
+  }
 
 html {
     font-size: 62.5%;
@@ -26,23 +22,10 @@ body {
     font-family: 'M PLUS Rounded 1c', sans-serif;
 }
 
-h1 {
-    font-size: 1.5rem;
-}
-
-h2 {
-    padding: 1rem 1rem 0;
-    border-bottom: 2px solid gray
-}
-
-h3 {
-    padding: 2rem 1rem 2rem;
-}
-
 [class*="grid"],
 [class*="grid"]>[class*=col] {
     border-radius: 3px;
-    box-shadow: inset 0 0 0 1px gray;
+    box-shadow: inset 0 0 0 1px var(--default-color);
 }
 
 button {
@@ -53,10 +36,10 @@ button {
 input[type="text"],
 input[type="date"],
 textarea {
+    outline: none;
     border: none;
-    background-color: lightgrey;
+    background-color: var(--default-bg-color);
     padding: .6rem;
-    border: 1px solid grey;
 }
 
 .wrapper {
@@ -74,6 +57,7 @@ textarea {
     background-color: white;
     transition: all 0.1s ease-in-out;
     padding: 0 0 1rem 0;
+    overflow: hidden;
 }
 
 .notice-messages li {
@@ -85,21 +69,28 @@ textarea {
     transform: translateX(-50%) translateY(100%);
 }
 
-.notice.__success {
-    border-color: olivedrab;
+.notice.__info {
+    color: var(--info-color);
+    border-color: var(--info-color);
+    background-color: var(--info-bg-color);
 }
-.notice.__success .notice-close {
-    color: olivedrab;
+
+.notice.__success {
+    color: var(--success-color);
+    border-color: var(--success-color);
+    background-color: var(--success-bg-color);
 }
 
 .notice.__warning {
-    border-color: darkorange;
-    color: darkorange;
+    color: var(--warning-color);
+    border-color: var(--warning-color);
+    background-color: var(--warning-bg-color);
 }
 
-.notice.__err {
-    border-color: indianred;
-    color: indianred;
+.notice.__error {
+    color: var(--error-color);
+    border-color: var(--error-color);
+    background-color: var(--error-bg-color);
 }
 
 .notice-close {
@@ -110,5 +101,13 @@ textarea {
 }
 
 input._modifed {
-    border-color: cornflowerblue;
+    background-color: var(--info-bg-color);
+}
+
+input.__success {
+    background-color: var(--success-bg-color);
+}
+
+input.__warning {
+    background-color: var(--warning-bg-color);
 }
