@@ -66,14 +66,22 @@
         })
     })
 
+    let processing = false
     updateBtnElement.addEventListener('click', event => {
-
+        if(processing){
+            return 
+        }
+        processing = true
+        event.target.disabled = true;
+        
         const url = event.target.dataset.url
         const unique = event.target.dataset.unique
         const updateItems = document.querySelectorAll('._modified')
 
         if (updateItems.length === 0) {
             base.setNotice('warning', ['Nothing has changed.'])
+            processing = false
+            event.target.disabled = false;
             return
         }
 
@@ -129,10 +137,15 @@
                 })
 
                 base.setNotice(type, messages)
+                processing = false
+                event.target.disabled = false;
             })
             .catch(err => {
                 base.setNotice('error', [err.message])
                 console.log(err)
+
+                processing = false
+                event.target.disabled = false;
             })
     })
 </script>

@@ -10,6 +10,8 @@ export class Base {
         this.noticeClose.addEventListener('click', event => {
             this.closeNotice()
         })
+
+        this.noticeTimer;
     }
 
     static init() {
@@ -17,11 +19,11 @@ export class Base {
     }
 
     /* nitice */
-    setNotice(type, messages, title = null, timeout = 6000) {
-        console.time('timer')
+    setNotice(type, messages, title = null, timeout = 6000) {        
         this.clearNotice()
-        let timer;
-        clearTimeout(timer);
+
+        clearTimeout(this.noticeTimer);
+
         title = title != null ? title : type.toUpperCase()
         this.noticeTitle.textContent = title
 
@@ -33,9 +35,8 @@ export class Base {
 
         this.notice.classList.add(`__${type}`, '_active')
 
-        timer = setTimeout(_ => {
+        this.noticeTimer = setTimeout(_ => {
             this.closeNotice()
-        console.timeEnd('timer')
 
             // clear success class
             this.removeSuccessModifier()
