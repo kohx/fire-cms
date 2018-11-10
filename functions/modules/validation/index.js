@@ -5,11 +5,9 @@ const debug = require('../debug').debug
 module.exports = class validation {
 
     constructor(list) {
-
         if (typeof list !== 'object') {
             throw new Error('error at validation module: list is not object')
         }
-        this.list = list
         this.list = list
         this.values = Object.assign({}, list)
 
@@ -49,6 +47,7 @@ module.exports = class validation {
             isNumunder: `{{param1}} is not numeric and underscore.`,
             isBase64: `{{param1}} is not base64 encoded.`,
             isArray: `{{param1}} is not array.`,
+            isNotBlankObject: `{{param1}} is blank.`,
         }
     }
 
@@ -100,8 +99,21 @@ module.exports = class validation {
                     break
 
                 case 'isArray':
-                flag = typeof value === 'object' && Array.isArray(value)
-                break
+                    flag = typeof value === 'object' && Array.isArray(value)
+                    break
+
+                case 'isNotBlankObject':
+                    if (typeof value === 'object') {
+                        let objectValues = []
+                        Object.keys(value).forEach(key => {
+                            objectValues.push(value[key])
+                        })
+                        objectValues = objectValues.filter(objectValue => objectValue.length > 0)
+                        flag = objectValues.length > 0
+                    } else {
+                        flag = false
+                    }
+                    break
 
                 default:
                     // There is no error even if there is args!
@@ -197,14 +209,11 @@ module.exports = class validation {
 
         if (typeof str == 'string') {
             return this.setValue(obj, str.split('.'), value)
-        }
-        else if (str.length == 1 && value !== undefined) {
+        } else if (str.length == 1 && value !== undefined) {
             return obj[str[0]] = value
-        }
-        else if (str.length == 0) {
+        } else if (str.length == 0) {
             return obj
-        }
-        else {
+        } else {
             return this.setValue(obj[str[0]], str.slice(1), value)
         }
     }

@@ -9,7 +9,7 @@
     --warning-bg-color: rgb(255, 240, 200);
     --error-color: rgb(200, 100, 100);
     --error-bg-color: rgb(255, 235, 235);
-  }
+}
 
 html {
     font-size: 62.5%;
@@ -31,6 +31,7 @@ body {
 button {
     border: none;
     padding: 1rem;
+    transition: all .1s linear;
 }
 
 input[type="text"],
@@ -58,13 +59,29 @@ textarea {
     transition: all 0.1s ease-in-out;
     padding: 0 0 1rem 0;
     overflow: hidden;
+    padding: 1.2rem;
+}
+
+.notice-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.2rem;
+    transition: all .1s linear;
+}
+
+.notice-close:hover {
+    transform: rotate(0.5turn);
 }
 
 .notice-messages li {
     word-break: keep-all;
     white-space: nowrap;
-    padding: 0 2rem
+    padding: 0 2rem;
 }
+
 .notice._active {
     transform: translateX(-50%) translateY(100%);
 }
@@ -93,14 +110,8 @@ textarea {
     background-color: var(--error-bg-color);
 }
 
-.notice-close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    cursor: pointer;
-}
 
-input._modifed {
+input._modified {
     background-color: var(--info-bg-color);
     border-bottom-color: var(--info-color);
 }

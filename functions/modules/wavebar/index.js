@@ -437,7 +437,9 @@ module.exports = class wavebar {
                 return this.params.unique === value
             },
             inParents: (value) => {
+                // copy array
                 let uniques = this.params.parents.slice()
+            
                 uniques = uniques != null ? uniques : []
                 uniques.push(this.params.unique)
                 return uniques.includes(value)

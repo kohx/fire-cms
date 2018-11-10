@@ -17,7 +17,8 @@ module.exports.index = (req, res, next) => {
                 targets[doc.id] = doc.data()
             })
 
-            targets.lang.locales = targets.lang.locales.join(',')
+            // array to string
+            targets.lang.locales = targets.lang.locales.join(', ')
 
             req.vessel.thing.targets = targets
             next()
@@ -44,8 +45,13 @@ module.exports.update = (req, res, next) => {
     if (settings.lang != null && settings.lang.locales != null) {
         const newLocals = []
         settings.lang.locales.split(',').forEach(locale => {
-            newLocals.push(locale.trim())
+            locale = locale.trim()
+            if (locale.length > 0) {
+                newLocals.push(locale)
+            }
         })
+
+
 
         // override
         settings.lang.locales = newLocals
@@ -162,7 +168,7 @@ module.exports.update = (req, res, next) => {
             validate.sanitize('lang.dirname', 'trim')
         }
         if (lang.locales != null) {
-            validate.test('lang.locales', 'isRequired')
+            validate.test('lang.locales', 'isNotBlankObject')
             validate.test('lang.locales', 'isArray')
         }
     }
@@ -177,8 +183,12 @@ module.exports.update = (req, res, next) => {
         Object.keys(valid.errors).forEach(key => {
             valid.errors[key].forEach(error => {
                 // {path: xxx.xxx, message: 'asdf asdf asdf.'}
+                // change to 
                 // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-                messages.push({ key: error.path, content: req.__(error.message, error.params) })
+                messages.push({
+                    key: error.path,
+                    content: req.__(error.message, error.params)
+                })
             })
         })
         res.json({
@@ -200,7 +210,13 @@ module.exports.update = (req, res, next) => {
             // create success message
             Object.keys(docValues).forEach(valueKey => {
                 // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-                messages.push({ key: `${docKey}.${valueKey}`, message: req.__('{{docKey}} {{valueKey}} is updated.', { docKey, valueKey }) })
+                messages.push({
+                    key: `${docKey}.${valueKey}`,
+                    content: req.__('{{docKey}} {{valueKey}} is updated.', {
+                        docKey,
+                        valueKey
+                    })
+                })
             })
         })
 
@@ -217,7 +233,10 @@ module.exports.update = (req, res, next) => {
                 debug(err, __filename, __line)
                 res.json({
                     status: false,
-                    messages: [{ key: 'error', content: err.message }],
+                    messages: [{
+                        key: 'error',
+                        content: err.message
+                    }],
                     values: valid.values
                 })
             })

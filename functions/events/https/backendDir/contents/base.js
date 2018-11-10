@@ -1,7 +1,6 @@
 export class Base {
 
     constructor() {
-        this.name = 'kohei'
         this.notice = document.querySelector('.notice')
         this.noticeTitle = document.querySelector('.notice-title')
         this.noticeMessages = document.querySelector('.notice-messages')
@@ -18,21 +17,33 @@ export class Base {
     }
 
     /* nitice */
-    setNotice(type, messages, title = null, timeout = 4000) {
+    setNotice(type, messages, title = null, timeout = 6000) {
+        console.time('timer')
         this.clearNotice()
+        let timer;
+        clearTimeout(timer);
         title = title != null ? title : type.toUpperCase()
         this.noticeTitle.textContent = title
+
         messages.forEach(message => {
             const list = document.createElement('li');
             list.textContent = message
             this.noticeMessages.insertAdjacentElement('beforeend', list)
         });
+
         this.notice.classList.add(`__${type}`, '_active')
-        setTimeout(_ => {
+
+        timer = setTimeout(_ => {
             this.closeNotice()
+        console.timeEnd('timer')
+
+            // clear success class
+            this.removeSuccessModifier()
+
             setTimeout(_ => {
                 this.clearNotice()
             }, 100);
+
         }, timeout);
     }
 
@@ -44,6 +55,12 @@ export class Base {
 
     closeNotice() {
         this.notice.classList.remove('_active')
+    }
+
+    removeSuccessModifier() {
+        document.querySelectorAll('.__success').forEach(element => {
+            element.classList.remove('__success')
+        })
     }
 
 
@@ -58,13 +75,13 @@ export class Base {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'post',
-                mode: 'cors',
-                credentials: 'include',
-                cache: 'no-cache',
-                headers: headers,
-                body: JSON.stringify(body)
-            })
+                    method: 'post',
+                    mode: 'cors',
+                    credentials: 'include',
+                    cache: 'no-cache',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                })
                 .then(data => {
                     return data.json()
                 })

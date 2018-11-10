@@ -35,23 +35,34 @@
     const targetItems = document.querySelectorAll('.setting_item')
     const notice = document.querySelector('.notice')
 
-    const itemValues = {}
     Object.keys(targetItems).forEach(key => {
         const element = targetItems[key]
         element.addEventListener('keyup', event => {
+
+            /* if change valeu add _modified class */
+            if (event.target.dataset.default != event.target.value) {
+                event.target.classList.remove('__warning', '__success')
+                event.target.classList.add('_modified')
+            } else {
+                event.target.classList.remove('_modified')
+            }
+
+            /* if enter key up then next one focused */
+            if(event.keyCode === 13){
+                if((targetItems.length - 1) <= key){
+                    targetItems[0].focus()
+                    targetItems[0].setSelectionRange(-1, -1)
+                } else {
+                    targetItems[Number(key) + 1].focus()
+                    targetItems[Number(key) + 1].setSelectionRange(-1, -1)
+                }
+            }
 
             // クライアント側 validation
             const result = v8n()
                 .string()
                 .test("My string!"); //true
-            console.log(result)
-
-            if (event.target.dataset.default != event.target.value) {
-                event.target.classList.remove('__warning', '__success')
-                event.target.classList.add('_modifed')
-            } else {
-                event.target.classList.remove('_modifed')
-            }
+            // console.log(result)
         })
     })
 
@@ -59,7 +70,7 @@
 
         const url = event.target.dataset.url
         const unique = event.target.dataset.unique
-        const updateItems = document.querySelectorAll('._modifed')
+        const updateItems = document.querySelectorAll('._modified')
 
         if (updateItems.length === 0) {
             base.setNotice('warning', ['Nothing has changed.'])
@@ -80,29 +91,44 @@
 
                 // get type
                 const type = result.status ? 'success' : 'warning'
-                
-                // rebuilg message
+
                 let messages = []
                 result.messages.forEach(message => {
-                    const selector = message.key =! null ? `.${message.key.replace('.', ' .')}` : false
-                    
-                    if(selector){
-                        const elment = document.querySelector(selector)
-                        elment.classList.remove('__warning', '__success')
-                        elment.classList.add(`__${type}`)
-                    }
-                    
+
+                    // rebuild message
                     messages.push(message.content)
+
+                    // get selector from key
+                    let key = message.key
+                    const selector = key =! null ? `.${key.replace('.', ' .')}` : false
+                    
+                    // has selector
+                    if(selector){
+                        const element = document.querySelector(selector)
+
+                        // set type class
+                        element.classList.remove('__warning', '__success')
+                        element.classList.add(`__${type}`)
+
+                        // status is success
+                        if(result.status){
+                            // then remove _modified class
+                            element.classList.remove('_modified')
+
+                            // and remove _modified class
+                            let value = Object.assign({}, result.values)
+                            message.key.split('.').forEach(path => {
+                               value = value[path.trim()]
+                            })
+
+                            value = Array.isArray(value) ? value.join(', ') : value
+                            element.value = value
+                            element.dataset.default = value
+                        }
+                    }
                 })
 
                 base.setNotice(type, messages)
-
-                // status is success then remove _modifed class
-                if (result.status) {
-                    Object.keys(updateItems).forEach(key => {
-                        updateItems[key].classList.remove('_modifed')
-                    })
-                }
             })
             .catch(err => {
                 base.setNotice('error', [err.message])
