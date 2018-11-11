@@ -3,9 +3,14 @@
 
 <div class="col0 grid1 gap1">
 
+    <div class="col0 grid12">
+        <a class="col3 pad1 cen mid button" href="/{| backendFirstPath |}/user-add">add user</a>
+    </div>
+
     <ul>
         {|* targets: target |}
         <li class="col0 grid1 gap1 pad1">
+            <h2>{| target.name |}</h2>
             <div>{| key |}: {| target.name |}</div>
             <div>role: {| target.role |}</div>
         </li>

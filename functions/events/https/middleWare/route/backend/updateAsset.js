@@ -7,15 +7,7 @@ const system = parent.system
 const validation = require('../../../../../modules/validation')
 const uploadBase64 = require('../../../../../modules/uploadBase64')
 
-module.exports = (req, res, next) => {
-    //     // console.log('@@@', res.__('Hello'))
-    //     // console.log('@@@', res.__('yes'))
-    //     // console.log('@@@', req.__('Hello {{name}}', { name: 'kohei' }))
-    //     // console.log('@@@', res.__({ phrase: 'Hello {{name}}', locale: 'ja' }, { name: 'こうへい' }))
-    //     // console.log('@@@', res.__l('Hello'))
-    //     // console.log('@@@', res.__h('Hello'))
-    //     // console.log('@@@', res.__('greeting.formal'))
-    //     // console.log('@@@', res.__('greeting.informal'))     
+module.exports = (req, res, next) => { 
 
     // catch error end becose endpoint
     const assetsStoreRef = admin.firestore().collection('assets')

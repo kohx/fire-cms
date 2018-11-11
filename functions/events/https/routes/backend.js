@@ -4,6 +4,18 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
+/**
+ * translate
+ */
+// console.log('@@@', res.__('Hello'))
+// console.log('@@@', res.__('yes'))
+// console.log('@@@', req.__('Hello {{name}}', { name: 'kohei' }))
+// console.log('@@@', res.__({ phrase: 'Hello {{name}}', locale: 'ja' }, { name: 'こうへい' }))
+// console.log('@@@', res.__l('Hello'))
+// console.log('@@@', res.__h('Hello'))
+// console.log('@@@', res.__('greeting.formal'))
+// console.log('@@@', res.__('greeting.informal'))
+
 const express = require('express')
 const router = express.Router()
 
@@ -14,7 +26,6 @@ jsonCache.isActive(system.cache)
 
 // middleWare
 const generalMethod = require('../middleWare/route/backend/general')
-const updateAsset = require('../middleWare/route/backend/updateAsset')
 
 // subRote
 const setting = require('../middleWare/route/backend/setting')
@@ -22,7 +33,9 @@ const user = require('../middleWare/route/backend/user')
 const thing = require('../middleWare/route/backend/thing')
 const template = require('../middleWare/route/backend/template')
 const division = require('../middleWare/route/backend/division')
+
 const asset = require('../middleWare/route/backend/asset')
+const updateAsset = require('../middleWare/route/backend/updateAsset')
 
 /* route get */
 router.get('/*',
@@ -85,15 +98,21 @@ function subPostRoute(req, res, next) {
         // settings
         'setting-update': setting.update,
         // users
+        'user-create': user.create,
+        'user-update': user.update,
+        'user-delete': user.delete,
         // divisions
+        'division-create': division.create,
+        'division-update': division.update,
+        'division-delete': division.delete,
         // template
-        // thing
-        'thing-cleate': thing.cleate,
-        'thing-update': thing.update,
-        'thing-delete': thing.delete,
-        'template-cleate': template.cleate,
+        'template-create': template.create,
         'template-update': template.update,
         'template-delete': template.delete,
+        // thing
+        'thing-create': thing.create,
+        'thing-update': thing.update,
+        'thing-delete': thing.delete,
         // assets
     }
 

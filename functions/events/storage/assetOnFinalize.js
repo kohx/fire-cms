@@ -9,7 +9,7 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 
-exports.updateAsset = functions.storage.object()
+exports.assetOnFinalize = functions.storage.object()
     .onFinalize(object => {
         console.log('<1> storage onFinalize')
 
@@ -92,7 +92,8 @@ exports.updateAsset = functions.storage.object()
                     })
                     .then(snap => {
                         const data = snap.data()
-                        const otherSize = data.otherSize
+                        debug(data, __filename, __line)
+                        const otherSize = data.otherSize != null ? data.otherSize : []
                         otherSize[type] = true
                         return snap.ref.update({ otherSize: otherSize })
                     })
@@ -107,19 +108,19 @@ exports.updateAsset = functions.storage.object()
         }
 
         // プロミスのときはプロミスを返す！
-        return admin.firestore().collection('configs').doc('asset').get()
+        return admin.firestore().collection('settings').doc('asset').get()
             .then(doc => {
-                console.log('<2> Get config')
-                const config = doc.data()
+                console.log('<2> Get settings asset')
+                const settings = doc.data()
 
-                if (config.thumbPrefix) { types.thumb.prefix = config.thumbPrefix }
-                if (config.thumbSize) { types.thumb.size = config.thumbSize }
-                if (config.squarePrefix) { types.square.prefix = config.squarePrefix }
-                if (config.squareSize) { types.square.size = config.squareSize }
-                if (config.landscapePrefix) { types.landscape.prefix = config.landscapePrefix }
-                if (config.landscapeSize) { types.landscape.size = config.landscapeSize }
-                if (config.portraitPrefix) { types.portrait.prefix = config.portraitPrefix }
-                if (config.portraitSize) { types.portrait.size = config.portraitSize }
+                if (settings.thumbPrefix) { types.thumb.prefix = settings.thumbPrefix }
+                if (settings.thumbSize) { types.thumb.size = settings.thumbSize }
+                if (settings.squarePrefix) { types.square.prefix = settings.squarePrefix }
+                if (settings.squareSize) { types.square.size = settings.squareSize }
+                if (settings.landscapePrefix) { types.landscape.prefix = settings.landscapePrefix }
+                if (settings.landscapeSize) { types.landscape.size = settings.landscapeSize }
+                if (settings.portraitPrefix) { types.portrait.prefix = settings.portraitPrefix }
+                if (settings.portraitSize) { types.portrait.size = settings.portraitSize }
 
                 // thumb
                 types.thumb.temp = path.join(tmpdir, `${types.thumb.prefix}${fileName}`)

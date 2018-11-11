@@ -35,6 +35,7 @@ module.exports.index = (req, res, next) => {
  */
 module.exports.update = (req, res, next) => {
 
+    // get post from req body
     const settings = req.body
 
     // setting.lang.locales
@@ -51,9 +52,7 @@ module.exports.update = (req, res, next) => {
             }
         })
 
-
-
-        // override
+        // override becose reference new locales
         settings.lang.locales = newLocals
         locales = newLocals
     }
@@ -204,6 +203,13 @@ module.exports.update = (req, res, next) => {
         let updates = []
         Object.keys(values).forEach(docKey => {
             docValues = values[docKey]
+
+//seconds of UTC time since Unix epoch
+console.log(snap.createTime.seconds);
+
+//fractions of a second at nanosecond resolution, 0 to 999,999,999
+console.log(snap.createTime.nanoseconds);
+
             const updateDoc = settingsRef.doc(docKey).update(docValues)
             updates.push(updateDoc)
 

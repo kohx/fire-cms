@@ -9,6 +9,8 @@
     --warning-bg-color: rgb(255, 240, 200);
     --error-color: rgb(200, 100, 100);
     --error-bg-color: rgb(255, 235, 235);
+    --button-color: rgb(77, 77, 77);
+    --button-bg-color: rgb(230, 230, 230);
 }
 
 html {
@@ -35,45 +37,59 @@ button {
     outline: none;
 }
 
-button {
+button,
+a.button {
     border: none;
     padding: 1rem;
     position: relative;
     overflow: hidden;
     transition: all .1s linear;
+    color: var(--button-color);
+    background-color: var(--button-bg-color);
+}
+
+a.button:hover {
+    text-decoration: none;
 }
 
 button::before,
-button::after {
+button::after,
+a.button::before,
+a.button::after {
     content: '';
     display: block;
     position: absolute;
     background-color: transparent;
-    transition: all .5s linear;
+    transition: all .2s linear;
     height: 10px;
     width: 10px;
 }
 
-button::before {
+button::before,
+a.button::before {
     top: 0;
     left: 0;
-    border-top: 2px solid var(--default-color);
-    border-left: 2px solid var(--default-color);
+    border-top: 2px solid var(--button-color);
+    border-left: 2px solid var(--button-color);
 }
 
-button::after {
+button::after,
+a.button::after {
     right: 0;
     bottom: 0;
-    border-right: 2px solid var(--default-color);
-    border-bottom: 2px solid var(--default-color);
+    border-right: 2px solid var(--button-color);
+    border-bottom: 2px solid var(--button-color);
 }
 
 button:hover::before,
 button:disabled::before,
+a.button:hover::before,
 button:hover::after,
-button:disabled::after {
+button:disabled::after,
+a.button:hover::after {
     height: 100%;
     width: 100%;
+    color: var(--button-color);
 }
 
 input[type="text"],
