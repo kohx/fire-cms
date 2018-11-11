@@ -54,6 +54,7 @@ function subGetRoute(req, res, next) {
     const unique = req.vessel.get('paths.unique')
 
     const subRoutes = {
+
         // settings
         'settings': setting.index,
         // users

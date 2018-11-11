@@ -277,7 +277,7 @@ module.exports.getThing = (req, res, next) => {
         const thing = backendThings.get(unique)
 
         if (!thing) {
-            let err = new Error('Thing Not Found!')
+            let err = new Error(`Thing [${thing}] Not Found!`)
             err.status = 404
             next(err)
             return

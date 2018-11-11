@@ -196,14 +196,14 @@ module.exports.in = (req, res, next) => {
     }
 
     // get from settings
+    // The session cookie duration must be a valid number in milliseconds between 5 minutes and 2 weeks.
+    // セッションクッキーの有効期間は、5分から2週間の間のミリ秒単位の有効な数値でなければなりません。
     // 60 * 60 * 24 * 5 * 1000 有効期限を5日に設定
-    const expiresIn = req.vessel.get('settings.backend.expiresIn')
+    const expiresIn = Number(req.vessel.get('settings.backend.expiresIn'))
 
     // セッションCookieを作成、これにより、プロセス内のIDトークンも検証
     // セッションクッキーは、IDトークンと同じ要求を持つ
-    admin.auth().createSessionCookie(idToken, {
-            expiresIn
-        })
+    admin.auth().createSessionCookie(idToken, { expiresIn })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {
@@ -222,6 +222,7 @@ module.exports.in = (req, res, next) => {
             })
         })
         .catch(err => {
+            debug(err, __filename, __line)
             res.json({
                 status: false,
                 message: err.message
