@@ -1,6 +1,6 @@
-.firebase
-.vscode
-coverage
+.firebase/
+.vscode/
+coverage/
 firebase-debug.log
 node_modules/
 functions/node_modules/
