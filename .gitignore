@@ -1,4 +1,5 @@
 firebase-debug.log
 node_modules/
 functions/node_modules/
-.firebase/hosting.cHVibGlj.cache
+.firebase/
+.vscode/
