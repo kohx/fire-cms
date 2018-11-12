@@ -28,6 +28,7 @@ jsonCache.isActive(system.cache)
 const generalMethod = require('../middleWare/route/backend/general')
 
 // subRote
+const sign = require('../middleWare/route/backend/sign')
 const setting = require('../middleWare/route/backend/setting')
 const user = require('../middleWare/route/backend/user')
 const thing = require('../middleWare/route/backend/thing')
@@ -96,6 +97,9 @@ function subPostRoute(req, res, next) {
 
     const unique = req.vessel.get('paths.unique')
     const subRoutes = {
+        // sign
+        'sign-in': sign.in,
+        'sign-out': sign.out,
         // settings
         'setting-update': setting.update,
         // users

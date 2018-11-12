@@ -17,12 +17,23 @@ module.exports.get = (unique) => {
             contentType: 'html',
             contentFile: 'index.html'
         },
+        /* sign */
         'signin': {
             unique: 'signin',
             name: 'signin',
             roles: {},
             contentType: 'html',
             contentFile: 'signin.html'
+        },
+        'sign-in': {
+            unique: 'sign-in',
+            roles: {},
+            contentType: 'json',
+        },
+        'sign-out': {
+            unique: 'sign-out',
+            roles: {},
+            contentType: 'json',
         },
         /* settings */
         'settings': {
