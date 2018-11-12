@@ -23,7 +23,7 @@ module.exports.get = (unique) => {
             name: 'signin',
             roles: {},
             contentType: 'html',
-            contentFile: 'signin.html'
+            contentFile: 'sign/in.html'
         },
         'sign-in': {
             unique: 'sign-in',
@@ -34,6 +34,13 @@ module.exports.get = (unique) => {
             unique: 'sign-out',
             roles: {},
             contentType: 'json',
+        },
+        'signin.js': {
+            unique: 'signin.js',
+            name: 'signin.js',
+            roles: {},
+            contentType: 'js',
+            contentFile: 'sign/in.js'
         },
         /* settings */
         'settings': {
@@ -472,19 +479,13 @@ module.exports.get = (unique) => {
             contentType: 'css',
             contentFile: 'css/std-grid-mq.css'
         },
+        /* js */
         'base.js': {
             unique: 'base.js',
             name: 'base.js',
             roles: {},
             contentType: 'js',
             contentFile: 'base.js'
-        },
-        'signin.js': {
-            unique: 'signin.js',
-            name: 'signin.js',
-            roles: {},
-            contentType: 'js',
-            contentFile: 'signin.js'
         }
     }
 

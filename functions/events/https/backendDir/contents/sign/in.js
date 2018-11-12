@@ -1,11 +1,16 @@
 // httpOnly Cookieを使用するため、クライアントの状態を保持しない
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
 
+/* イベント */
+const signinBtn = document.querySelector('#signin')
+const signoutBtn = document.querySelector('#signout')
+
 /* サインイン */
 const signin = event => {
 
     const email = document.querySelector('#email').value
     const passwoard = document.querySelector('#password').value
+    const signInUrl = `${window.location.origin}/{|backendFirstPath|}/sign-in`
 
     firebase.auth()
         .signInWithEmailAndPassword(email, passwoard)
@@ -17,7 +22,16 @@ const signin = event => {
                     // セッションログインエンドポイントが照会され、セッションクッキーが設定
                     // CSRFプロテクトのためのトークン
                     const csrfToken = document.querySelector('#csrfToken').textContent
-                    return fetchServerSignin(idToken, csrfToken)
+
+                    // create body
+                    const body = {
+                        idToken: idToken,
+                        csrfToken: csrfToken
+                    }
+
+                    const addHeader = { 'Authorization': 'Bearer ' + idToken }
+
+                    return fetchServerSignin(url, body, addHeader)
                 })
         })
         .then(result => {
@@ -46,45 +60,22 @@ const signin = event => {
 }
 
 // 非同期通信でサーバ側をログイン
-function fetchServerSignin(idToken, csrfToken) {
+function fetchServerSignin(url, body, addHeader) {
 
-    const url = `${window.location.origin}/{|backendFirstPath|}/sign-in`
-
-    const headers = {
-        'Authorization': 'Bearer ' + idToken,
-        // 'Access-Control-Allow-Credentials': 'true',
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-    }
-
-    const body = {
-        idToken: idToken,
-        csrfToken: csrfToken
-    }
-
-    return new Promise((resolve, reject) => {
-        fetch(url, {
-            method: 'post',
-            mode: 'cors',
-            credentials: 'include',
-            cache: 'no-cache',
-            headers: headers,
-            body: JSON.stringify(body)
+    fetchServer(url, body, addHeader)
+        .then(data => {
+            return data.json()
         })
-            .then(data => {
-                return data.json()
+        .then(json => {
+            resolve(json)
+        })
+        .catch(err => {
+            reject({
+                status: true,
+                message: "network err."
             })
-            .then(json => {
-                resolve(json)
-            })
-            .catch(err => {
-                console.log(err)
-                reject({
-                    status: false,
-                    message: "network err.",
-                })
-            })
-    })
+        })
+
 }
 
 /* サインアウト */
@@ -93,7 +84,7 @@ const signout = event => {
 
     return fetchServerSignout()
         .then(result => {
-            if(result.status == false){
+            if (result.status == false) {
                 window.location.reload()
             }
             // document.querySelector('#signin').disabled = false
@@ -141,6 +132,14 @@ function fetchServerSignout() {
     })
 }
 
+if (signinBtn) {
+    signinBtn.addEventListener('click', signin)
+}
+
+if (signoutBtn) {
+    signoutBtn.addEventListener('click', signout)
+}
+
 /* チェンジユーザ */
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
@@ -151,14 +150,4 @@ firebase.auth().onAuthStateChanged(user => {
         // document.querySelector('#signout').disabled = true
     }
 })
-
-/* イベント */
-const signinBtn = document.querySelector('#signin')
-if (signinBtn) {
-    signinBtn.addEventListener('click', signin)
-}
-const signoutBtn = document.querySelector('#signout')
-if (signoutBtn) {
-    signoutBtn.addEventListener('click', signout)
-}
 

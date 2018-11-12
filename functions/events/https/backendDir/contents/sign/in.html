@@ -1,0 +1,96 @@
+{|@ wrapper |}
+{|> header |}
+
+<div class="col0 grid1 gap1">
+
+    <div class="grid3 gap1">
+        <label class="col1 cen mid">email</label>
+        <input class="target_item col2" id="email" type="email" data-default="" value="kohei0728@gmail.com">
+        <label class="target_item col1 cen mid">password</label>
+        <input class="col2" id="password" type="password" data-default="" value="1072551">
+
+        <p id="signin_message"></p>
+
+    </div>
+
+    <button class="col1" type="button" id="sign_in_button" data-csrf_token="{|csrfToken|}" data-request_url="/{|backendFirstPath|}/sign-in"
+        data-backend_url="{|backendFirstPath|}">signin</button>
+</div>
+{|> footer |}
+
+<script type="module">
+
+    import { Base } from '/{| backendFirstPath |}/base.js';
+    const base = Base.init()
+
+    // httpOnly Cookieを使用するため、クライアントの状態を保持しない
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
+
+    /* イベント */
+    const signInButton = document.querySelector('#sign_in_button')
+    signInButton.addEventListener('click', (event) => {
+        const email = document.querySelector('#email').value
+        const passwoard = document.querySelector('#password').value
+        const target = event.currentTarget
+        const csrfToken = target.dataset.csrf_token
+        const requestUrl = target.dataset.request_url
+        const backendUrl = target.dataset.backend_url
+
+        signInFunction(email, passwoard, csrfToken, requestUrl)
+        .then(result => {
+            console.log(result)
+            if(result.status){
+                window.location.assign(backendUrl)
+            } else {
+                base.setNotice('error', [result.message], 'Signin failed')
+            }
+        })
+        .catch(err => {
+            base.setNotice('error', [result.message], 'Signin error')
+        })
+
+        // signin success then send to backend index
+        // window.location.assign(backendUrl)
+    })
+
+    function signInFunction(email, passwoard, csrfToken, requestUrl) {
+        return firebase.auth().signInWithEmailAndPassword(email, passwoard)
+            .then(result => {
+                const user = result.user
+                // セッションCookieを交換するために必要なユーザーのIDトークンを取得
+                return user.getIdToken()
+                    .then(idToken => {
+
+                        // set body
+                        // idTokenとCSRFプロテクトのためのトークン
+                        const body = {
+                            idToken: idToken,
+                            csrfToken: csrfToken
+                        }
+
+                        // set header
+                        const addHeader = { 'Authorization': 'Bearer ' + idToken }
+
+                        // サーバに問い合わせ
+                        return base.fetchServer(requestUrl, body, addHeader)
+                    })
+            })
+            .then(result => {
+                // 永続性がNONEに設定されているため、ページのリダイレクトで十分
+                firebase.auth().signOut()
+                return result
+            })
+            .then(result => {
+                return ({
+                        status: false,
+                        message: result.message
+                    })
+            })
+            .catch(err => {
+                return ({
+                    status: false,
+                    message: err.message
+                })
+            })
+    }
+</script>

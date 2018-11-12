@@ -11,7 +11,7 @@
                 {|* targetValue: itemName: itemValue |}
                 <li class="grid3 gap1">
                     <label class="col1 cen mid">{| itemName |}</label>
-                    <input class="setting_item col2 {| itemName |} " type="text" data-default="{| itemValue |}"
+                    <input class="target_item col2 {| itemName |}" type="text" data-default="{| itemValue |}"
                         data-target="{| targetName |}" data-item="{| itemName |}" value="{| itemValue |}">
                 </li>
                 {|/*|}
@@ -32,7 +32,7 @@
     const base = Base.init()
 
     const updateBtnElement = document.querySelector('#updateBtn')
-    const targetItems = document.querySelectorAll('.setting_item')
+    const targetItems = document.querySelectorAll('.target_item')
     const notice = document.querySelector('.notice')
 
     Object.keys(targetItems).forEach(key => {
@@ -94,7 +94,7 @@
             body[element.dataset.target][element.dataset.item] = element.value
         })
 
-        base.fetchPost(url, body)
+        base.fetchServer(url, body)
             .then(result => {
 
                 // get type

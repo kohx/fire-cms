@@ -19,7 +19,7 @@ export class Base {
     }
 
     /* nitice */
-    setNotice(type, messages, title = null, timeout = 6000) {        
+    setNotice(type, messages, title = null, timeout = 6000) {
         this.clearNotice()
 
         clearTimeout(this.noticeTimer);
@@ -64,25 +64,32 @@ export class Base {
         })
     }
 
-
     /* fetche */
-    fetchPost(url, body = {}) {
+    fetchSignIn(email, passwoard, url, csrfToken) {
 
-        const headers = {
+    }
+
+    fetchServer(url, body = {}, addHeader = {}) {
+
+        // default headers
+        const defaultHeaders = {
             // 'Access-Control-Allow-Credentials': 'true',
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         }
 
+        // merge defaultHeaders and addHeader
+        const headers = Object.assign(defaultHeaders, addHeader)
+
         return new Promise((resolve, reject) => {
             fetch(url, {
-                    method: 'post',
-                    mode: 'cors',
-                    credentials: 'include',
-                    cache: 'no-cache',
-                    headers: headers,
-                    body: JSON.stringify(body)
-                })
+                method: 'post',
+                mode: 'cors',
+                credentials: 'include',
+                cache: 'no-cache',
+                headers: headers,
+                body: JSON.stringify(body)
+            })
                 .then(data => {
                     return data.json()
                 })

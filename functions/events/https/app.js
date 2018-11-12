@@ -24,7 +24,6 @@ const wavebar = require('../../modules/wavebar')
 /* routes */
 var backendRouter = require('./routes/backend')
 var frontendRouter = require('./routes/frontend')
-var signEndPointRouter = require('./routes/signEndPoint')
 
 /* middleware */
 const initWare = require('./middleWare/app/initWare')
@@ -75,10 +74,9 @@ app.use(wavebar.init)
 /* route */
 app.use(`/*`, frontendRouter)
 app.use(`/*`, backendRouter)
-app.use('/signEndPoint', signEndPointRouter)
 
 // TODO:: メールはnodeでしかできないで作成
-// app.use('/mailEndPoint', signEndPointRouter)
+// app.use('/mailEndPoint', mailEndPointRouter)
 
 /* errWare notFound */
 app.use(errWare.notFound)

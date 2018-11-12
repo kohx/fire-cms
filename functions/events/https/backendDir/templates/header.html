@@ -1,22 +1,19 @@
 <header class="col0 grid12 gap1">
-    <h1 class="col0">backend</h1>
-    <div class="col3 row1 mid cen pad1">
-        <div>unique: {| unique |}</div>
-        <div>name: {| name |}</div>
-    </div>
+    <h1 class="col0">
+        backend <span>{| name |}</span>
+    </h1>
 
-    {|# sign.status |}
-    <div class="col6 row1 mid pad1">
+    <div class="col0 row1 mid pad1">
+        {|# sign.status |}
         <div>uid: {| user.uid |}</div>
         <div>name: {| user.name |}</div>
         <div>email: {| user.email |}</div>
+        {|/#|}
+
+        {|^ sign.status |}
+        <div>not sign in.</div>
+        {|/^|}
     </div>
-    {|/#|}
-    {|^ sign.status |}
-    <div class="col9 row1 mid pad1">
-            <div>not sign in.</div>
-    </div>
-    {|/^|}
 
     {|# sign.status |}
     <button class="col3 row1 mid cen" id="signout">sign out</button>

@@ -6,7 +6,10 @@ const system = parent.system
 
 const debug = require('../../../../modules/debug').debug
 
-/* csrf function */
+/**
+ * csrf function
+ * 
+ */
 module.exports.csrf = (req, res, next) => {
 
     // Get unique
@@ -39,7 +42,10 @@ module.exports.csrf = (req, res, next) => {
     next()
 }
 
-/* check middle ware */
+/**
+ * check middle ware
+ * 
+ */
 module.exports.check = (req, res, next) => {
 
     // sign object
@@ -101,6 +107,9 @@ module.exports.check = (req, res, next) => {
     }
 }
 
+/**
+ * get user info
+ */
 module.exports.user = (req, res, next) => {
     // サインインしているかチェック
     let isSigned = req.vessel.get('sign.status')
@@ -140,7 +149,9 @@ module.exports.user = (req, res, next) => {
     }
 }
 
-/* in function */
+/**
+ * sign in
+ */
 module.exports.in = (req, res, next) => {
 
     // postされたIDトークンとCSRFトークンを取得
