@@ -1,15 +1,17 @@
 :root {
-    --default-color: rgb(140, 140, 140);
+    --default-color: rgb(50, 50, 50);
     --default-bg-color: rgb(240, 240, 240);
     --info-color: rgb(100, 150, 240);
     --info-bg-color: rgb(200, 200, 240);
     --success-color: rgb(100, 140, 40);
-    --success-bg-color: rgb(235, 245, 217);
+    --success-bg-color: rgb(235, 245, 215);
     --warning-color: rgb(220, 120, 0);
     --warning-bg-color: rgb(255, 240, 200);
     --error-color: rgb(200, 100, 100);
     --error-bg-color: rgb(255, 235, 235);
-    --button-color: rgb(77, 77, 77);
+    
+    --button-active-color: rgb(50, 50, 50);
+    --button-inactive-color: rgb(120, 120, 120);
     --button-bg-color: rgb(230, 230, 230);
 }
 
@@ -66,35 +68,47 @@ button::before,
 a.button::before {
     top: 0;
     left: 0;
-    border-top: 2px solid var(--button-color);
-    border-left: 2px solid var(--button-color);
+    border-top: 2px solid var(--button-active-color);
+    border-left: 2px solid var(--button-active-color);
 }
 
 button::after,
 a.button::after {
     right: 0;
     bottom: 0;
-    border-right: 2px solid var(--button-color);
-    border-bottom: 2px solid var(--button-color);
+    border-right: 2px solid var(--button-active-color);
+    border-bottom: 2px solid var(--button-active-color);
 }
 
 button:hover::before,
 button:disabled::before,
+button:focus::before,
 a.button:hover::before,
 button:hover::after,
 button:disabled::after,
+button:focus::after,
 a.button:hover::after {
     height: 100%;
     width: 100%;
-    color: var(--button-color);
+    color: var(--button-active-color);
 }
 
 input[type="text"],
 input[type="date"],
+input[type="email"],
+input[type="password"],
 textarea {
     border: 1px solid transparent;
     background-color: var(--default-bg-color);
     padding: .6rem;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+    border: 1px solid var(--default-color);
 }
 
 .wrapper {
@@ -103,13 +117,12 @@ textarea {
 
 /* notice */
 .notice {
-    bottom: 100%;
-    border-width: 1px;
-    border-style: solid;
+    border: solid 1px var(--default-color);
+    background-color: white;
     position: fixed;
     left: 50%;
+    bottom: 100%;
     transform: translateX(-50%);
-    background-color: white;
     transition: all 0.1s ease-in-out;
     padding: 0 0 1rem 0;
     overflow: hidden;
@@ -124,10 +137,12 @@ textarea {
     line-height: 1;
     padding: 0.2rem;
     transition: all .1s linear;
+    font-size: 1.4rem;
+    color: var(--button-inactive-color);
 }
 
 .notice-close:hover {
-    transform: rotate(0.5turn);
+    color: var(--button-active-color);
 }
 
 .notice-messages li {
@@ -137,34 +152,26 @@ textarea {
 }
 
 .notice._active {
-    transform: translateX(-50%) translateY(100%);
+    transform: translateX(-50%) translateY(110%);
 }
 
 .notice.__info {
     color: var(--info-color);
-    border-color: var(--info-color);
-    background-color: var(--info-bg-color);
 }
 
 .notice.__success {
     color: var(--success-color);
-    border-color: var(--success-color);
-    background-color: var(--success-bg-color);
 }
 
 .notice.__warning {
     color: var(--warning-color);
-    border-color: var(--warning-color);
-    background-color: var(--warning-bg-color);
 }
 
 .notice.__error {
     color: var(--error-color);
-    border-color: var(--error-color);
-    background-color: var(--error-bg-color);
 }
 
-
+/* input */
 input._modified {
     background-color: var(--info-bg-color);
     border-bottom-color: var(--info-color);

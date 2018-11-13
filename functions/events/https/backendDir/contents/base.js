@@ -1,11 +1,16 @@
 export class Base {
 
     constructor() {
+
+        /* target next */
+
+        this.targetItemSelector = '.target_item'
+        this.targetNext()
+
+        /* notice */
         this.notice = document.querySelector('.notice')
         this.noticeTitle = document.querySelector('.notice-title')
         this.noticeMessages = document.querySelector('.notice-messages')
-
-        /* notice */
         this.noticeClose = document.querySelector('.notice-close')
         this.noticeClose.addEventListener('click', event => {
             this.closeNotice()
@@ -16,6 +21,45 @@ export class Base {
 
     static init() {
         return new Base()
+    }
+
+    /* terget next */
+    targetNext(selector = null) {
+
+        selector = selector != null ? selector : this.targetItemSelector
+        const targetItems = document.querySelectorAll(selector)
+        console.log(targetItems)
+        Object.keys(targetItems).forEach(key => {
+
+            const element = targetItems[key]
+
+            element.addEventListener('keyup', event => {
+                event.target.classList.remove('_modified', '__warning', '__success')
+
+                /* if change valeu add _modified class */
+                if (event.target.dataset.default != event.target.value) {
+                    event.target.classList.remove('__warning', '__success')
+                    event.target.classList.add('_modified')
+                } else {
+                    event.target.classList.remove('_modified')
+                }
+
+                /* if enter key up then next one focused */
+                if (event.keyCode === 13) {
+
+                    let nextItem = targetItems[0]
+                    if ((targetItems.length - 1) > key) {
+                        nextItem = targetItems[Number(key) + 1]
+                    }
+
+                    nextItem.focus()
+
+                    if (nextItem.tagName !== 'BUTTON') {
+                        nextItem.setSelectionRange(-1, -1)
+                    }
+                }
+            })
+        })
     }
 
     /* nitice */

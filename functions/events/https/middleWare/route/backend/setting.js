@@ -14,6 +14,13 @@ module.exports.index = (req, res, next) => {
         .then(docs => {
             const targets = {}
             docs.forEach(doc => {
+
+                //seconds of UTC time since Unix epoch
+                // console.log(doc.createTime.seconds);
+
+                //fractions of a second at nanosecond resolution, 0 to 999,999,999
+                // console.logdoc(doc.createTime.nanoseconds);
+
                 targets[doc.id] = doc.data()
             })
 
@@ -203,12 +210,6 @@ module.exports.update = (req, res, next) => {
         let updates = []
         Object.keys(values).forEach(docKey => {
             docValues = values[docKey]
-
-//seconds of UTC time since Unix epoch
-console.log(snap.createTime.seconds);
-
-//fractions of a second at nanosecond resolution, 0 to 999,999,999
-console.log(snap.createTime.nanoseconds);
 
             const updateDoc = settingsRef.doc(docKey).update(docValues)
             updates.push(updateDoc)

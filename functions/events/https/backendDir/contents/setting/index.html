@@ -21,53 +21,20 @@
         {|/*|}
     </ul>
 
-    <button class="col1" type="button" id="updateBtn" data-url="/{| backendFirstPath |}/setting-update">update</button>
-
+    <button class="target_item col1" type="button" id="updateBtn" data-url="/{| backendFirstPath |}/setting-update">update</button>
 </div>
 {|> footer |}
 
 <script type="module">
 
     import { Base } from '/{| backendFirstPath |}/base.js';
-    const base = Base.init()
+    var base = Base.init()
 
     const updateBtnElement = document.querySelector('#updateBtn')
-    const targetItems = document.querySelectorAll('.target_item')
-    const notice = document.querySelector('.notice')
-
-    Object.keys(targetItems).forEach(key => {
-        const element = targetItems[key]
-        element.addEventListener('keyup', event => {
-
-            /* if change valeu add _modified class */
-            if (event.target.dataset.default != event.target.value) {
-                event.target.classList.remove('__warning', '__success')
-                event.target.classList.add('_modified')
-            } else {
-                event.target.classList.remove('_modified')
-            }
-
-            /* if enter key up then next one focused */
-            if(event.keyCode === 13){
-                if((targetItems.length - 1) <= key){
-                    targetItems[0].focus()
-                    targetItems[0].setSelectionRange(-1, -1)
-                } else {
-                    targetItems[Number(key) + 1].focus()
-                    targetItems[Number(key) + 1].setSelectionRange(-1, -1)
-                }
-            }
-
-            // クライアント側 validation
-            const result = v8n()
-                .string()
-                .test("My string!"); //true
-            // console.log(result)
-        })
-    })
 
     let processing = false
     updateBtnElement.addEventListener('click', event => {
+        
         if(processing){
             return 
         }
