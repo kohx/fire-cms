@@ -61,6 +61,7 @@
             body[element.dataset.target][element.dataset.item] = element.value
         })
 
+        // request to server
         base.fetchServer(url, body)
             .then(result => {
 
@@ -81,10 +82,9 @@
                     if(selector){
                         const element = document.querySelector(selector)
 
-                        // set type class
-                        element.classList.remove('__warning', '__success')
-                        element.classList.add(`__${type}`)
-
+                        // set modifier class
+                        base.changeModifierClass(element, type)
+                        
                         // status is success
                         if(result.status){
                             // then remove _modified class
@@ -96,6 +96,7 @@
                                value = value[path.trim()]
                             })
 
+                            // value is array then change to string
                             value = Array.isArray(value) ? value.join(', ') : value
                             element.value = value
                             element.dataset.default = value

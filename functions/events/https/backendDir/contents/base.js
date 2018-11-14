@@ -37,6 +37,7 @@ export class Base {
                 event.target.classList.remove('_modified', '__warning', '__success')
 
                 /* if change valeu add _modified class */
+                console.log(event.target.dataset.default)
                 if (event.target.dataset.default != event.target.value) {
                     event.target.classList.remove('__warning', '__success')
                     event.target.classList.add('_modified')
@@ -62,7 +63,30 @@ export class Base {
         })
     }
 
-    /* nitice */
+    changeModifierClass(element, type = null) {
+
+        element.classList.remove('__info', '__success', '__warning', '__error')
+
+        if (type != null) {
+            element.classList.add(`__${type}`)
+        }
+    }
+
+    removeAllModifierClass(type) {
+
+        document.querySelectorAll(`.__${type}`).forEach(element => {
+            element.classList.remove(`__${type}`)
+        })
+    }
+
+
+
+
+
+
+
+
+    /* notice */
     setNotice(type, messages, title = null, timeout = 6000) {
         this.clearNotice()
 
@@ -82,9 +106,6 @@ export class Base {
         this.noticeTimer = setTimeout(_ => {
             this.closeNotice()
 
-            // clear success class
-            this.removeSuccessModifier()
-
             setTimeout(_ => {
                 this.clearNotice()
             }, 100);
@@ -100,12 +121,6 @@ export class Base {
 
     closeNotice() {
         this.notice.classList.remove('_active')
-    }
-
-    removeSuccessModifier() {
-        document.querySelectorAll('.__success').forEach(element => {
-            element.classList.remove('__success')
-        })
     }
 
     /* fetche */
