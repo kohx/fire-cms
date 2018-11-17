@@ -27,7 +27,7 @@ body {
     /* 「2.4rem」と「1.6rem」です。フォントサイズは、
     992pxのビューポートでは2.4remまで大きくなり、
     768xのビューポートでは1.6remまで小さくなる */
-  /* font-size: calc(1.6rem + (2.4 - 1.6)*(100vw - 768px)/(992 - 768)); */
+    /* font-size: calc(1.6rem + (2.4 - 1.6)*(100vw - 768px)/(992 - 768)); */
 }
 
 /* [class*="grid"],
@@ -91,8 +91,7 @@ button:hover::after,
 button:disabled::after,
 button:focus::before,
 button:focus::after,
-a.button:hover::after
- {
+a.button:hover::after {
     height: 100%;
     width: 100%;
     color: var(--button-active-color);
@@ -195,4 +194,13 @@ input.__success {
 input.__warning {
     background-color: var(--warning-bg-color);
     border-bottom-color: var(--warning-color);
+}
+
+/* header */
+.header-topline {
+    display: flex;
+}
+
+.sign_out_button {
+    margin-left: auto;
 }

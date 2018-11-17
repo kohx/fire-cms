@@ -1,7 +1,10 @@
-<header class="col0 grid12 gap1">
-    <h1 class="col0">
-        backend <span>{| name |}</span>
-    </h1>
+<header class="header col0 grid12 gap1">
+    <div class="hedder-topline col0">
+        <h1>backend <span>{| name |}</span></h1>
+        {|# sign.status |}
+        <button class="sign_out_button col3 row1 mid cen" id="sign_out_button" data-request_url="/{|backendFirstPath|}/sign-out">sign out</button>
+        {|/#|}
+    </div>
 
     <div class="col0 row1 mid pad1">
         {|# sign.status |}
@@ -9,16 +12,9 @@
         <div>name: {| user.name |}</div>
         <div>email: {| user.email |}</div>
         {|/#|}
-
-        {|^ sign.status |}
-        <div>not sign in.</div>
-        {|/^|}
     </div>
 
     {|# sign.status |}
-    <button class="col3 row1 mid cen" id="sign_out_button" data-request_url="/{|backendFirstPath|}/sign-out">sign out</button>
-    {|/#|}
-
     <ul class="col12 grid7 gap1">
         <li class="col1 row1 cen mid">
             {|# is(`index`) |}
@@ -77,4 +73,5 @@
             {|/^|}
         </li>
     </ul>
+    {|/#|}
 </header>

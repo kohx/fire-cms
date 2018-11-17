@@ -5,6 +5,11 @@ export class Base {
      * 
      */
     constructor() {
+
+        // httpOnly Cookieを使用するため、クライアントの状態を保持しない
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
+
+        /* processing flag */
         this.processing = false;
 
         /* sign in */
@@ -65,7 +70,6 @@ export class Base {
                 event.target.classList.remove('_modified', '__warning', '__success')
 
                 /* if change valeu add _modified class */
-                console.log(event.target.dataset.default)
                 if (event.target.dataset.default != event.target.value) {
                     event.target.classList.remove('__warning', '__success')
                     event.target.classList.add('_modified')
@@ -211,7 +215,73 @@ export class Base {
         const requestUrl = target.dataset.request_url
         const backendUrl = target.dataset.backend_url
 
-        
+        this.signInFunction(email, passwoard, csrfToken, requestUrl)
+            .then(result => {
+                if (result.status) {
+                    // result status is true then send to backend top index
+                    window.location.assign(`${window.location.origin}/${backendUrl}`)
+                } else {
+                    // show
+                    this.setNotice('error', [result.message], 'Signin failed')
+                    this.processing = false
+                    event.target.disabled = false
+                }
+            })
+            .catch(err => {
+                this.setNotice('error', [err.message], 'Signin error')
+                this.processing = false
+                event.target.disabled = false
+            })
+    }
+
+    signInFunction(email, passwoard, csrfToken, requestUrl) {
+
+        // auth sign in
+        return firebase.auth().signInWithEmailAndPassword(email, passwoard)
+            .then(result => {
+
+                // get user from result
+                const user = result.user
+
+                // セッションCookieを交換するために必要なユーザーのIDトークンを取得
+                return user.getIdToken()
+                    .then(idToken => {
+
+                        // set body
+                        // idTokenとCSRFプロテクトのためのトークン
+                        const body = {
+                            idToken: idToken,
+                            csrfToken: csrfToken
+                        }
+
+                        // set header
+                        const addHeader = {
+                            'Authorization': 'Bearer ' + idToken
+                        }
+
+                        // サーバに問い合わせ
+                        // server sign in
+                        return this.fetchServer(requestUrl, body, addHeader)
+                    })
+            })
+            .then(result => {
+                // 永続性がNONEに設定されているため、ページのリダイレクトで十分
+                firebase.auth().signOut()
+                return result
+            })
+            .then(result => {
+                // result from signWare
+                return ({
+                    status: result.status,
+                    message: result.message
+                })
+            })
+            .catch(err => {
+                return ({
+                    status: false,
+                    message: err.message
+                })
+            })
     }
 
     /**
@@ -235,6 +305,9 @@ export class Base {
 
         // auth sign out
         firebase.auth().signOut()
+        .then(resutl => {
+            console.log('check sign out result ===>', resutl)
+        })
 
         // サーバに問い合わせ
         // server sign out

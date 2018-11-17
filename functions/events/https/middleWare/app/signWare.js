@@ -158,6 +158,7 @@ module.exports.in = (req, res, next) => {
     const idToken = (req.body.idToken != null) ? req.body.idToken : false
     if (!idToken) {
         res.json({
+            isSigned: false,
             status: false,
             message: `there is not idToken in post data.`
         })
