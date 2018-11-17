@@ -1,9 +1,29 @@
 export class Base {
 
+    /**
+     * constructor
+     * 
+     */
     constructor() {
+        this.processing = false;
+
+        /* sign in */
+        this.signInButton = document.querySelector('#sign_in_button')
+        if (this.signInButton) {
+            this.signInButton.addEventListener('click', event => {
+                this.signIn(event)
+            })
+        }
+
+        /* sign out */
+        this.signOutButton = document.querySelector('#sign_out_button')
+        if (this.signOutButton) {
+            this.signOutButton.addEventListener('click', event => {
+                this.signOut(event)
+            })
+        }
 
         /* target next */
-
         this.targetItemSelector = '.target_item'
         this.targetNext()
 
@@ -19,16 +39,24 @@ export class Base {
         this.noticeTimer;
     }
 
+    /**
+     * init
+     * 
+     */
     static init() {
         return new Base()
     }
 
-    /* terget next */
+    /**
+     * terget next
+     * 
+     * @param {string|null} selector 
+     */
     targetNext(selector = null) {
 
         selector = selector != null ? selector : this.targetItemSelector
         const targetItems = document.querySelectorAll(selector)
-        console.log(targetItems)
+
         Object.keys(targetItems).forEach(key => {
 
             const element = targetItems[key]
@@ -63,28 +91,29 @@ export class Base {
         })
     }
 
-    changeModifierClass(element, type = null) {
+    /**
+     * set modifier class
+     * 
+     * @param {object} element 
+     * @param {string|null} type 
+     * @param {number|null} cleareTime 
+     */
+    setModifierClass(element, type = null, cleareTime = null) {
 
         element.classList.remove('__info', '__success', '__warning', '__error')
 
         if (type != null) {
             element.classList.add(`__${type}`)
+
+            if (cleareTime != null) {
+
+                setTimeout(_ => {
+
+                    element.classList.remove(`__${type}`)
+                }, cleareTime)
+            }
         }
     }
-
-    removeAllModifierClass(type) {
-
-        document.querySelectorAll(`.__${type}`).forEach(element => {
-            element.classList.remove(`__${type}`)
-        })
-    }
-
-
-
-
-
-
-
 
     /* notice */
     setNotice(type, messages, title = null, timeout = 6000) {
@@ -124,10 +153,6 @@ export class Base {
     }
 
     /* fetche */
-    fetchSignIn(email, passwoard, url, csrfToken) {
-
-    }
-
     fetchServer(url, body = {}, addHeader = {}) {
 
         // default headers
@@ -142,13 +167,13 @@ export class Base {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'post',
-                mode: 'cors',
-                credentials: 'include',
-                cache: 'no-cache',
-                headers: headers,
-                body: JSON.stringify(body)
-            })
+                    method: 'post',
+                    mode: 'cors',
+                    credentials: 'include',
+                    cache: 'no-cache',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                })
                 .then(data => {
                     return data.json()
                 })
@@ -162,5 +187,68 @@ export class Base {
                     })
                 })
         })
+    }
+
+    /**
+     * sign in
+     */
+    signIn() {
+
+        // processing then can't send request
+        if (this.processing) {
+            return
+        }
+
+        // start processing
+        this.processing = true
+        event.currentTarget.disabled = true;
+
+        // get datas
+        const email = document.querySelector('#email').value
+        const passwoard = document.querySelector('#password').value
+        const target = event.currentTarget
+        const csrfToken = target.dataset.csrf_token
+        const requestUrl = target.dataset.request_url
+        const backendUrl = target.dataset.backend_url
+
+        
+    }
+
+    /**
+     * sign out
+     * 
+     * @param {object} event 
+     */
+    signOut(event) {
+
+        // processing then can't send request
+        if (this.processing) {
+            return
+        }
+
+        // start processing
+        this.processing = true
+        event.currentTarget.disabled = true;
+
+        // request url
+        const requestUrl = event.currentTarget.dataset.request_url
+
+        // auth sign out
+        firebase.auth().signOut()
+
+        // サーバに問い合わせ
+        // server sign out
+        this.fetchServer(requestUrl)
+            .then(result => {
+
+                // success signout then reload
+                if (result.status == false) {
+                    window.location.reload()
+                }
+            })
+            .catch(err => {
+
+                this.setNotice('error', [err.message])
+            })
     }
 }

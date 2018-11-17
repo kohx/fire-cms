@@ -35,26 +35,34 @@
     let processing = false
     updateBtnElement.addEventListener('click', event => {
         
+        // processing then can't send request
         if(processing){
             return 
         }
-        processing = true
-        event.target.disabled = true;
         
-        const url = event.target.dataset.url
-        const unique = event.target.dataset.unique
-        const updateItems = document.querySelectorAll('._modified')
+        // start processing
+        processing = true
+        event.currentTarget.disabled = true;
+        
+        const url = event.currentTarget.dataset.url
+        const unique = event.currentTarget.dataset.unique
+        const modifiedItems = document.querySelectorAll('._modified')
 
-        if (updateItems.length === 0) {
+        // not change then show warnning
+        if (modifiedItems.length === 0) {
             base.setNotice('warning', ['Nothing has changed.'])
             processing = false
             event.target.disabled = false;
             return
         }
 
+        // get body from modified items
         const body = {}
-        Object.keys(updateItems).forEach(key => {
-            const element = updateItems[key]
+        Object.keys(modifiedItems).forEach(key => {
+            // element
+            const element = modifiedItems[key]
+
+            // if not has object property then add property
             if (!body.hasOwnProperty(element.dataset.target)) {
                 body[element.dataset.target] = {}
             }
@@ -82,15 +90,12 @@
                     if(selector){
                         const element = document.querySelector(selector)
 
-                        // set modifier class
-                        base.changeModifierClass(element, type)
-                        
                         // status is success
                         if(result.status){
                             // then remove _modified class
                             element.classList.remove('_modified')
 
-                            // and remove _modified class
+                            // get new value from result balues
                             let value = Object.assign({}, result.values)
                             message.key.split('.').forEach(path => {
                                value = value[path.trim()]
@@ -98,13 +103,26 @@
 
                             // value is array then change to string
                             value = Array.isArray(value) ? value.join(', ') : value
+
+                            // set new value
                             element.value = value
+
+                            // set new value to data dafault
                             element.dataset.default = value
+
+                            // set modifier class success whith clear time
+                            base.setModifierClass(element, type, 4000)
+                        } else {
+                            // set modifier class error or warning
+                            base.setModifierClass(element, type)
                         }
                     }
                 })
 
+                // set notice
                 base.setNotice(type, messages)
+
+                // end process
                 processing = false
                 event.target.disabled = false;
             })
@@ -112,6 +130,7 @@
                 base.setNotice('error', [err.message])
                 console.log(err)
 
+                // end process
                 processing = false
                 event.target.disabled = false;
             })
