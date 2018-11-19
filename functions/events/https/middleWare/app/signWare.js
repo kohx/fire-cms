@@ -50,6 +50,8 @@ module.exports.check = (req, res, next) => {
 
     // sign object
     req.vessel.sign = {
+        // signin: false,
+        // status: null,
         status: false,
         message: ``,
     }
@@ -73,6 +75,8 @@ module.exports.check = (req, res, next) => {
     // sessionCookieがない場合
     if (!sessionCookie) {
 
+        // req.vessel.sign.signin = false
+        // req.vessel.sign.status = 'error'
         req.vessel.sign.status = false
         req.vessel.sign.message = `sign in failed. there is not sessionCookie.`
         next()
@@ -87,6 +91,8 @@ module.exports.check = (req, res, next) => {
                 const now = new Date().getTime() / 1000 - decodedClaims.auth_time
                 if (now >= signinLImit) {
 
+                    // req.vessel.sign.signin = false
+                    // req.vessel.sign.status = 'error'
                     req.vessel.sign.status = false
                     req.vessel.sign.message = `sign in failed. recent sign in required. limit: ${signinLImit}`
                     next()
@@ -215,7 +221,9 @@ module.exports.in = (req, res, next) => {
 
     // セッションCookieを作成、これにより、プロセス内のIDトークンも検証
     // セッションクッキーは、IDトークンと同じ要求を持つ
-    admin.auth().createSessionCookie(idToken, { expiresIn })
+    admin.auth().createSessionCookie(idToken, {
+            expiresIn
+        })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {

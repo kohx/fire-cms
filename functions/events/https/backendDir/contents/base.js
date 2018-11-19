@@ -278,6 +278,8 @@ export class Base {
             })
             .catch(err => {
                 return ({
+                    // signin: false,
+                    // status: error,
                     status: false,
                     message: err.message
                 })
@@ -305,23 +307,31 @@ export class Base {
 
         // auth sign out
         firebase.auth().signOut()
-        .then(resutl => {
-            console.log('check sign out result ===>', resutl)
-        })
+            .then(resutl => {
+                console.log('check sign out result ===>', resutl)
+                // サーバに問い合わせ
+                // server sign out
+                this.fetchServer(requestUrl)
+                    .then(result => {
 
-        // サーバに問い合わせ
-        // server sign out
-        this.fetchServer(requestUrl)
-            .then(result => {
+                        // success signout then reload
+                        if (result.status == false) {
+                            window.location.reload()
+                        }
+                    })
+                    .catch(err => {
 
-                // success signout then reload
-                if (result.status == false) {
-                    window.location.reload()
-                }
+                        this.setNotice('error', [err.message])
+                    })
             })
             .catch(err => {
-
-                this.setNotice('error', [err.message])
+                console.log('check sign out result ===>', err)
+                return ({
+                    // signin: false,
+                    // status: error,
+                    status: false,
+                    message: err.message
+                })
             })
     }
 }
