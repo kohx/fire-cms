@@ -164,8 +164,7 @@ module.exports.in = (req, res, next) => {
     const idToken = (req.body.idToken != null) ? req.body.idToken : false
     if (!idToken) {
         res.json({
-            isSigned: false,
-            status: false,
+            code: 'error',
             message: `there is not idToken in post data.`
         })
         return
@@ -174,7 +173,7 @@ module.exports.in = (req, res, next) => {
     const bodyCsrfToken = (req.body.csrfToken != null) ? req.body.csrfToken : false
     if (!bodyCsrfToken) {
         res.json({
-            status: false,
+            code: 'error',
             message: `there is not csrfToken in post data.`
         })
         return
@@ -185,7 +184,7 @@ module.exports.in = (req, res, next) => {
     const cookieCsrfToken = (session['csrfToken'] != null) ? session['csrfToken'] : false
     if (!cookieCsrfToken) {
         res.json({
-            status: false,
+            code: 'error',
             message: `there is not cookieCsrfToken.`
         })
         return
@@ -195,7 +194,7 @@ module.exports.in = (req, res, next) => {
     if (bodyCsrfToken !== cookieCsrfToken) {
 
         res.json({
-            status: false,
+            code: 'error',
             message: `csrfToken is not match.`
         })
         return
@@ -207,7 +206,7 @@ module.exports.in = (req, res, next) => {
     // bearerのチェック
     if (!bearer || !idToken || bearer !== idToken) {
         res.json({
-            status: false,
+            code: 'error',
             message: `bearer is not true.`
         })
         return
@@ -237,14 +236,14 @@ module.exports.in = (req, res, next) => {
             session.sessionCookie = sessionCookie
             res.cookie('__session', JSON.stringify(session), options);
             res.json({
-                status: true,
+                code: 'success',
                 message: `sign in success.`
             })
         })
         .catch(err => {
             debug(err, __filename, __line)
             res.json({
-                status: false,
+                code: 'error',
                 message: err.message
             })
         })
@@ -259,7 +258,7 @@ module.exports.out = (req, res, next) => {
 
     if (!sessionCookie) {
         res.json({
-            status: false,
+            code: 'error',
             message: `there is not sessionCookie.`
         })
         return
@@ -274,20 +273,20 @@ module.exports.out = (req, res, next) => {
             return admin.auth().revokeRefreshTokens(decodedClaims.sub)
                 .then(() => {
                     res.json({
-                        status: false,
+                        code: 'success',
                         message: `sign out.`
                     })
                 })
                 .catch(err => {
                     res.json({
-                        status: true,
+                        code: 'error',
                         message: `sign out failed.`
                     })
                 })
         })
         .catch(err => {
             res.json({
-                status: true,
+                code: 'error',
                 message: `there is not claims.`
             })
         })

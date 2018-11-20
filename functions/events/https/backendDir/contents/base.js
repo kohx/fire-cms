@@ -99,33 +99,33 @@ export class Base {
      * set modifier class
      * 
      * @param {object} element 
-     * @param {string|null} type 
+     * @param {string|null} code 
      * @param {number|null} cleareTime 
      */
-    setModifierClass(element, type = null, cleareTime = null) {
+    setModifierClass(element, code = null, cleareTime = null) {
 
         element.classList.remove('__info', '__success', '__warning', '__error')
 
-        if (type != null) {
-            element.classList.add(`__${type}`)
+        if (code != null) {
+            element.classList.add(`__${code}`)
 
             if (cleareTime != null) {
 
                 setTimeout(_ => {
 
-                    element.classList.remove(`__${type}`)
+                    element.classList.remove(`__${code}`)
                 }, cleareTime)
             }
         }
     }
 
     /* notice */
-    setNotice(type, messages, title = null, timeout = 6000) {
+    setNotice(code, messages, title = null, timeout = 6000) {
         this.clearNotice()
 
         clearTimeout(this.noticeTimer);
 
-        title = title != null ? title : type.toUpperCase()
+        title = title != null ? title : code.toUpperCase()
         this.noticeTitle.textContent = title
 
         messages.forEach(message => {
@@ -134,7 +134,7 @@ export class Base {
             this.noticeMessages.insertAdjacentElement('beforeend', list)
         });
 
-        this.notice.classList.add(`__${type}`, '_active')
+        this.notice.classList.add(`__${code}`, '_active')
 
         this.noticeTimer = setTimeout(_ => {
             this.closeNotice()
@@ -171,13 +171,13 @@ export class Base {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                    method: 'post',
-                    mode: 'cors',
-                    credentials: 'include',
-                    cache: 'no-cache',
-                    headers: headers,
-                    body: JSON.stringify(body)
-                })
+                method: 'post',
+                mode: 'cors',
+                credentials: 'include',
+                cache: 'no-cache',
+                headers: headers,
+                body: JSON.stringify(body)
+            })
                 .then(data => {
                     return data.json()
                 })
@@ -186,7 +186,7 @@ export class Base {
                 })
                 .catch(err => {
                     reject({
-                        status: true,
+                        code: 'error',
                         message: "network err."
                     })
                 })
@@ -203,34 +203,35 @@ export class Base {
             return
         }
 
+        const target = event.currentTarget
+
         // start processing
         this.processing = true
-        event.currentTarget.disabled = true;
+        target.disabled = true;
 
         // get datas
         const email = document.querySelector('#email').value
         const passwoard = document.querySelector('#password').value
-        const target = event.currentTarget
         const csrfToken = target.dataset.csrf_token
         const requestUrl = target.dataset.request_url
         const backendUrl = target.dataset.backend_url
 
         this.signInFunction(email, passwoard, csrfToken, requestUrl)
             .then(result => {
-                if (result.status) {
+                if (result.code === 'success') {
                     // result status is true then send to backend top index
                     window.location.assign(`${window.location.origin}/${backendUrl}`)
                 } else {
                     // show
                     this.setNotice('error', [result.message], 'Signin failed')
                     this.processing = false
-                    event.target.disabled = false
+                    target.disabled = false
                 }
             })
             .catch(err => {
                 this.setNotice('error', [err.message], 'Signin error')
                 this.processing = false
-                event.target.disabled = false
+                target.disabled = false
             })
     }
 
@@ -270,17 +271,12 @@ export class Base {
                 return result
             })
             .then(result => {
-                // result from signWare
-                return ({
-                    status: result.status,
-                    message: result.message
-                })
+                // result from signWare.in
+                return result
             })
             .catch(err => {
                 return ({
-                    // signin: false,
-                    // status: error,
-                    status: false,
+                    code: 'error',
                     message: err.message
                 })
             })
@@ -298,40 +294,42 @@ export class Base {
             return
         }
 
+        const target = event.currentTarget
+
         // start processing
         this.processing = true
-        event.currentTarget.disabled = true;
+        target.disabled = true
 
         // request url
-        const requestUrl = event.currentTarget.dataset.request_url
+        const requestUrl = target.dataset.request_url
 
         // auth sign out
         firebase.auth().signOut()
             .then(resutl => {
-                console.log('check sign out result ===>', resutl)
                 // サーバに問い合わせ
                 // server sign out
                 this.fetchServer(requestUrl)
                     .then(result => {
-
+                        // result from signWare.out
                         // success signout then reload
-                        if (result.status == false) {
+                        if (result.code === 'success') {
                             window.location.reload()
+                        } else {
+                            this.setNotice(result.code, [result.message], 'Signout failed')
+                            this.processing = false
+                            target.disabled = false
                         }
                     })
                     .catch(err => {
-
-                        this.setNotice('error', [err.message])
+                        this.setNotice('error', [err.message], 'Signout failed')
+                        this.processing = false
+                        target.disabled = false
                     })
             })
             .catch(err => {
-                console.log('check sign out result ===>', err)
-                return ({
-                    // signin: false,
-                    // status: error,
-                    status: false,
-                    message: err.message
-                })
+                this.setNotice('error', [err.message])
+                this.processing = false
+                target.disabled = false
             })
     }
 }
