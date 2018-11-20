@@ -73,8 +73,8 @@
         base.fetchServer(url, body)
             .then(result => {
 
-                // get type
-                const type = result.status ? 'success' : 'warning'
+                // get code
+                const code = result.code
 
                 let messages = []
                 result.messages.forEach(message => {
@@ -90,8 +90,8 @@
                     if(selector){
                         const element = document.querySelector(selector)
 
-                        // status is success
-                        if(result.status){
+                        // code is success
+                        if(code === 'success'){
                             // then remove _modified class
                             element.classList.remove('_modified')
 
@@ -111,16 +111,16 @@
                             element.dataset.default = value
 
                             // set modifier class success whith clear time
-                            base.setModifierClass(element, type, 4000)
+                            base.setModifierClass(element, code, 4000)
                         } else {
                             // set modifier class error or warning
-                            base.setModifierClass(element, type)
+                            base.setModifierClass(element, code)
                         }
                     }
                 })
 
                 // set notice
-                base.setNotice(type, messages)
+                base.setNotice(result.code, messages)
 
                 // end process
                 processing = false

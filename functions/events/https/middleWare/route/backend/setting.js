@@ -198,7 +198,7 @@ module.exports.update = (req, res, next) => {
             })
         })
         res.json({
-            status: valid.status,
+            code: valid.status ? 'success' : 'warning',
             messages: messages,
             values: valid.values
         })
@@ -231,7 +231,7 @@ module.exports.update = (req, res, next) => {
             .then(results => {
                 debug(results, __filename, __line)
                 res.json({
-                    status: true,
+                    code: 'success',
                     messages: messages,
                     values: valid.values
                 })
@@ -239,7 +239,7 @@ module.exports.update = (req, res, next) => {
             .catch(err => {
                 debug(err, __filename, __line)
                 res.json({
-                    status: false,
+                    code: 'error',
                     messages: [{
                         key: 'error',
                         content: err.message
