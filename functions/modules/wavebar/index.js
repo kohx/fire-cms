@@ -439,7 +439,7 @@ module.exports = class wavebar {
             inParents: (value) => {
                 // copy array
                 let uniques = this.params.parents.slice()
-            
+
                 uniques = uniques != null ? uniques : []
                 uniques.push(this.params.unique)
                 return uniques.includes(value)
@@ -511,10 +511,10 @@ module.exports = class wavebar {
     entityify(string) {
         var chars = {}
         chars[`<`] = `&lt`
-        chars[`>`] = `&gt`,
-            chars[`&`] = `&amp`,
-            chars[`"`] = `&quot`,
-            chars[`'`] = `&#39`
+        chars[`>`] = `&gt`
+        chars[`&`] = `&amp`
+        chars[`"`] = `&quot`
+        chars[`'`] = `&#39`
 
         return String(string).replace(/[<>'&"]/g, char => {
             return chars[char]
