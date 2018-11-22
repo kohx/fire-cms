@@ -25,49 +25,69 @@ module.exports.index = (req, res, next) => {
 }
 
 module.exports.create = (req, res, next) => {
+    
+    console.log(req.body)
+    // get post from req body
+    const user = req.body
+    const name = user.name != null ? user.name : ''
+    const email = user.email != null ? user.email : ''
+    const description = user.description != null ? user.description : ''
+    const order = user.order != null ? user.order : ''
 
-    admin.auth().createUser({
-            email: "user@example.com",
-            emailVerified: false,
-            phoneNumber: "+11234567890",
-            password: "secretPassword",
-            displayName: "John Doe",
-            photoURL: "http://www.example.com/12345678/photo.png",
-            disabled: false
-        })
-        .then(function (userRecord) {
-            // See the UserRecord reference doc for the contents of userRecord.
-            console.log("Successfully created new user:", userRecord.uid);
-        })
-        .catch(function (error) {
-            console.log("Error creating new user:", error);
-        });
+    /* set orderbalidation */
+    const validate = validation.list(req.body)
 
-    next()
+        validate.test('name', 'isRequired')
+        validate.test('name', 'isAlnumunder')
+        validate.sanitize('asset.landscapePrefix', 'trim')
+
+    
+    // admin.auth().createUser({
+    //     email: "user@example.com",
+    //     emailVerified: false,
+    //     phoneNumber: "+11234567890",
+    //     password: "secretPassword",
+    //     displayName: "John Doe",
+    //     photoURL: "http://www.example.com/12345678/photo.png",
+    //     disabled: false
+    // })
+    //     .then(function (userRecord) {
+    //         // See the UserRecord reference doc for the contents of userRecord.
+    //         console.log("Successfully created new user:", userRecord.uid);
+    //     })
+    //     .catch(function (error) {
+    //         console.log("Error creating new user:", error);
+    //     });
+
+    res.json({
+        code: 'success',
+        messages: 'test',
+        values: ''
+    })
 }
 
 module.exports.update = (req, res, next) => {
 
     debug('update', __filename, __line)
 
-    admin.auth().updateUser(uid, {
-            email: "modifiedUser@example.com",
-            phoneNumber: "+11234567890",
-            emailVerified: true,
-            password: "newPassword",
-            displayName: "Jane Doe",
-            photoURL: "http://www.example.com/12345678/photo.png",
-            disabled: true
-        })
-        .then(function (userRecord) {
-            // See the UserRecord reference doc for the contents of userRecord.
-            console.log("Successfully updated user", userRecord.toJSON());
-        })
-        .catch(function (error) {
-            console.log("Error updating user:", error);
-        });
+    // admin.auth().updateUser(uid, {
+    //     email: "modifiedUser@example.com",
+    //     phoneNumber: "+11234567890",
+    //     emailVerified: true,
+    //     password: "newPassword",
+    //     displayName: "Jane Doe",
+    //     photoURL: "http://www.example.com/12345678/photo.png",
+    //     disabled: true
+    // })
+    //     .then(function (userRecord) {
+    //         // See the UserRecord reference doc for the contents of userRecord.
+    //         console.log("Successfully updated user", userRecord.toJSON());
+    //     })
+    //     .catch(function (error) {
+    //         console.log("Error updating user:", error);
+    //     });
 
-    next()
+
 }
 
 module.exports.delete = (req, res, next) => {

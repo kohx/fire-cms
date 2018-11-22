@@ -46,7 +46,7 @@ module.exports.admin = admin
 module.exports.system = (() => {
     return {
         cache: false,
-        debugSinin: false,
+        debugSinin: true,
         backendDir: path.join(__dirname, 'https', 'backendDir')
     }
 })()

@@ -187,7 +187,8 @@ export class Base {
                 .catch(err => {
                     reject({
                         code: 'error',
-                        message: "network err."
+                        // message: "network err."
+                        message: err.message,
                     })
                 })
         })
@@ -196,14 +197,15 @@ export class Base {
     /**
      * sign in
      */
-    signIn() {
+    signIn(event) {
+
+        // get target
+        const target = event.currentTarget
 
         // processing then can't send request
         if (this.processing) {
             return
         }
-
-        const target = event.currentTarget
 
         // start processing
         this.processing = true
@@ -289,12 +291,13 @@ export class Base {
      */
     signOut(event) {
 
+        // get target
+        const target = event.currentTarget
+
         // processing then can't send request
         if (this.processing) {
             return
         }
-
-        const target = event.currentTarget
 
         // start processing
         this.processing = true

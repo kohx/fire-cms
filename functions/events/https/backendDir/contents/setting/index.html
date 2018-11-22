@@ -21,7 +21,7 @@
         {|/*|}
     </ul>
 
-    <button class="target_item col1" type="button" id="updateBtn" data-url="/{| backendFirstPath |}/setting-update">update</button>
+    <button class="target_item col1" type="button" id="update_button" data-url="/{| backendFirstPath |}/setting-update">update</button>
 </div>
 {|> footer |}
 
@@ -30,22 +30,25 @@
     import { Base } from '/{| backendFirstPath |}/base.js';
     var base = Base.init()
 
-    const updateBtnElement = document.querySelector('#updateBtn')
+    const updateBtnElement = document.querySelector('#update_button')
 
     let processing = false
     updateBtnElement.addEventListener('click', event => {
-        
+
+        // get target
+        const target = event.currentTarget
+
         // processing then can't send request
-        if(processing){
-            return 
+        if (processing) {
+            return
         }
-        
+
         // start processing
         processing = true
-        event.currentTarget.disabled = true;
-        
-        const url = event.currentTarget.dataset.url
-        const unique = event.currentTarget.dataset.unique
+        target.disabled = true;
+
+        const url = target.dataset.url
+        const unique = target.dataset.unique
         const modifiedItems = document.querySelectorAll('._modified')
 
         // not change then show warnning
@@ -84,21 +87,21 @@
 
                     // get selector from key
                     let key = message.key
-                    const selector = key =! null ? `.${key.replace('.', ' .')}` : false
-                    
+                    const selector = key = ! null ? `.${key.replace('.', ' .')}` : false
+
                     // has selector
-                    if(selector){
+                    if (selector) {
                         const element = document.querySelector(selector)
 
                         // code is success
-                        if(code === 'success'){
+                        if (code === 'success') {
                             // then remove _modified class
                             element.classList.remove('_modified')
 
                             // get new value from result balues
                             let value = Object.assign({}, result.values)
                             message.key.split('.').forEach(path => {
-                               value = value[path.trim()]
+                                value = value[path.trim()]
                             })
 
                             // value is array then change to string

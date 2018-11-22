@@ -38,6 +38,27 @@ const division = require('../middleWare/route/backend/division')
 const asset = require('../middleWare/route/backend/asset')
 const updateAsset = require('../middleWare/route/backend/updateAsset')
 
+
+
+/*
+これつかえるかな？
+function innerLambda(start) {
+    let count = start
+    return function (add) {
+      count = count + add
+      return count
+    }
+  }
+  const inner = innerLambda(3)
+  function outer(...fn) {
+    return fn
+  }
+  const test = () => outer(inner(1), inner(2), inner(3))
+ */
+
+
+
+
 /* route get */
 router.get('/*',
     generalMethod.checkPath,
@@ -77,6 +98,7 @@ function subGetRoute(req, res, next) {
     }
 
     const callSubRoute = subRoutes[unique] != null ? subRoutes[unique] : null
+   
     if (callSubRoute) {
         callSubRoute(req, res, next)
     } else {
