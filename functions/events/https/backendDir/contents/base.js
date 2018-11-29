@@ -70,7 +70,7 @@ export class Base {
                 event.target.classList.remove('_modified', '__warning', '__success')
 
                 /* if change valeu add _modified class */
-                if (event.target.dataset.default != event.target.value) {
+                if (event.target.dataset.default != null && event.target.dataset.default != event.target.value) {
                     event.target.classList.remove('__warning', '__success')
                     event.target.classList.add('_modified')
                 } else {
@@ -81,13 +81,14 @@ export class Base {
                 if (event.keyCode === 13) {
 
                     let nextItem = targetItems[0]
+
                     if ((targetItems.length - 1) > key) {
                         nextItem = targetItems[Number(key) + 1]
                     }
 
                     nextItem.focus()
 
-                    if (nextItem.tagName !== 'BUTTON') {
+                    if (nextItem.tagName === 'TEXT') {
                         nextItem.setSelectionRange(-1, -1)
                     }
                 }

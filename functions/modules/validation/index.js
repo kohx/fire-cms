@@ -48,6 +48,11 @@ module.exports = class validation {
             isBase64: `{{param1}} is not base64 encoded.`,
             isArray: `{{param1}} is not array.`,
             isNotBlankObject: `{{param1}} is blank.`,
+            containsSymbol: `{{param1}} is not contains symbol.`,
+            containsUppercase: `{{param1}} is not contains uppercase.`,
+            containsNumric: `{{param1}} is not contains numric.`,
+            isConfirm: `{{param1}} is not same with {{param2}}.`,
+            canNotUsedBlank: `{{param1}} can not used blank.`,
         }
     }
 
@@ -81,11 +86,12 @@ module.exports = class validation {
                     break
 
                 case 'notUse':
-                    flag = !validator.equals(value, ...args)
-                    console.log('->>', value, ...args)
+                    const length = Number(args[0])
+                    flag = length == 0
                     break
 
                 case 'isAlnumunder':
+                    // \w
                     flag = validator.matches(value, /^[a-zA-Z0-9_]+$/)
                     break
 
@@ -113,6 +119,33 @@ module.exports = class validation {
                     } else {
                         flag = false
                     }
+                    break
+
+                case 'containsSymbol':
+                    // ! " # $ % & ' ( ) * + - . , / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
+                    const regSymbol = new RegExp(/[!"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]/g)
+                    flag = regSymbol.test(value)
+                    break
+
+                case 'containsUppercase':
+                    const regUppercase = new RegExp(/[A-Z]/g)
+                    flag = regUppercase.test(value)
+                    break
+
+                case 'containsNumric':
+                    const regNumric = new RegExp(/[0-9]/g)
+                    flag = regNumric.test(value)
+                    break
+
+                case 'isConfirm':
+                    const targetKey = args[0]
+                    const targetValue = this.getValue(targetKey)
+                    flag = value === targetValue
+                    break
+
+                case 'canNotUsedBlank':
+                    const regBlank = new RegExp(/\s/g)
+                    flag = !regBlank.test(value)
                     break
 
                 default:

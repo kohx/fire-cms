@@ -26,6 +26,8 @@ module.exports.checkThing = (req, res, next) => {
     }
 }
 
+// TODO:: Service Worker によるセッション管理
+// https://firebase.google.com/docs/auth/web/service-worker-sessions?hl=ja
 module.exports.checkSingIn = (req, res, next) => {
 
     const unique = req.vessel.get('paths.unique')

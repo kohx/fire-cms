@@ -1,4 +1,6 @@
 :root {
+    font-size: 62.5%;
+
     --default-color: rgb(50, 50, 50);
     --default-bg-color: rgb(240, 240, 240);
     --info-color: rgb(100, 150, 240);
@@ -13,10 +15,6 @@
     --button-active-color: rgb(50, 50, 50);
     --button-inactive-color: rgb(120, 120, 120);
     --button-bg-color: rgb(230, 230, 230);
-}
-
-html {
-    font-size: 62.5%;
 }
 
 body {
@@ -120,6 +118,24 @@ textarea:focus {
     border: 1px solid var(--default-color);
 }
 
+input[type="radio"] {
+    width: 0;
+    height: 0;
+}
+input[type="radio"] + label{
+    padding: 0 .4rem;
+    border: 1px solid transparent;
+    background-color: var(--button-bg-color);
+    cursor: pointer;
+}
+input[type="radio"]:focus + label{
+    border: 1px solid var(--button-active-color);
+}
+input[type="radio"]:checked + label{
+    background-color: var(--button-active-color);
+    color: white;
+}
+
 .wrapper {
     position: relative;
 }
@@ -136,6 +152,8 @@ textarea:focus {
     padding: 0 0 1rem 0;
     overflow: hidden;
     padding: 1.2rem;
+    min-width: 70vw;
+    max-width: 90vw;
 }
 
 .notice-close {
@@ -156,7 +174,6 @@ textarea:focus {
 
 .notice-messages li {
     word-break: keep-all;
-    white-space: nowrap;
     padding: 0 2rem;
 }
 

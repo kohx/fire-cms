@@ -73,6 +73,9 @@ module.exports.checkSingIn = (req, res, next) => {
     // thing
     const backend = req.vessel.get('settings.backend')
 
+    // TODO:: X-Forwarded-Host (XFH) ヘッダー使える？
+    const backendBase = req.vessel.get('backendBase')
+
     if (isSigned) {
 
         // サインインしていてサインインページの場合
@@ -82,7 +85,7 @@ module.exports.checkSingIn = (req, res, next) => {
             let referer = (refererUrl != null) ? url.parse(refererUrl).pathname.trims('/') : ''
 
             if (referer === '' || referer === backend.signinUnique) {
-                referer = `/${backend.firstPath}/${backend.topUnique}`
+                referer = `${backendBase}/${backend.topUnique}`
             }
 
             debug(`@ already sigin in. redirect to ${referer}`, __filename, __line)
@@ -117,7 +120,7 @@ module.exports.checkSingIn = (req, res, next) => {
         // サインインしていない場合
         else {
 
-            const redirectPath = `/${backend.firstPath}/${backend.signinUnique}`
+            const redirectPath = `${backendBase}/${backend.signinUnique}`
             debug(`@ [ ${thing.uniqueng} ] not sigin in. redirect to ${redirectPath}`, __filename, __line)
             res.redirect(`${redirectPath}`)
         }
@@ -147,6 +150,7 @@ module.exports.renderPage = (req, res, next) => {
     data.params.frontendBase = req.vessel.get('frontendBase')
     data.params.backendBase = req.vessel.get('backendBase')
     data.params.backendFirstPath = req.vessel.get('settings.backend.firstPath')
+    data.params.roles = req.vessel.get('settings.general.roles')
 
     console.log(`=============== ${thing.unique} ===============\n`)
     res.wbRender(data)

@@ -33,7 +33,7 @@ module.exports.getInfo = (req, res, next) => {
     //   protocol: req.protocol,
     //   host: req.get('host'),
     //   originalUrl: req.originalUrl,
-    //   fullUrl: url.format({ protocol: req.protocol, host: req.get('host'), pathname: req.originalUrl })
+    // //   fullUrl: url.format({ protocol: req.protocol, host: req.get('host'), pathname: req.originalUrl })
     // }
     // console.log('@parse', parse)
 
@@ -82,8 +82,9 @@ module.exports.getInfo = (req, res, next) => {
                 // キャッシュに入れる 
                 jsonCache.set('settings', settings)
                 // set value
-                req.vessel.frontendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/` || null
-                req.vessel.backendBase = `${req.protocol}/${req.headers['x-forwarded-host']}/${settings.backend.firstPath}/` || null
+                req.vessel.baseUrl = `${req.protocol}://${req.headers['x-forwarded-host']}` || null
+                req.vessel.frontendBase = `${req.protocol}://${req.headers['x-forwarded-host']}` || null
+                req.vessel.backendBase = `${req.protocol}://${req.headers['x-forwarded-host']}/${settings.backend.firstPath}` || null
                 req.vessel.settings = settings
 
                 next()

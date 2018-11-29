@@ -22,5 +22,15 @@
 	"{{docKey}} {{valueKey}} is updated.": "{{docKey}} {{valueKey}} is updated.",
 	"chack this!": "chack this!",
 	"{{param1}} is not array.": "{{param1}} is not array.",
-	"{{param1}} is blank.": "{{param1}} is blank."
+	"{{param1}} is blank.": "{{param1}} is blank.",
+	"{{param1}} is not alphanumeric and underscore.": "{{param1}} is not alphanumeric and underscore.",
+	"{{param1}} is not use symbol.": "{{param1}} is not use symbol.",
+	"{{param1}} is not use uppercase.": "{{param1}} is not use uppercase.",
+	"{{param1}} is not use numric.": "{{param1}} is not use numric.",
+	"{{param1}} is not same with {{param2}}.": "{{param1}} is not same with {{param2}}.",
+	"{{param1}} is not contains symbol.": "{{param1}} is not contains symbol.",
+	"{{param1}} is not contains uppercase.": "{{param1}} is not contains uppercase.",
+	"{{param1}} is not contains numric.": "{{param1}} is not contains numric.",
+	"{{param1}} can not used blank.": "{{param1}} can not used blank.",
+	"{{param1}} is already used.": "{{param1}} is already used."
 }

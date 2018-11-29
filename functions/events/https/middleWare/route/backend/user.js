@@ -5,7 +5,11 @@ const system = parent.system
 
 const url = require('url')
 
+const validation = require('../../../../../modules/validation')
 const debug = require('../../../../../modules/debug').debug
+
+// TODO:: カスタムのメール アクション ハンドラの作成
+// https://firebase.google.com/docs/auth/custom-email-handler?hl=ja
 
 module.exports.index = (req, res, next) => {
 
@@ -25,45 +29,107 @@ module.exports.index = (req, res, next) => {
 }
 
 module.exports.create = (req, res, next) => {
-    
-    console.log(req.body)
-    // get post from req body
-    const user = req.body
-    const name = user.name != null ? user.name : ''
-    const email = user.email != null ? user.email : ''
-    const description = user.description != null ? user.description : ''
-    const order = user.order != null ? user.order : ''
 
-    /* set orderbalidation */
-    const validate = validation.list(req.body)
+    const getName = admin.firestore().collection('users')
+        .where('name', '==', req.body.name)
+        .get()
 
-        validate.test('name', 'isRequired')
-        validate.test('name', 'isAlnumunder')
-        validate.sanitize('asset.landscapePrefix', 'trim')
+    const getEmail = admin.firestore().collection('users')
+        .where('email', '==', req.body.email)
+        .get()
 
-    
-    // admin.auth().createUser({
-    //     email: "user@example.com",
-    //     emailVerified: false,
-    //     phoneNumber: "+11234567890",
-    //     password: "secretPassword",
-    //     displayName: "John Doe",
-    //     photoURL: "http://www.example.com/12345678/photo.png",
-    //     disabled: false
-    // })
-    //     .then(function (userRecord) {
-    //         // See the UserRecord reference doc for the contents of userRecord.
-    //         console.log("Successfully created new user:", userRecord.uid);
-    //     })
-    //     .catch(function (error) {
-    //         console.log("Error creating new user:", error);
-    //     });
+    Promise.all([getName, getEmail])
+        .then(results => {
+            const [name, email] = results
 
-    res.json({
-        code: 'success',
-        messages: 'test',
-        values: ''
-    })
+            /* set orderbalidation */
+            const validate = validation.list(req.body)
+
+            validate.test('name', 'isRequired')
+            validate.test('name', 'isAlnumunder')
+            validate.test('name', 'notUse', name.size)
+
+            validate.test('email', 'isRequired')
+            validate.test('email', 'isEmail')
+            validate.test('email', 'notUse', email.size)
+
+            validate.test('password', 'isRequired')
+            validate.test('password', 'isLength', 6, 20)
+            validate.test('password', 'containsSymbol')
+            validate.test('password', 'containsUppercase')
+            validate.test('password', 'containsNumric')
+            validate.test('password', 'canNotUsedBlank')
+
+            validate.test('confirm', 'isRequired')
+            validate.test('confirm', 'isConfirm', 'password')
+            
+            validate.test('role', 'isRequired')
+
+            valid = validate.check()
+
+            /* validation not passed */
+            let messages = []
+
+            /* validation not passed */
+            if (!valid.status) {
+
+                // translate validation message and rebuild messages
+                Object.keys(valid.errors).forEach(key => {
+                    valid.errors[key].forEach(error => {
+                        // {path: xxx.xxx, message: 'asdf asdf asdf.'}
+                        // change to 
+                        // {key: xxx.xxx, content: 'asdf asdf asdf.'}
+                        messages.push({
+                            key: error.path,
+                            content: req.__(error.message, error.params)
+                        })
+                    })
+                })
+
+                res.json({
+                    code: 'warning',
+                    messages: messages,
+                    values: valid.values
+                })
+            } else {
+                /* create user */
+                admin.auth().createUser({
+                    email: valid.values.email,
+                    emailVerified: false,
+                    password: valid.values.password,
+                    displayName: valid.values.name,
+                    disabled: false
+                })
+                    .then(userRecord => {
+                        // See the UserRecord reference doc for the contents of userRecord.
+                        res.json({
+                            code: 'success',
+                            messages: [`Successfully created new user: ${userRecord.uid}`],
+                            values: valid.values,
+                        })
+                    })
+                    .catch(err => {
+                        res.json({
+                            code: 'error',
+                            messages: [{
+                                key: 'error',
+                                content: err.message,
+                            }],
+                            values: valid.values,
+                        })
+                    })
+            }
+        })
+        .catch(err => {
+            res.json({
+                code: 'error',
+                messages: [{
+                    key: 'error',
+                    content: err.message,
+                }],
+                values: valid.values,
+            })
+        })
 }
 
 module.exports.update = (req, res, next) => {
