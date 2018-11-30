@@ -123,7 +123,7 @@ module.exports.user = (req, res, next) => {
     // ローカルデバグ用
     if (system.debugSinin) {
 
-        debug(`@ line: ${__line}`, __filename, __line, true)
+        debug(`DEBAG SIGNIN`, __filename, __line)
         isSigned = true
         req.vessel.sign.status = true
         req.vessel.sign.message = `sign in success.`
