@@ -6,6 +6,7 @@ module.exports.get = (unique) => {
         'index': {
             unique: 'index',
             name: 'index',
+            parents: [],
             roles: {
                 owner: true,
                 direct: true,
@@ -21,6 +22,7 @@ module.exports.get = (unique) => {
         'signin': {
             unique: 'signin',
             name: 'signin',
+            parents: [],
             roles: {},
             contentType: 'html',
             contentFile: 'sign/in.html'
@@ -46,6 +48,7 @@ module.exports.get = (unique) => {
         'settings': {
             unique: 'settings',
             name: 'settings',
+            parents: [],
             roles: {
                 owner: true,
                 direct: true,
@@ -73,6 +76,7 @@ module.exports.get = (unique) => {
         'users': {
             unique: 'users',
             name: 'users',
+            parents: [],
             roles: {
                 owner: true,
                 direct: true,

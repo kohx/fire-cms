@@ -221,3 +221,10 @@ input.__warning {
 .sign_out_button {
     margin-left: auto;
 }
+
+.gnav{
+    border-bottom: 1px solid var(--default-color);
+}
+.gnav ._active{
+    background-color: 1px solid var(--default-bg-color);
+}
