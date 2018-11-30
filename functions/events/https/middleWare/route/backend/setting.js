@@ -26,6 +26,7 @@ module.exports.index = (req, res, next) => {
 
             // array to string
             targets.lang.locales = targets.lang.locales.join(', ')
+            targets.general.roles = targets.general.roles.join(', ')
 
             req.vessel.thing.targets = targets
             next()
@@ -62,6 +63,18 @@ module.exports.update = (req, res, next) => {
         // override becose reference new locales
         settings.lang.locales = newLocals
         locales = newLocals
+    }
+
+    if (settings.general != null && settings.general.roles != null) {
+        const newRoles = []
+        settings.general.roles.split(',').forEach(role => {
+            role = role.trim()
+            if (role.length > 0) {
+                newRoles.push(locale)
+            }
+        })
+
+        settings.general.roles = newRoles
     }
 
     /* set balidation */
