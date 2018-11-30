@@ -2,6 +2,9 @@
 const validator = require('validator')
 const debug = require('../debug').debug
 
+// TODO:: sanitaize後の値をテストするように変更？
+// テストを通った値がsanitaizeで代わってしまう？
+
 module.exports = class validation {
 
     constructor(list) {
@@ -38,7 +41,6 @@ module.exports = class validation {
             contains: `{{param1}} is not contains {{param2}}.`,
             equals: `{{param1}} is not equals {{param2}}.`,
             notEquals: `{{param1}} is equals {{param2}}.`,
-            notUse: `{{param1}} is already used.`,
             matches: `{{param1}} is not matches {{param2}}.`,
             isIn: `{{param1}} must be included in {{param2}}`,
             isLength: `{{param1}} length is min {{param2}}, max {{param3}}.`,
@@ -53,6 +55,7 @@ module.exports = class validation {
             containsNumric: `{{param1}} is not contains numric.`,
             isConfirm: `{{param1}} is not same with {{param2}}.`,
             canNotUsedBlank: `{{param1}} can not used blank.`,
+            isUnique: `{{param1}} is already used.`,
         }
     }
 
@@ -85,9 +88,8 @@ module.exports = class validation {
                     flag = !validator.equals(value, ...args)
                     break
 
-                case 'notUse':
-                    const length = Number(args[0])
-                    flag = length == 0
+                case 'isUnique':
+                    flag = args[0]
                     break
 
                 case 'isAlnumunder':

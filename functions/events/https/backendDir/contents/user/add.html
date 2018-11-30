@@ -88,7 +88,8 @@
                             // code is success
                             if (code === 'success') {
                                 // result status is true then send to backend top index
-                                window.location.assign(`${window.location.origin}/${backendUrl}`)
+                                console.log(`${window.location.origin}/${backendUrl}`)
+                                // window.location.assign(`${window.location.origin}/${backendUrl}`)
                             } else {
                                 if (element) {
                                     // set modifier class error or warning

@@ -11,6 +11,82 @@ const debug = require('../../../../../modules/debug').debug
 // TODO:: カスタムのメール アクション ハンドラの作成
 // https://firebase.google.com/docs/auth/custom-email-handler?hl=ja
 
+/* check unique at user */
+const checkUnique = (key, value, uid = null) => {
+    return new Promise((resolve, reject) => {
+        admin.firestore().collection('users')
+            .where(key, '==', value).get()
+            .then(users => {
+                let flag = true
+                users.forEach(user => {
+                    const userData = user.data()
+                    if (uid != null) {
+                        if (userData.uid !== uid) {
+                            flag = false
+                        }
+                    } else {
+                        flag = false
+                    }
+                })
+                resolve(flag)
+            })
+            .catch(err => reject(err))
+    })
+}
+
+/* validation user */
+const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
+
+    /* set orderbalidation */
+    const validate = validation.list(body)
+
+    // ユーザー名には、[a-z]、[0-9]、-、_、'、.を使用できます。
+    // ユーザー名には、&、=、<、>、+、,を使用できません。
+    // また、連続した複数のピリオド（.）を含めることはできません。
+    validate.test('name', 'isRequired')
+    validate.test('name', 'isAlnumunder')
+    validate.test('name', 'isUnique', nameUniqueFlag)
+
+    validate.test('email', 'isRequired')
+    validate.test('email', 'isEmail')
+    validate.test('email', 'isUnique', emailUniqueFlag)
+
+    // パスワードには任意の組み合わせの印刷可能な ASCII 文字を使用できます。
+    // また、8 文字以上にする必要があります。
+    validate.test('password', 'isRequired')
+    validate.test('password', 'isLength', 8, 20)
+    validate.test('password', 'containsSymbol')
+    validate.test('password', 'containsUppercase')
+    validate.test('password', 'containsNumric')
+    validate.test('password', 'canNotUsedBlank')
+
+    validate.test('confirm', 'isRequired')
+    validate.test('confirm', 'isConfirm', 'password')
+
+    validate.test('role', 'isRequired')
+
+    return validate.check()
+}
+
+/* create user Auth */
+const createAuth = (name, email, password) => {
+
+    return admin.auth().createUser({
+        displayName: name,
+        email: email,
+        password: password,
+        emailVerified: false,
+        disabled: false
+    })
+}
+
+/* set user */
+const setUser = (uid, name, email, role) => {
+    return admin.firestore().collection('users')
+        .doc(uid)
+        .set({ name, email, role })
+}
+
 module.exports.index = (req, res, next) => {
 
     admin.firestore().collection('users').get()
@@ -30,72 +106,21 @@ module.exports.index = (req, res, next) => {
 
 module.exports.create = (req, res, next) => {
 
-    const getNameFunc = admin.firestore().collection('users')
-        .where('name', '==', req.body.name)
-        .get()
+    const name = req.body.name
+    const email = req.body.email
+    const password = req.body.password
+    const role = req.body.role
 
-    const getEmailFunc = admin.firestore().collection('users')
-        .where('email', '==', req.body.email)
-        .get()
-
-    const validationBody = (body, ...arg) => {
-
-        /* set orderbalidation */
-        const validate = validation.list(body)
-
-        const name = arg.shift()
-        const email = arg.shift()
-
-        // ユーザー名には、[a-z]、[0-9]、-、_、'、.を使用できます。
-        // ユーザー名には、&、=、<、>、+、,を使用できません。
-        // また、連続した複数のピリオド（.）を含めることはできません。
-        validate.test('name', 'isRequired')
-        validate.test('name', 'isAlnumunder')
-        validate.test('name', 'notUse', name.size)
-
-        validate.test('email', 'isRequired')
-        validate.test('email', 'isEmail')
-        validate.test('email', 'notUse', email.size)
-
-        // パスワードには任意の組み合わせの印刷可能な ASCII 文字を使用できます。
-        // また、8 文字以上にする必要があります。
-        validate.test('password', 'isRequired')
-        validate.test('password', 'isLength', 8, 20)
-        validate.test('password', 'containsSymbol')
-        validate.test('password', 'containsUppercase')
-        validate.test('password', 'containsNumric')
-        validate.test('password', 'canNotUsedBlank')
-
-        validate.test('confirm', 'isRequired')
-        validate.test('confirm', 'isConfirm', 'password')
-
-        validate.test('role', 'isRequired')
-
-        return validate.check()
-    }
-
-    const createAuthFunc = (name, email, password) => {
-        return admin.auth().createUser({
-            displayName: name,
-            email: email,
-            password: password,
-            emailVerified: false,
-            disabled: false
-        })
-    }
-
-    const createUserFunc = (name, email, role) => {
-        return admin.firestore().collection('users')
-            .doc(user.uid)
-            .set({ name, email, role })
-    }
-
-    Promise.all([getNameFunc, getEmailFunc])
+    Promise.all([
+        checkUnique('name', name),
+        checkUnique('email', email),
+    ])
         .then(results => {
-            const [name, email] = results
+
+            const [nameUniqueFlag, emailUniqueFlag] = results
 
             /* validation */
-            valid = validationBody(req.body, name, email)
+            valid = validationBody(req.body, nameUniqueFlag, emailUniqueFlag)
 
             /* validation not passed */
             if (!valid.status) {
@@ -124,16 +149,16 @@ module.exports.create = (req, res, next) => {
                 /* create user */
                 Promise.resolve()
                     .then(_ => {
-                        return createAuthFunc = (valid.values.name, emavalid.values.name, valid.values.password)
+                        return createAuth(name, email, password)
                     })
                     .then(user => {
-                        return createUserFunc(valid.values.email, valid.values.name, valid.values.role)
+                        return setUser(user.uid, name, email, role)
                     })
                     .then(result => {
-                        // See the UserRecord reference doc for the contents of userRecord.
+                        debug(result, __filename, __line)
                         res.json({
                             code: 'success',
-                            messages: [`Successfully created new user: ${userRecord.uid}`],
+                            messages: [`Successfully created new user:`],
                             values: valid.values,
                         })
                     })
