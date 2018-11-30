@@ -216,14 +216,14 @@ export class Base {
         const email = document.querySelector('#email').value
         const passwoard = document.querySelector('#password').value
         const csrfToken = target.dataset.csrf_token
-        const requestUrl = target.dataset.request_url
-        const backendUrl = target.dataset.backend_url
+        const requestUrl = `${window.location.origin}/${target.dataset.request_url}`
+        const backendUrl = `${window.location.origin}/${target.dataset.backend_url}`
 
         this.signInFunction(email, passwoard, csrfToken, requestUrl)
             .then(result => {
                 if (result.code === 'success') {
                     // result status is true then send to backend top index
-                    window.location.assign(`${window.location.origin}/${backendUrl}`)
+                    window.location.assign(backendUrl)
                 } else {
                     // show
                     this.setNotice('error', [result.message], 'Signin failed')

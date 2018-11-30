@@ -15,8 +15,8 @@
             {|/*|}
         </div>
         <div class="col1"> <label for="order">order</label> <input id="order" class="target_item" type="text"></div>
-        <button class="col1 target_item" type="button" id="create_button" data-url="/{| backendFirstPath |}/user-create"
-            data-backend_url="/{| backendFirstPath |}/users">create</button>
+        <button class="col1 target_item" type="button" id="create_button" data-request_url="{| backendFirstPath |}/user-create"
+            data-users_url="/{| backendFirstPath |}/users">create</button>
     </div>
 
     {|> footer |}
@@ -43,8 +43,8 @@
             processing = true
             event.currentTarget.disabled = true;
 
-            const url = event.currentTarget.dataset.url
-            const backendUrl = event.currentTarget.dataset.backend_url
+            const requestUrl = `${window.location.origin}/${event.currentTarget.dataset.request_url}`
+            const usersUrl = `${window.location.origin}/${event.currentTarget.dataset.users_url}`
             const nameItem = document.querySelector('#name')
             const emailItem = document.querySelector('#email')
             const passwordItem = document.querySelector('#password')
@@ -64,7 +64,7 @@
             }
 
             // request to server
-            base.fetchServer(url, body)
+            base.fetchServer(requestUrl, body)
                 .then(result => {
 
                     console.log(result)
@@ -88,8 +88,7 @@
                             // code is success
                             if (code === 'success') {
                                 // result status is true then send to backend top index
-                                console.log(`${window.location.origin}/${backendUrl}`)
-                                // window.location.assign(`${window.location.origin}/${backendUrl}`)
+                                window.location.assign(usersUrl)
                             } else {
                                 if (element) {
                                     // set modifier class error or warning
