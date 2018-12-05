@@ -118,12 +118,17 @@ textarea:focus {
     border: 1px solid var(--default-color);
 }
 
+.radio_frame {
+    display: flex;
+    padding: 0.2rem;
+}
 input[type="radio"] {
     width: 0;
     height: 0;
 }
 input[type="radio"] + label{
     padding: 0 .4rem;
+    margin: 0.2rem;
     border: 1px solid transparent;
     background-color: var(--button-bg-color);
     cursor: pointer;
@@ -198,7 +203,9 @@ input[type="radio"]:checked + label{
 }
 
 /* input */
-input._modified {
+._modified,
+input._modified
+ {
     background-color: var(--info-bg-color);
     border-bottom-color: var(--info-color);
 }
@@ -225,6 +232,32 @@ input.__warning {
 .gnav{
     border-bottom: 1px solid var(--default-color);
 }
-.gnav ._active{
-    background-color: 1px solid var(--default-bg-color);
+.gnav-item {
+   transform: translateY(1px);
+   line-height: 1.2;
+   padding:0.6rem 1rem;
 }
+
+.gnav-item._active {
+    background-color: var(--default-bg-color);
+    border-left: 1px solid var(--default-color);
+    border-top: 1px solid var(--default-color);
+    border-right: 1px solid var(--default-color);
+ }
+
+/* クリック可能な範囲を広げる */
+.stretched_link::after{
+    position:absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    z-index:1;
+    pointer-events:auto;
+    content:"";
+    background-color:rgba(0,0,0,0)
+}
+/* 要素が「position: relative;」ではない場合は、リンクが親要素より外側に拡大しないように、.position-relativeを用意 */
+.user-item{
+    position:relative;
+} 

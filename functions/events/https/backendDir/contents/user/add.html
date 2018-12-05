@@ -10,110 +10,115 @@
     <div class="col1"> <span>role</span>
         <div>
             {|* roles : key : role |}
-            <input{|# equal(key, 1)|} checked{|/#|} class="target_item role_item" id="{|role|}" name='role' type="radio" value="{|role|}">
+            <input {|# equal(key, 1)|} checked{|/#|} class="target_item role_item" id="{|role|}" name='role' type="radio"
+                value="{|role|}">
             <label for="{|role|}">{|role|}</label>
             {|/*|}
         </div>
-        <div class="col1"> <label for="order">order</label> <input id="order" class="target_item" type="text"></div>
-        <button class="col1 target_item" type="button" id="create_button" data-request_url="{| backendFirstPath |}/user-create"
-            data-users_url="/{| backendFirstPath |}/users">create</button>
     </div>
+    <div class="col1"> <label for="order">order</label> <input id="order" class="target_item" type="text"></div>
+    <button class="col1 target_item" type="button" id="create_button" data-request_url="{| backendFirstPath |}/user-create"
+        data-users_url="{| backendFirstPath |}/users">create</button>
+</div>
 
-    {|> footer |}
+{|> footer |}
 
-    <script type="module">
+<script type="module">
 
-        import { Base } from '/{| backendFirstPath |}/base.js';
-        var base = Base.init()
+    import { Base } from '/{| backendFirstPath |}/base.js';
+    var base = Base.init()
 
-        const createBtnElement = document.querySelector('#create_button')
+    const createBtnElement = document.querySelector('#create_button')
 
-        let processing = false
-        createBtnElement.addEventListener('click', event => {
+    let processing = false
+    createBtnElement.addEventListener('click', event => {
 
-            // get target
-            const target = event.currentTarget
+        // get target
+        const target = event.currentTarget
 
-            // processing then can't send request
-            if (processing) {
-                return
-            }
+        // processing then can't send request
+        if (processing) {
+            return
+        }
 
-            // start processing
-            processing = true
-            event.currentTarget.disabled = true;
+        // start processing
+        processing = true
+        event.currentTarget.disabled = true;
 
-            const requestUrl = `${window.location.origin}/${event.currentTarget.dataset.request_url}`
-            const usersUrl = `${window.location.origin}/${event.currentTarget.dataset.users_url}`
-            const nameItem = document.querySelector('#name')
-            const emailItem = document.querySelector('#email')
-            const passwordItem = document.querySelector('#password')
-            const confirmItem = document.querySelector('#confirm')
-            const descriptionItem = document.querySelector('#description')
-            const roleItem = document.querySelector('.role_item:checked')
-            const orderItem = document.querySelector('#order')
+        const requestUrl = `${window.location.origin}/${event.currentTarget.dataset.request_url}`
+        const usersUrl = `${window.location.origin}/${event.currentTarget.dataset.users_url}`
+        
+        const nameItem = document.querySelector('#name')
+        const emailItem = document.querySelector('#email')
+        const passwordItem = document.querySelector('#password')
+        const confirmItem = document.querySelector('#confirm')
+        const descriptionItem = document.querySelector('#description')
 
-            const body = {
-                name: nameItem.value,
-                email: emailItem.value,
-                password: passwordItem.value,
-                confirm: confirmItem.value,
-                description: descriptionItem.value,
-                role: roleItem != null ? roleItem.value : '',
-                order: orderItem.value,
-            }
+        const roleItem = document.querySelector('.role_item:checked')
 
-            // request to server
-            base.fetchServer(requestUrl, body)
-                .then(result => {
+        const orderItem = document.querySelector('#order')
 
-                    console.log(result)
-                    // get code
-                    const code = result.code
+        const body = {
+            name: nameItem.value,
+            email: emailItem.value,
+            password: passwordItem.value,
+            confirm: confirmItem.value,
+            description: descriptionItem.value,
+            role: roleItem != null ? roleItem.value : '',
+            order: orderItem.value,
+        }
 
-                    let messages = []
-                    result.messages.forEach(message => {
+        // request to server
+        base.fetchServer(requestUrl, body)
+            .then(result => {
 
-                        // rebuild message
-                        messages.push(message.content)
+                console.log(result)
+                // get code
+                const code = result.code
 
-                        // get selector from key
-                        let key = message.key
-                        let selector = (key = ! null) ? `#${message.key}` : false
+                let messages = []
+                result.messages.forEach(message => {
 
-                        // has selector
-                        if (selector) {
-                            const element = document.querySelector(selector)
+                    // rebuild message
+                    messages.push(message.content)
 
-                            // code is success
-                            if (code === 'success') {
-                                // result status is true then send to backend top index
-                                window.location.assign(usersUrl)
-                            } else {
-                                if (element) {
-                                    // set modifier class error or warning
-                                    base.setModifierClass(element, code)
-                                }
+                    // get selector from key
+                    let key = message.key
+                    let selector = (key = ! null) ? `#${message.key}` : false
+
+                    // has selector
+                    if (selector) {
+                        const element = document.querySelector(selector)
+
+                        // code is success
+                        if (code === 'success') {
+                            // result status is true then send to backend top index
+                            window.location.assign(usersUrl)
+                        } else {
+                            if (element) {
+                                // set modifier class error or warning
+                                base.setModifierClass(element, code)
                             }
                         }
-                    })
-
-                    // set notice
-                    base.setNotice(result.code, messages)
-
-                    // end process
-                    processing = false
-                    event.target.disabled = false;
+                    }
                 })
-                .catch(err => {
 
-                    base.setNotice('error', [err.message])
-                    console.log(err)
+                // set notice
+                base.setNotice(result.code, messages)
 
-                    // end process
-                    processing = false
-                    event.target.disabled = false;
-                })
-        })
+                // end process
+                processing = false
+                event.target.disabled = false;
+            })
+            .catch(err => {
 
-    </script>
+                base.setNotice('error', [err.message])
+                console.log(err)
+
+                // end process
+                processing = false
+                event.target.disabled = false;
+            })
+    })
+
+</script>

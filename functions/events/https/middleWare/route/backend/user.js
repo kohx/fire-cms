@@ -80,6 +80,18 @@ const createAuth = (name, email, password) => {
     })
 }
 
+/* update user Auth */
+const updateAuth = (uid, name, email, password) => {
+
+    return admin.auth().updateUser(uid, {
+        displayName: name,
+        email: email,
+        password: password,
+        emailVerified: false,
+        disabled: false
+    })
+}
+
 /* set user */
 const setUser = (uid, name, email, role) => {
     return admin.firestore().collection('users')
@@ -96,6 +108,21 @@ module.exports.index = (req, res, next) => {
                 targets[doc.id] = doc.data()
             })
             req.vessel.thing.targets = targets
+            next()
+        })
+        .catch(err => {
+            debug(err, __filename, __line)
+            next(err)
+        })
+}
+
+module.exports.edit = (req, res, next) => {
+    const segments = req.vessel.get('paths.segments')
+    const target = segments.shift()
+
+    admin.firestore().collection('users').doc(target).get()
+        .then(doc => {
+            req.vessel.thing.target = doc.data()
             next()
         })
         .catch(err => {
@@ -158,7 +185,7 @@ module.exports.create = (req, res, next) => {
                         debug(result, __filename, __line)
                         res.json({
                             code: 'success',
-                            messages: [`Successfully created new user:`],
+                            messages: [`Successfully created new user.`],
                             values: valid.values,
                         })
                     })
@@ -188,26 +215,85 @@ module.exports.create = (req, res, next) => {
 
 module.exports.update = (req, res, next) => {
 
-    debug('update', __filename, __line)
+    const uid = req.body.uid
+    const name = req.body.name
+    const email = req.body.email
+    const password = req.body.password
+    const role = req.body.role
 
-    // admin.auth().updateUser(uid, {
-    //     email: "modifiedUser@example.com",
-    //     phoneNumber: "+11234567890",
-    //     emailVerified: true,
-    //     password: "newPassword",
-    //     displayName: "Jane Doe",
-    //     photoURL: "http://www.example.com/12345678/photo.png",
-    //     disabled: true
-    // })
-    //     .then(function (userRecord) {
-    //         // See the UserRecord reference doc for the contents of userRecord.
-    //         console.log("Successfully updated user", userRecord.toJSON());
-    //     })
-    //     .catch(function (error) {
-    //         console.log("Error updating user:", error);
-    //     });
+    Promise.all([
+        checkUnique('name', name, uid),
+        checkUnique('email', email, uid),
+    ])
+        .then(results => {
 
+            const [nameUniqueFlag, emailUniqueFlag] = results
 
+            /* validation */
+            valid = validationBody(req.body, nameUniqueFlag, emailUniqueFlag)
+
+            /* validation not passed */
+            if (!valid.status) {
+
+                // translate validation message and rebuild messages
+                let messages = []
+                Object.keys(valid.errors).forEach(key => {
+                    valid.errors[key].forEach(error => {
+                        // {path: xxx.xxx, message: 'asdf asdf asdf.'}
+                        // change to 
+                        // {key: xxx.xxx, content: 'asdf asdf asdf.'}
+                        messages.push({
+                            key: error.path,
+                            content: req.__(error.message, error.params)
+                        })
+                    })
+                })
+
+                res.json({
+                    code: 'warning',
+                    messages: messages,
+                    values: valid.values
+                })
+            } else {
+
+                /* create user */
+                Promise.resolve()
+                    .then(_ => {
+                        return createAuth(name, email, password)
+                    })
+                    .then(user => {
+                        return setUser(user.uid, name, email, role)
+                    })
+                    .then(result => {
+                        debug(result, __filename, __line)
+                        res.json({
+                            code: 'success',
+                            messages: [`Successfully created new user.`],
+                            values: valid.values,
+                        })
+                    })
+                    .catch(err => {
+                        res.json({
+                            code: 'error',
+                            messages: [{
+                                key: 'error',
+                                content: err.message,
+                            }],
+                            values: valid.values,
+                        })
+                    })
+            }
+        })
+        .catch(err => {
+            res.json({
+                code: 'error',
+                messages: [{
+                    key: 'error',
+                    content: err.message,
+                }],
+                values: valid.values,
+            })
+        })
 }
 
 module.exports.delete = (req, res, next) => {

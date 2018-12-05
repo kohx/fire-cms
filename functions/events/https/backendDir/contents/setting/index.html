@@ -21,7 +21,7 @@
         {|/*|}
     </ul>
 
-    <button class="target_item col1" type="button" id="update_button" data-url="{| backendFirstPath |}/setting-update">update</button>
+    <button class="target_item col1" type="button" id="update_button" data-request_url="{| backendFirstPath |}/setting-update">update</button>
 </div>
 {|> footer |}
 
@@ -47,7 +47,7 @@
         processing = true
         target.disabled = true;
 
-        const url = `${window.location.origin}/${target.dataset.url}`
+        const requestUrl = `${window.location.origin}/${target.dataset.request_url}`
         const unique = target.dataset.unique
         const modifiedItems = document.querySelectorAll('._modified')
 
@@ -73,7 +73,7 @@
         })
 
         // request to server
-        base.fetchServer(url, body)
+        base.fetchServer(requestUrl, body)
             .then(result => {
 
                 // get code

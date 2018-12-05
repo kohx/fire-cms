@@ -32,5 +32,6 @@
 	"{{param1}} is not contains uppercase.": "{{param1}} is not contains uppercase.",
 	"{{param1}} is not contains numric.": "{{param1}} is not contains numric.",
 	"{{param1}} can not used blank.": "{{param1}} can not used blank.",
-	"{{param1}} is already used.": "{{param1}} is already used."
+	"{{param1}} is already used.": "{{param1}} is already used.",
+	"check {{thing}}.": "check {{thing}}."
 }

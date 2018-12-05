@@ -63,19 +63,45 @@ export class Base {
         const targetItems = document.querySelectorAll(selector)
 
         Object.keys(targetItems).forEach(key => {
-
             const element = targetItems[key]
 
-            element.addEventListener('keyup', event => {
-                event.target.classList.remove('_modified', '__warning', '__success')
+            element.addEventListener('click', event => {
 
-                /* if change valeu add _modified class */
-                if (event.target.dataset.default != null && event.target.dataset.default != event.target.value) {
-                    event.target.classList.remove('__warning', '__success')
-                    event.target.classList.add('_modified')
-                } else {
-                    event.target.classList.remove('_modified')
+                const target = event.currentTarget
+                const type = target.type
+                const defaultValuet = target.dataset.default
+
+                if (type === 'radio') {
+
+                    /* if change valeu add _modified class */
+                    if (defaultValuet != null && defaultValuet != target.value) {
+                        this.setModifierClass(target.parentElement)
+                        target.parentElement.classList.add('_modified')
+                        console.log('change')
+                    } else {
+                        target.parentElement.classList.remove('_modified')
+                        console.log('no change')
+                    }
                 }
+            })
+
+            element.addEventListener('keyup', event => {
+
+                const target = event.currentTarget
+                const type = target.type
+                const defaultValuet = target.dataset.default
+
+                if (type === 'text' || type === 'password' || type === 'email' || type === 'textarea') {
+
+                    /* if change valeu add _modified class */
+                    if (defaultValuet != null && defaultValuet != target.value) {
+                        this.setModifierClass(target)
+                        target.classList.add('_modified')
+                    } else {
+                        target.classList.remove('_modified')
+                    }
+                }
+
 
                 /* if enter key up then next one focused */
                 if (event.keyCode === 13) {
@@ -88,7 +114,7 @@ export class Base {
 
                     nextItem.focus()
 
-                    if (nextItem.tagName === 'TEXT') {
+                    if (nextItem.type === 'text' || nextItem.type === 'textarea') {
                         nextItem.setSelectionRange(-1, -1)
                     }
                 }

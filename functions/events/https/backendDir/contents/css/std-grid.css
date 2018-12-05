@@ -7,7 +7,7 @@ http://opensource.org/licenses/mit-license.php
 
 /* set default height and gap */
 :root {
-  --grid-height: 4rem;
+  --grid-height: 3rem;
   --grid-gap: 1rem;
 }
 
