@@ -189,7 +189,8 @@ export class Base {
         const formElement = document.querySelector(formSelector)
         const formData = new FormData(formElement)
         for (var key of formData.keys()) {
-            console.log('asdf[]'.match(/.+\\[/))
+            // TODO:: こっから！
+            console.log(key.match(/.+\[\]/))
         }
         return formObjects
     }

@@ -134,7 +134,12 @@ module.exports = class wavebar {
         // quotation escape
         content = content.replace(/`/g, '\\`')
         content = content.replace(/\$\{/g, '$\\{')
-        content = content.replace(/'/g, '\\\'')
+
+        // TODO:: このパターンを全種類作るか、その他の方法。。。
+        content = content.replace(/(\\')/g, '\\\\\'')
+        content = content.replace(/(\\\[)/g, '\\\\\\[')
+        content = content.replace(/(\\\])/g, '\\\\\\]')
+        content = content.replace(/(\\\\n)/g, '\\\\\\n')
 
         this.merged = content
         return content
@@ -476,9 +481,11 @@ module.exports = class wavebar {
     /* lining */
     // encode
     lining(string) {
+        
+        // string = string.replace(/\r/g, ``)
+        // string = string.replace(/\n/g, `\\n`)
+        string = string.replace(/\r\n|\r|\n/g, `\\n`)
 
-        string = string.replace(/\r/g, ``)
-        string = string.replace(/\n/g, `\\n`)
         return string
     }
     // decode

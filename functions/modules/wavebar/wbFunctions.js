@@ -3,7 +3,7 @@ const debug = require('../../modules/debug').debug
 
 module.exports.funcs = {
 
-    /* 引数にストリングを使うときは「”」のみ使用可能 */
+    /* 引数にストリングを使うときは「'」のみ使用可能 */
 
     /**
      * is
