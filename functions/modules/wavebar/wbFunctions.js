@@ -3,19 +3,21 @@ const debug = require('../../modules/debug').debug
 
 module.exports.funcs = {
 
+    /* 引数にストリングを使うときは「”」のみ使用可能 */
+
     /**
      * is
-     * {|# is(`divisions`) |}
+     * {|# is("divisions") |}
      */
 
     /**
      * inParents
-     * {|# inParents(`divisions`) |}
+     * {|# inParents("divisions") |}
      */
 
     /**
      * __
-     * {|~ __(`check {{thing}}.`, {thing: target.unique}) |}
+     * {|~ __("check {{thing}}.", {thing: target.unique}) |}
      */
 
     /**
@@ -39,7 +41,7 @@ module.exports.funcs = {
 
     /**
      * equal
-     * {|# equal(targetName, `lang`)|} this is equal {|/#|}
+     * {|# equal(targetName, "lang")|} this is equal {|/#|}
      */
     equal: (value1, value2) => {
         return value1 == value2

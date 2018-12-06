@@ -5,7 +5,7 @@ const debug = require('../../modules/debug').debug
 module.exports = class wavebar {
 
     constructor() {
-        this.isDebug = 4
+        this.isDebug = 0
 
         this.templateTagReg = /(\{\|).*?(\|\})/g
         this.bareReg = /(\{\|)|(\|\})/g
@@ -132,6 +132,8 @@ module.exports = class wavebar {
         }
 
         // quotation escape
+        content = content.replace(/`/g, '\\`')
+        content = content.replace(/\$\{/g, '$\\{')
         content = content.replace(/'/g, '\\\'')
 
         this.merged = content
@@ -167,7 +169,7 @@ module.exports = class wavebar {
     /* build */
     build() {
         // console.log(`===>`, `in build!`)
-        let builded = `builded = '';\n`
+        let builded = `builded = \`\`;\n`
         const counter = {
             for: {
                 open: 0,
@@ -246,7 +248,7 @@ module.exports = class wavebar {
                         builded += this.buildText(body)
                 }
             } else {
-                builded += `builded += '${segment}';\n`
+                builded += `builded += \`${segment}\`;\n`
             }
         })
 

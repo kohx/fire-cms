@@ -189,7 +189,7 @@ export class Base {
         const formElement = document.querySelector(formSelector)
         const formData = new FormData(formElement)
         for (var key of formData.keys()) {
-            console.log('asdf[]'.match(RegExp('.+\\)))
+            console.log('asdf[]'.match(/.+\\[/))
         }
         return formObjects
     }
