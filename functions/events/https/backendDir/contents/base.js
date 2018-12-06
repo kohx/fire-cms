@@ -183,6 +183,17 @@ export class Base {
         this.notice.classList.remove('_active')
     }
 
+    /* get form object */
+    getForm(formSelector) {
+        let formObjects = {}
+        const formElement = document.querySelector(formSelector)
+        const formData = new FormData(formElement)
+        for (var key of formData.keys()) {
+            console.log('asdf[]'.match(RegExp('.+\\)))
+        }
+        return formObjects
+    }
+
     /* fetche */
     fetchServer(url, body = {}, addHeader = {}) {
 

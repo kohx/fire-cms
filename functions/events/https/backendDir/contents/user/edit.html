@@ -2,7 +2,7 @@
 {|> header |}
 
 <div class="col12 grid1 gap1">
-    <form action="form">
+    <form>
         <div class="col1"><label>uid</label><input id="uid" type="text" readonly value="{| target.uid |}"></div>
         <div class="col1"><label for="name">name</label><input id="name" class="target_item" type="text" name="name"
                 value="{| target.name |}" data-default="{| target.name |}"></div>
@@ -22,11 +22,38 @@
             </div>
         </div>
         <div class="col1"><label for="order">order</label><input id="order" class="target_item" type="text" name="order"
-                value="{| target.order |}" data-default="order"></div>
+                value="{| target.order |}" data-default="order">
+        </div>
+
+        <div class="col1">
+            <div>chack</div>
+            <div class="chack_frame">
+                <input type="checkbox" id="aaa" name='chack[]' value="aaa" data-default="aaa" checked><label for="aaa">aaa</label>
+                <input type="checkbox" id="bbb" name='chack[]' value="bbb" data-default="bbb"><label for="bbb">bbb</label>
+                <input type="checkbox" id="ccc" name='chack[]' value="ccc" data-default="ccc"><label for="ccc">ccc</label>
+            </div>
+
+            <div>select</div>
+            <div class="select_frame">
+                <select name="select" id="sss" data-default="222">
+                    <option value="111">111</option>
+                    <option value="222" selected>222</option>
+                    <option value="333">333</option>
+                </select>
+            </div>
+
+            <div>multiple</div>
+            <div class="select_frame">
+                <select multiple name="multiple" id="mmm" data-default="xxx">
+                    <option value="xxx" selected>xxx</option>
+                    <option value="yyy">yyy</option>
+                    <option value="zzz" selected>zzz</option>
+                </select>
+            </div>
     </form>
+
     <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/user-update"
         data-users_url="{| backendFirstPath |}/users" data-unique="{| target.uid |}">update</button>
-</div>
 </div>
 
 {|> footer |}
@@ -36,13 +63,21 @@
     import { Base } from '/{| backendFirstPath |}/base.js';
     var base = Base.init()
 
+    // get modified form object
+    const defaultValues = base.getForm('form')
+    console.log(defaultValues)
+
+    // get element
     const updateBtnElement = document.querySelector('#update_button')
 
+    // prosess start
     let processing = false
+
+    // click event
     updateBtnElement.addEventListener('click', event => {
 
-        // get target
-        const target = event.currentTarget
+        // get button
+        const button = event.currentTarget
 
         // processing then can't send request
         if (processing) {
@@ -51,39 +86,36 @@
 
         // start processing
         processing = true
-        target.disabled = true;
+        button.disabled = true;
 
-        const requestUrl = `${window.location.origin}/${target.dataset.request_url}`
-        const usersUrl = `${window.location.origin}/${target.dataset.users_url}`
-        const unique = target.dataset.unique
+        const requestUrl = `${window.location.origin}/${button.dataset.request_url}`
+        const usersUrl = `${window.location.origin}/${button.dataset.users_url}`
+        const unique = button.dataset.unique
         const modifiedItems = document.querySelectorAll('._modified')
 
-        // not change then show warnning
-        if (modifiedItems.length === 0) {
-            base.setNotice('warning', ['Nothing has changed.'])
-            processing = false
-            event.target.disabled = false;
-            return
-        }
+        // get modified form object
+        const modifiedValues = base.getForm('form')
+        console.log(modifiedValues)
 
-        const body = { uid: unique }
-        const defaultValues = {
-            name: document.querySelector('#name').dataset.default,
-            email: document.querySelector('#email').dataset.default,
-            password: document.querySelector('#password').dataset.default,
-            confirm: document.querySelector('#confirm').dataset.default,
-            description: document.querySelector('#description').dataset.default,
-            role: document.querySelector('.role_item:checked').dataset.default,
-            order: document.querySelector('#order').dataset.default,
-        }
-        console.log(defaultValues)
-        var formElement = document.querySelector("form")
-        var formData = new FormData(formElement);
-        for (var pair of formData.entries()) {
-            console.log(pair[0])
-            console.log(defaultValues[pair[0]])
-            // console.log(pair[0] + ': ' + pair[1])
-        }
+        // // not change then show warnning
+        // if (modifiedItems.length === 0) {
+        //     base.setNotice('warning', ['Nothing has changed.'])
+        //     processing = false
+        //     button.disabled = false;
+        //     return
+        // }
+
+        // const body = { uid: unique }
+        // const defaultValues = {
+        //     name: document.querySelector('#name').dataset.default,
+        //     email: document.querySelector('#email').dataset.default,
+        //     password: document.querySelector('#password').dataset.default,
+        //     confirm: document.querySelector('#confirm').dataset.default,
+        //     description: document.querySelector('#description').dataset.default,
+        //     role: document.querySelector('.role_item:checked').dataset.default,
+        //     order: document.querySelector('#order').dataset.default,
+        // }
+
 
 
         // // get body from modified items

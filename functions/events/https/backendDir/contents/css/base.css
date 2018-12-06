@@ -122,21 +122,26 @@ textarea:focus {
     display: flex;
     padding: 0.2rem;
 }
-input[type="radio"] {
+input[type="radio"],
+input[type="checkbox"] {
     width: 0;
     height: 0;
 }
-input[type="radio"] + label{
+input[type="radio"] + label,
+input[type="checkbox"] + label {
     padding: 0 .4rem;
     margin: 0.2rem;
     border: 1px solid transparent;
     background-color: var(--button-bg-color);
     cursor: pointer;
 }
-input[type="radio"]:focus + label{
+input[type="radio"]:focus + label,
+input[type="checkbox"]:focus + label
+{
     border: 1px solid var(--button-active-color);
 }
-input[type="radio"]:checked + label{
+input[type="radio"]:checked + label,
+input[type="checkbox"]:checked + label {
     background-color: var(--button-active-color);
     color: white;
 }

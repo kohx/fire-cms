@@ -5,7 +5,7 @@ const debug = require('../../modules/debug').debug
 module.exports = class wavebar {
 
     constructor() {
-        this.isDebug = 0
+        this.isDebug = 4
 
         this.templateTagReg = /(\{\|).*?(\|\})/g
         this.bareReg = /(\{\|)|(\|\})/g
@@ -131,7 +131,7 @@ module.exports = class wavebar {
             })
         }
 
-        // backquote escape
+        // quotation escape
         content = content.replace(/'/g, '\\\'')
 
         this.merged = content
@@ -305,7 +305,6 @@ module.exports = class wavebar {
         } else {
             text += `builded += ${func};\n`
         }
-        // text += `}\n`
         return text
     }
     // for
