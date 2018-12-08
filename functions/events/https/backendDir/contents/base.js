@@ -5,12 +5,20 @@ export class Base {
      * 
      */
     constructor() {
-
         // httpOnly Cookieを使用するため、クライアントの状態を保持しない
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
 
-        /* processing flag */
-        this.processing = false;
+        
+        /* property */
+
+        // prosessing flag
+        this.processing = false
+
+        // defaults
+        this.defaults = this.getFormObject()
+
+        // targets is emement tagname is input, select and textarea
+        this.targets = document.querySelectorAll('input, select, textarea')
 
         /* sign in */
         this.signInButton = document.querySelector('#sign_in_button')
@@ -28,9 +36,8 @@ export class Base {
             })
         }
 
-        /* target next */
-        this.targetItemSelector = '.target_item'
-        this.targetNext()
+        /* add events */
+        this.addEvents()
 
         /* notice */
         this.notice = document.querySelector('.notice')
@@ -52,72 +59,128 @@ export class Base {
         return new Base()
     }
 
+    /* get form object */
+    getFormObject(key = null) {
+        let formObjects = {}
+
+        // get data from form
+        const formElement = document.querySelector('form')
+        const formData = new FormData(formElement)
+        // itelator to array and unique
+        let keys = Array.from(formData.keys()).filter(function (val, idx, arr) {
+            return arr.indexOf(val) === idx;
+        })
+
+        keys.forEach(key => {
+            let value = formData.get(key)
+            const finded = key.match(/.+(\[\])/)
+            if (finded != null) {
+                // get first
+                value = formData.getAll(key)
+                // remove brakets
+                key = key.replace('[]', '')
+            }
+            formObjects[key] = value
+        })
+
+        let reslt = formObjects
+        if (key) {
+            reslt = formObjects[key] != null ? formObjects[key] : null
+        }
+
+        return reslt
+    }
+
+    equalValue(one, two) {
+        let result = null
+        if (Array.isArray(one) && Array.isArray(two)) {
+            result = JSON.stringify(one.sort()) === JSON.stringify(two.sort())
+        } else {
+            result = one == two
+        }
+
+        return result
+    }
+
+    getBody() {
+        let changed = false
+        let results = {}
+        const modifieds = this.getFormObject()
+
+        Object.keys(this.defaults).forEach(key => {
+            const defaultValue = this.defaults[key]
+            const modifiedValue = modifieds[key]
+
+            if (!this.equalValue(defaultValue, modifiedValue)) {
+                changed = true
+                results[key] = modifiedValue
+            }
+        })
+        
+        if (!changed){
+            this.setNotice('warning', ['Nothing has changed.'])
+        }
+
+        return results
+    }
+
+    modifyValue(event) {
+        const target = event.currentTarget
+        const key = target.name.replace('[]', '')
+
+        const defaultValue = this.defaults[key]
+        const modifiedValue = this.getFormObject(key)
+
+        const modified = !this.equalValue(defaultValue, modifiedValue)
+
+        const elements = document.querySelectorAll(`[name="${target.name}"]`)
+
+        elements.forEach(element => {
+            if (modified) {
+                this.setModifierClass(element)
+                element.classList.add('_modified')
+            } else {
+                element.classList.remove('_modified')
+            }
+        })
+    }
+
+    toNext(event, key) {
+        /* if enter key up then next one focused */
+        if (event.keyCode === 13) {
+
+            let next = this.targets[0]
+
+            if ((this.targets.length - 1) > key) {
+                next = this.targets[Number(key) + 1]
+            }
+
+            next.focus()
+
+            if (next.type === 'text' || next.type === 'textarea') {
+                next.setSelectionRange(-1, -1)
+            }
+        }
+    }
+
     /**
-     * terget next
+     * add events
      * 
      * @param {string|null} selector 
      */
-    targetNext(selector = null) {
+    addEvents() {
+        Object.keys(this.targets).forEach(key => {
+            const element = this.targets[key]
 
-        selector = selector != null ? selector : this.targetItemSelector
-        const targetItems = document.querySelectorAll(selector)
-
-        Object.keys(targetItems).forEach(key => {
-            const element = targetItems[key]
-
-            element.addEventListener('click', event => {
-
-                const target = event.currentTarget
-                const type = target.type
-                const defaultValuet = target.dataset.default
-
-                if (type === 'radio') {
-
-                    /* if change valeu add _modified class */
-                    if (defaultValuet != null && defaultValuet != target.value) {
-                        this.setModifierClass(target.parentElement)
-                        target.parentElement.classList.add('_modified')
-                        console.log('change')
-                    } else {
-                        target.parentElement.classList.remove('_modified')
-                        console.log('no change')
-                    }
-                }
+            // add event click
+            element.addEventListener('keyup', event => {
+                this.modifyValue(event)
+                this.toNext(event, key)
             })
 
-            element.addEventListener('keyup', event => {
-
-                const target = event.currentTarget
-                const type = target.type
-                const defaultValuet = target.dataset.default
-
-                if (type === 'text' || type === 'password' || type === 'email' || type === 'textarea') {
-
-                    /* if change valeu add _modified class */
-                    if (defaultValuet != null && defaultValuet != target.value) {
-                        this.setModifierClass(target)
-                        target.classList.add('_modified')
-                    } else {
-                        target.classList.remove('_modified')
-                    }
-                }
-
-
-                /* if enter key up then next one focused */
-                if (event.keyCode === 13) {
-
-                    let nextItem = targetItems[0]
-
-                    if ((targetItems.length - 1) > key) {
-                        nextItem = targetItems[Number(key) + 1]
-                    }
-
-                    nextItem.focus()
-
-                    if (nextItem.type === 'text' || nextItem.type === 'textarea') {
-                        nextItem.setSelectionRange(-1, -1)
-                    }
-                }
+            // add event keyup
+            element.addEventListener('click', event => {
+                this.modifyValue(event)
             })
         })
     }
@@ -183,18 +246,6 @@ export class Base {
         this.notice.classList.remove('_active')
     }
 
-    /* get form object */
-    getForm(formSelector) {
-        let formObjects = {}
-        const formElement = document.querySelector(formSelector)
-        const formData = new FormData(formElement)
-        for (var key of formData.keys()) {
-            // TODO:: こっから！
-            console.log(key.match(/.+\[\]/))
-        }
-        return formObjects
-    }
-
     /* fetche */
     fetchServer(url, body = {}, addHeader = {}) {
 
@@ -210,13 +261,13 @@ export class Base {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'post',
-                mode: 'cors',
-                credentials: 'include',
-                cache: 'no-cache',
-                headers: headers,
-                body: JSON.stringify(body)
-            })
+                    method: 'post',
+                    mode: 'cors',
+                    credentials: 'include',
+                    cache: 'no-cache',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                })
                 .then(data => {
                     return data.json()
                 })

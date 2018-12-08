@@ -3,57 +3,56 @@
 
 <div class="col12 grid1 gap1">
     <form>
-        <div class="col1"><label>uid</label><input id="uid" type="text" readonly value="{| target.uid |}"></div>
-        <div class="col1"><label for="name">name</label><input id="name" class="target_item" type="text" name="name"
-                value="{| target.name |}" data-default="{| target.name |}"></div>
-        <div class="col1"><label for="email">email</label><input id="email" class="target_item" type="text" name="email"
-                value="{| target.email |}" data-default="{| target.email |}"></div>
-        <div class="col1"><label for="password">password</label><input id="password" class="target_item" type="password"
-                name="password" value="" data-default=""></div>
-        <div class="col1"><label for="confirm">confirm</label><input id="confirm" class="target_item" type="password"
-                name="confirm" value="" data-default=""></div>
-        <div class="col1"><label for="description">description</label><input id="description" class="target_item" type="text"
-                name="description" value="" data-default=""></div>
+        <div class="col1"><input id="uid" name="uid" type="text" readonly value="{| target.uid |}"></div>
+        <div class="col1"><label for="name">name</label><input id="name" class="target_item" type="text" name="name" value="{| target.name |}"></div>
+        <div class="col1"><label for="email">email</label><input id="email" class="target_item" type="text" name="email" value="{| target.email |}"></div>
+        <div class="col1"><label for="password">password</label><input id="password" class="target_item" type="password" name="password" value=""></div>
+        <div class="col1"><label for="confirm">confirm</label><input id="confirm" class="target_item" type="password" name="confirm" value=""></div>
+        <div class="col1"><label for="description">description</label><input id="description" class="target_item" type="text" name="description" value=""></div>
         <div class="col1">
             <div>role</div>
-            <div class="radio_frame">
-                {|* roles : key : role |}<input {|# equal(role, target.role)|} checked{|/#|} class="target_item role_item"
-                    id="{|role|}" name='role' type="radio" value="{|role|}" data-default="{| target.role |}"><label for="{|role|}">{|role|}</label>{|/*|}
+            <div>
+                {|* roles : key : role |}
+                <input {|# equal(role, target.role)|} checked{|/#|} class="target_item role_item" id="{|role|}" name='role' type="radio" value="{|role|}"><label for="{|role|}">{|role|}</label>
+                {|/*|}
             </div>
         </div>
-        <div class="col1"><label for="order">order</label><input id="order" class="target_item" type="text" name="order"
-                value="{| target.order |}" data-default="order">
+        <div class="col1"><label for="order">order</label><input id="order" class="target_item" type="text" name="order" value="{| target.order |}">
         </div>
-
+        <div class="col1">
+            <div>radio</div>
+            <div>
+                <input type="radio" id="iii" name='radio' value="iii" checked><label for="iii">iii</label>
+                <input type="radio" id="jjj" name='radio' value="jjj"><label for="jjj">jjj</label>
+                <input type="radio" id="kkk" name='radio' value="kkk"><label for="kkk">kkk</label>
+            </div>
+        </div>
         <div class="col1">
             <div>chack</div>
-            <div class="chack_frame">
-                <input type="checkbox" id="aaa" name='chack[]' value="aaa" data-default="aaa" checked><label for="aaa">aaa</label>
-                <input type="checkbox" id="bbb" name='chack[]' value="bbb" data-default="bbb"><label for="bbb">bbb</label>
-                <input type="checkbox" id="ccc" name='chack[]' value="ccc" data-default="ccc"><label for="ccc">ccc</label>
+            <div>
+                <input type="checkbox" id="aaa" name='chack[]' value="aaa" checked><label for="aaa">aaa</label>
+                <input type="checkbox" id="bbb" name='chack[]' value="bbb" checked><label for="bbb">bbb</label>
+                <input type="checkbox" id="ccc" name='chack[]' value="ccc"><label for="ccc">ccc</label>
             </div>
-
+        </div>
+        <div class="col1">
             <div>select</div>
-            <div class="select_frame">
-                <select name="select" id="sss" data-default="222">
-                    <option value="111">111</option>
-                    <option value="222" selected>222</option>
-                    <option value="333">333</option>
-                </select>
-            </div>
-
+            <select name="select" id="sss">
+                <option value="111">111</option>
+                <option value="222" selected>222</option>
+                <option value="333">333</option>
+            </select>
+        </div>
+        <div class="col1">
             <div>multiple</div>
-            <div class="select_frame">
-                <select multiple name="multiple" id="mmm" data-default="xxx">
-                    <option value="xxx" selected>xxx</option>
-                    <option value="yyy">yyy</option>
-                    <option value="zzz" selected>zzz</option>
-                </select>
-            </div>
+            <select multiple name="multiple[]" id="mmm">
+                <option value="xxx" selected>xxx</option>
+                <option value="yyy">yyy</option>
+                <option value="zzz" selected>zzz</option>
+            </select>
+        </div>
     </form>
-
-    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/user-update"
-        data-users_url="{| backendFirstPath |}/users" data-unique="{| target.uid |}">update</button>
+    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/user-update" data-users_url="{| backendFirstPath |}/users">update</button>
 </div>
 
 {|> footer |}
@@ -62,10 +61,6 @@
 
     import { Base } from '/{| backendFirstPath |}/base.js';
     var base = Base.init()
-
-    // get modified form object
-    const defaultValues = base.getForm('form')
-    console.log(defaultValues)
 
     // get element
     const updateBtnElement = document.querySelector('#update_button')
@@ -78,6 +73,10 @@
 
         // get button
         const button = event.currentTarget
+        
+        // get button data
+        const requestUrl = `${window.location.origin}/${button.dataset.request_url}`
+        const usersUrl = `${window.location.origin}/${button.dataset.users_url}`
 
         // processing then can't send request
         if (processing) {
@@ -88,113 +87,67 @@
         processing = true
         button.disabled = true;
 
-        const requestUrl = `${window.location.origin}/${button.dataset.request_url}`
-        const usersUrl = `${window.location.origin}/${button.dataset.users_url}`
-        const unique = button.dataset.unique
-        const modifiedItems = document.querySelectorAll('._modified')
+        // not change then show warnning
+        let body = base.getBody()
+        if(!body) {
+            processing = false
+            button.disabled = false;
+            return
+        }
 
-        // get modified form object
-        const modifiedValues = base.getForm('form')
-        console.log(modifiedValues)
-
-        // // not change then show warnning
-        // if (modifiedItems.length === 0) {
-        //     base.setNotice('warning', ['Nothing has changed.'])
-        //     processing = false
-        //     button.disabled = false;
-        //     return
-        // }
-
-        // const body = { uid: unique }
-        // const defaultValues = {
-        //     name: document.querySelector('#name').dataset.default,
-        //     email: document.querySelector('#email').dataset.default,
-        //     password: document.querySelector('#password').dataset.default,
-        //     confirm: document.querySelector('#confirm').dataset.default,
-        //     description: document.querySelector('#description').dataset.default,
-        //     role: document.querySelector('.role_item:checked').dataset.default,
-        //     order: document.querySelector('#order').dataset.default,
-        // }
-
-
-
-        // // get body from modified items
-        // const body = { uid: unique }
-        // Object.keys(modifiedItems).forEach(key => {
-        //     // element
-        //     const element = modifiedItems[key]
-
-        //     if (['INPUT', 'TEXTAREA'].includes(element.tagName)) {
-
-        //     }
-        //     body[element.id] = element.value
-        // })
-
-        // console.log(body)
-
-
-        // const body = {
-        //     uid: unique,
-        //     name: nameItem.value,
-        //     email: emailItem.value,
-        //     password: passwordItem.value,
-        //     confirm: confirmItem.value,
-        //     description: descriptionItem.value,
-        //     role: roleItem != null ? roleItem.value : '',
-        //     order: orderItem.value,
-        // }
-
+        // add uid because uid is not modified
+        body['uid'] = base.defaults.uid
+        
         // request to server
-        // base.fetchServer(requestUrl, body)
-        //     .then(result => {
+        base.fetchServer(requestUrl, body)
+            .then(result => {
 
-        //         console.log(result)
-        //         // get code
-        //         const code = result.code
+                // get code
+                const code = result.code
 
-        //         let messages = []
-        //         result.messages.forEach(message => {
+                let messages = []
+                result.messages.forEach(message => {
 
-        //             // rebuild message
-        //             messages.push(message.content)
+                    // rebuild message
+                    messages.push(message.content)
 
-        //             // get selector from key
-        //             let key = message.key
-        //             let selector = (key = ! null) ? `#${message.key}` : false
+                    // get selector from key
+                    let key = message.key
+                    let selector = (key = ! null) ? `#${message.key}` : false
 
-        //             // has selector
-        //             if (selector) {
-        //                 const element = document.querySelector(selector)
+                    // has selector
+                    if (selector) {
+                        const element = document.querySelector(selector)
 
-        //                 // code is success
-        //                 if (code === 'success') {
-        //                     // result status is true then send to backend top index
-        //                     window.location.assign(usersUrl)
-        //                 } else {
-        //                     if (element) {
-        //                         // set modifier class error or warning
-        //                         base.setModifierClass(element, code)
-        //                     }
-        //                 }
-        //             }
-        //         })
+                        // code is success
+                        if (code === 'success') {
+                            // result status is true then send to backend top index
+                            window.location.assign(usersUrl)
+                        } else {
+                            if (element) {
+                                // set modifier class error or warning
+                                base.setModifierClass(element, code)
+                            }
+                        }
+                    }
+                })
 
-        //         // set notice
-        //         base.setNotice(result.code, messages)
+                // set notice
+                base.setNotice(result.code, messages)
 
-        //         // end process
-        //         processing = false
-        //         event.target.disabled = false;
-        //     })
-        //     .catch(err => {
+                // end process
+                processing = false
+                event.target.disabled = false;
+            })
+            .catch(err => {
 
-        //         base.setNotice('error', [err.message])
-        //         console.log(err)
+                base.setNotice('error', [err.message])
+                console.log(err)
 
-        //         // end process
-        //         processing = false
-        //         event.target.disabled = false;
-        //     })
+                // end process
+                processing = false
+                event.target.disabled = false;
+            })
     })
 
 </script>

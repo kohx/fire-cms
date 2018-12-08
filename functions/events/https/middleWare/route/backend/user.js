@@ -40,30 +40,42 @@ const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
     /* set orderbalidation */
     const validate = validation.list(body)
 
-    // ユーザー名には、[a-z]、[0-9]、-、_、'、.を使用できます。
-    // ユーザー名には、&、=、<、>、+、,を使用できません。
-    // また、連続した複数のピリオド（.）を含めることはできません。
-    validate.test('name', 'isRequired')
-    validate.test('name', 'isAlnumunder')
-    validate.test('name', 'isUnique', nameUniqueFlag)
+    if (body.name != null) {
+        // ユーザー名には、[a-z]、[0-9]、-、_、'、.を使用できます。
+        // ユーザー名には、&、=、<、>、+、,を使用できません。
+        // また、連続した複数のピリオド（.）を含めることはできません。
+        validate.test('name', 'isRequired')
+        validate.test('name', 'isAlnumunder')
+        validate.test('name', 'isUnique', nameUniqueFlag)
+    }
 
-    validate.test('email', 'isRequired')
-    validate.test('email', 'isEmail')
-    validate.test('email', 'isUnique', emailUniqueFlag)
+    if (body.email != null) {
+        validate.test('email', 'isRequired')
+        validate.test('email', 'isEmail')
+        validate.test('email', 'isUnique', emailUniqueFlag)
+    }
 
-    // パスワードには任意の組み合わせの印刷可能な ASCII 文字を使用できます。
-    // また、8 文字以上にする必要があります。
-    validate.test('password', 'isRequired')
-    validate.test('password', 'isLength', 8, 20)
-    validate.test('password', 'containsSymbol')
-    validate.test('password', 'containsUppercase')
-    validate.test('password', 'containsNumric')
-    validate.test('password', 'canNotUsedBlank')
+    if (body.password != null) {
+        // パスワードには任意の組み合わせの印刷可能な ASCII 文字を使用できます。
+        // また、8 文字以上にする必要があります。
+        validate.test('password', 'isRequired')
+        validate.test('password', 'isLength', 8, 20)
+        validate.test('password', 'containsSymbol')
+        validate.test('password', 'containsUppercase')
+        validate.test('password', 'containsNumric')
+        validate.test('password', 'canNotUsedBlank')
 
-    validate.test('confirm', 'isRequired')
-    validate.test('confirm', 'isConfirm', 'password')
+        validate.test('confirm', 'isRequired')
+        validate.test('confirm', 'isConfirm', 'password')
+    }
 
-    validate.test('role', 'isRequired')
+    if (body.description != null) {
+        validate.test('description', 'isLength', 0, 200)
+    }
+
+    if (body.role != null) {
+        validate.test('role', 'isRequired')
+    }
 
     return validate.check()
 }
@@ -83,22 +95,66 @@ const createAuth = (name, email, password) => {
 /* update user Auth */
 const updateAuth = (uid, name, email, password) => {
 
-    return admin.auth().updateUser(uid, {
-        displayName: name,
-        email: email,
-        password: password,
-        emailVerified: false,
-        disabled: false
-    })
+    const params = {}
+
+    if (name != null) {
+        params.displayName = name
+    }
+    if (email != null) {
+        params.email = email
+    }
+    if (password != null) {
+        params.password = password
+    }
+
+    if (Object.keys(params).length === 0) {
+        return
+    }
+
+    params.emailVerified = false
+    params.disabled = false
+
+    return admin.auth().updateUser(uid, params)
 }
 
-/* set user */
-const setUser = (uid, name, email, role) => {
+/* ser user */
+const setUser = (uid, body) => {
+
+    const params = {}
+    const allowaKeys = ['name', 'email', 'role', 'description', 'order']
+
+    Object.keys(body).forEach(key => {
+
+        if (allowaKeys.includes(key)) {
+            params[key] = body[key]
+        }
+    })
+
     return admin.firestore().collection('users')
         .doc(uid)
-        .set({ name, email, role })
+        .set(params)
 }
 
+/* update user */
+const updateUser = (uid, body) => {
+    const params = {}
+    const allowaKeys = ['name', 'email', 'role', 'description', 'order']
+
+    Object.keys(body).forEach(key => {
+
+        if (allowaKeys.includes(key)) {
+            params[key] = body[key]
+        }
+    })
+
+    return admin.firestore().collection('users')
+        .doc(uid)
+        .update(params)
+}
+
+/**
+ * user index (users)
+ */
 module.exports.index = (req, res, next) => {
 
     admin.firestore().collection('users').get()
@@ -116,6 +172,9 @@ module.exports.index = (req, res, next) => {
         })
 }
 
+/**
+ * user edit
+ */
 module.exports.edit = (req, res, next) => {
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
@@ -131,17 +190,19 @@ module.exports.edit = (req, res, next) => {
         })
 }
 
+/**
+ * user create (post)
+ */
 module.exports.create = (req, res, next) => {
 
     const name = req.body.name
     const email = req.body.email
     const password = req.body.password
-    const role = req.body.role
 
     Promise.all([
-        checkUnique('name', name),
-        checkUnique('email', email),
-    ])
+            checkUnique('name', name),
+            checkUnique('email', email),
+        ])
         .then(results => {
 
             const [nameUniqueFlag, emailUniqueFlag] = results
@@ -179,7 +240,7 @@ module.exports.create = (req, res, next) => {
                         return createAuth(name, email, password)
                     })
                     .then(user => {
-                        return setUser(user.uid, name, email, role)
+                        return setUser(user.uid, req.body)
                     })
                     .then(result => {
                         debug(result, __filename, __line)
@@ -193,7 +254,7 @@ module.exports.create = (req, res, next) => {
                         res.json({
                             code: 'error',
                             messages: [{
-                                key: 'error',
+                                key: null,
                                 content: err.message,
                             }],
                             values: valid.values,
@@ -205,7 +266,7 @@ module.exports.create = (req, res, next) => {
             res.json({
                 code: 'error',
                 messages: [{
-                    key: 'error',
+                    key: null,
                     content: err.message,
                 }],
                 values: valid.values,
@@ -213,21 +274,43 @@ module.exports.create = (req, res, next) => {
         })
 }
 
+/**
+ * user update (post)
+ */
 module.exports.update = (req, res, next) => {
 
-    const uid = req.body.uid
-    const name = req.body.name
-    const email = req.body.email
-    const password = req.body.password
-    const role = req.body.role
+    // then update uid is requred
+    const uid = req.body.uid != null ? req.body.uid : null
 
-    Promise.all([
-        checkUnique('name', name, uid),
-        checkUnique('email', email, uid),
-    ])
+    // args
+    const name = req.body.name != null ? req.body.name : null
+    const email = req.body.email != null ? req.body.email : null
+    const password = req.body.password != null ? req.body.epasswordmail : null
+    const role = req.body.role != null ? req.body.role : null
+    const description = req.body.description != null ? req.body.description : null
+
+    if (!uid) {
+        res.json({
+            code: 'error',
+            messages: [{
+                key: null,
+                content: ['uid is undefined!'],
+            }],
+        })
+    }
+
+    let funs = []
+    if (req.body.name != null) {
+        funs.push(checkUnique('name', req.body.name, uid))
+    }
+    if (req.body.email != null) {
+        funs.push(checkUnique('email', req.body.email, uid))
+    }
+
+    Promise.all(funs)
         .then(results => {
-
-            const [nameUniqueFlag, emailUniqueFlag] = results
+            const nameUniqueFlag = results[0] != null ? results[0] : null
+            const emailUniqueFlag = results[1] != null ? results[1] : null
 
             /* validation */
             valid = validationBody(req.body, nameUniqueFlag, emailUniqueFlag)
@@ -259,10 +342,11 @@ module.exports.update = (req, res, next) => {
                 /* create user */
                 Promise.resolve()
                     .then(_ => {
-                        return createAuth(name, email, password)
+                        return updateAuth(uid, name, email, password)
                     })
                     .then(user => {
-                        return setUser(user.uid, name, email, role)
+
+                        return updateUser(user.uid, req.body)
                     })
                     .then(result => {
                         debug(result, __filename, __line)
@@ -273,10 +357,11 @@ module.exports.update = (req, res, next) => {
                         })
                     })
                     .catch(err => {
+
                         res.json({
                             code: 'error',
                             messages: [{
-                                key: 'error',
+                                key: null,
                                 content: err.message,
                             }],
                             values: valid.values,
@@ -288,7 +373,7 @@ module.exports.update = (req, res, next) => {
             res.json({
                 code: 'error',
                 messages: [{
-                    key: 'error',
+                    key: null,
                     content: err.message,
                 }],
                 values: valid.values,

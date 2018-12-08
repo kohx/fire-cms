@@ -38,6 +38,7 @@ body {
     outline: none;
 }
 
+/* button */
 button,
 a.button {
     border: none;
@@ -100,52 +101,66 @@ button:disabled {
     color: var(--button-bg-color);
 }
 
-input[type="text"],
-input[type="date"],
-input[type="email"],
-input[type="password"],
+/* input default */
+input,
+select,
 textarea {
+    padding: .4rem;
     border: 1px solid transparent;
     background-color: var(--default-bg-color);
-    padding: .6rem;
 }
 
-input[type="text"]:focus,
-input[type="date"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-textarea:focus {
-    border: 1px solid var(--default-color);
-}
-
-.radio_frame {
-    display: flex;
-    padding: 0.2rem;
-}
 input[type="radio"],
 input[type="checkbox"] {
     width: 0;
     height: 0;
 }
-input[type="radio"] + label,
-input[type="checkbox"] + label {
+
+input[type="radio"]+label,
+input[type="checkbox"]+label {
     padding: 0 .4rem;
-    margin: 0.2rem;
     border: 1px solid transparent;
     background-color: var(--button-bg-color);
     cursor: pointer;
 }
-input[type="radio"]:focus + label,
-input[type="checkbox"]:focus + label
-{
+
+/* input focus */
+input:focus,
+select:focus,
+input[type="radio"]:focus+label,
+input[type="checkbox"]:focus+label {
     border: 1px solid var(--button-active-color);
 }
-input[type="radio"]:checked + label,
-input[type="checkbox"]:checked + label {
-    background-color: var(--button-active-color);
-    color: white;
+
+/* input checked */
+input[type="radio"]+label::before,
+input[type="checkbox"]+label::before {
+    font-family: "Font Awesome 5 Free";
+    display: inline-block;
+    margin-right: .2rem;
 }
 
+input[type="radio"]+label::before {
+    content: '\\f111';
+    /* template engin bug !!!!! */
+}
+
+input[type="checkbox"]+label::before {
+    content: '\\f0c8';
+    /* template engin bug !!!!! */
+}
+
+input[type="radio"]:checked+label::before {
+    content: '\\f192';
+    /* template engin bug !!!!! */
+}
+
+input[type="checkbox"]:checked+label::before {
+    content: '\\f14a';
+    /* template engin bug !!!!! */
+}
+
+/* wrapper */
 .wrapper {
     position: relative;
 }
@@ -207,12 +222,13 @@ input[type="checkbox"]:checked + label {
     color: var(--error-color);
 }
 
-/* input */
-._modified,
-input._modified
- {
+/* modified */
+input._modified,
+select._modified,
+input[type="password"]._modified,
+input[type="radio"]._modified+label,
+input[type="checkbox"]._modified+label {
     background-color: var(--info-bg-color);
-    border-bottom-color: var(--info-color);
 }
 
 input.__success {
@@ -234,35 +250,37 @@ input.__warning {
     margin-left: auto;
 }
 
-.gnav{
+.gnav {
     border-bottom: 1px solid var(--default-color);
 }
+
 .gnav-item {
-   transform: translateY(1px);
-   line-height: 1.2;
-   padding:0.6rem 1rem;
+    transform: translateY(1px);
+    line-height: 1.2;
+    padding: 0.6rem 1rem;
 }
 
 .gnav-item._active {
-    background-color: var(--default-bg-color);
     border-left: 1px solid var(--default-color);
     border-top: 1px solid var(--default-color);
     border-right: 1px solid var(--default-color);
- }
+    background-color: white;
+}
 
 /* クリック可能な範囲を広げる */
-.stretched_link::after{
-    position:absolute;
-    top:0;
-    right:0;
-    bottom:0;
-    left:0;
-    z-index:1;
-    pointer-events:auto;
-    content:"";
-    background-color:rgba(0,0,0,0)
+.stretched_link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: auto;
+    content: "";
+    background-color: rgba(0, 0, 0, 0)
 }
+
 /* 要素が「position: relative;」ではない場合は、リンクが親要素より外側に拡大しないように、.position-relativeを用意 */
-.user-item{
-    position:relative;
-} 
+.user-item {
+    position: relative;
+}
