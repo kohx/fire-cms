@@ -229,8 +229,7 @@ module.exports.create = (req, res, next) => {
 
                 res.json({
                     code: 'warning',
-                    messages: messages,
-                    values: valid.values
+                    messages: messages
                 })
             } else {
 
@@ -243,7 +242,6 @@ module.exports.create = (req, res, next) => {
                         return setUser(user.uid, req.body)
                     })
                     .then(result => {
-                        debug(result, __filename, __line)
                         res.json({
                             code: 'success',
                             messages: [`Successfully created new user.`],
@@ -256,8 +254,7 @@ module.exports.create = (req, res, next) => {
                             messages: [{
                                 key: null,
                                 content: err.message,
-                            }],
-                            values: valid.values,
+                            }]
                         })
                     })
             }
@@ -268,8 +265,7 @@ module.exports.create = (req, res, next) => {
                 messages: [{
                     key: null,
                     content: err.message,
-                }],
-                values: valid.values,
+                }]
             })
         })
 }
@@ -334,8 +330,7 @@ module.exports.update = (req, res, next) => {
 
                 res.json({
                     code: 'warning',
-                    messages: messages,
-                    values: valid.values
+                    messages: messages
                 })
             } else {
 
@@ -349,22 +344,22 @@ module.exports.update = (req, res, next) => {
                         return updateUser(user.uid, req.body)
                     })
                     .then(result => {
-                        debug(result, __filename, __line)
                         res.json({
                             code: 'success',
-                            messages: [`Successfully created new user.`],
-                            values: valid.values,
-                        })
-                    })
-                    .catch(err => {
-
-                        res.json({
-                            code: 'error',
                             messages: [{
                                 key: null,
                                 content: err.message,
                             }],
                             values: valid.values,
+                        })
+                    })
+                    .catch(err => {
+                        res.json({
+                            code: 'error',
+                            messages: [{
+                                key: null,
+                                content: err.message,
+                            }]
                         })
                     })
             }
@@ -375,8 +370,7 @@ module.exports.update = (req, res, next) => {
                 messages: [{
                     key: null,
                     content: err.message,
-                }],
-                values: valid.values,
+                }]
             })
         })
 }
