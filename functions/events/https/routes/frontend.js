@@ -10,6 +10,21 @@ const url = require('url')
 
 const debug = require('../../../modules/debug').debug
 const jsonCache = require('../../../modules/jsonCache')
+
+// TODO:: Service Worker によるセッション管理
+// https://firebase.google.com/docs/auth/web/service-worker-sessions?hl=ja
+
+// TODO:: 全文検索
+// https://firebase.google.com/docs/firestore/solutions/search?hl=ja
+
+
+
+
+
+
+
+
+
 // activata jsoncash from system
 jsonCache.isActive(system.cache)
 
