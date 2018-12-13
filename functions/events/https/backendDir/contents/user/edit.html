@@ -73,6 +73,8 @@
     // user createも合わせる
     // settingsも合わせる
 
+    // TODO:: validation statusもストリングに変更する？
+
     // get element
     const updateBtnElement = document.querySelector('#update_button')
 
@@ -105,7 +107,7 @@
         let body = base.getBody(button, {uid: uid})
 
         // 仮で止める
-        if(body) {
+        if(!body) {
             return
         }
 
