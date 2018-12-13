@@ -101,8 +101,21 @@ export class Base {
         return result
     }
 
-    getBody() {
-        let changed = false
+    // TODO:: これを新しく入れたよ！！！
+    // ここに表側を追加していく
+    // function名変更
+    getBody(buttonElement, addObjectg = {}) {
+
+    console.log('===>', buttonElement)
+        // // processing then can't send request
+        // if (this.processing) {
+        //     return
+        // }
+
+        // // prosess start
+        // this.processing = true
+        // buttonElement.disabled = true
+
         let results = {}
         const modifieds = this.getFormObject()
 
@@ -110,16 +123,21 @@ export class Base {
             const defaultValue = this.defaults[key]
             const modifiedValue = modifieds[key]
 
+            // then change value
             if (!this.equalValue(defaultValue, modifiedValue)) {
-                changed = true
                 results[key] = modifiedValue
             }
         })
-        
-        if (!changed){
+
+        if (Object.keys(results).length === 0) {
             this.setNotice('warning', ['Nothing has changed.'])
+            this.processing = false
+            // buttonElement.disabled = false
+            return false
         }
 
+        results = Object.assign(results, addObjectg)
+        console.log('===>', results)
         return results
     }
 

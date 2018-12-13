@@ -2,7 +2,7 @@
 {|> header |}
 
 <div class="col12 grid1 gap1">
-<form class="col1 gap3">
+    <form class="col1 gap3">
         <div class="col1"><input id="uid" name="uid" type="text" readonly value="{| target.uid |}"></div>
         <div class="col1"><label for="name">name</label><input id="name" class="target_item" type="text" name="name" value="{| target.name |}"></div>
         <div class="col1"><label for="email">email</label><input id="email" class="target_item" type="text" name="email" value="{| target.email |}"></div>
@@ -98,17 +98,17 @@
         processing = true
         button.disabled = true;
 
+        // add uid because uid is not modified
+        const uid = base.defaults.uid
+
         // not change then show warnning
-        let body = base.getBody()
-        if(!body) {
-            processing = false
-            button.disabled = false;
+        let body = base.getBody(button, {uid: uid})
+
+        // 仮で止める
+        if(body) {
             return
         }
 
-        // add uid because uid is not modified
-        body['uid'] = base.defaults.uid
-        
         // request to server
         base.fetchServer(requestUrl, body)
             .then(result => {

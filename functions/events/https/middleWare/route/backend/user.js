@@ -117,7 +117,7 @@ const updateAuth = (uid, name, email, password) => {
     return admin.auth().updateUser(uid, params)
 }
 
-/* ser user */
+/* set user */
 const setUser = (uid, body) => {
 
     const params = {}
