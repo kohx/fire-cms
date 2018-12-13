@@ -2,7 +2,7 @@
 {|> header |}
 
 <div class="col12 grid1 gap1">
-    <form>
+<form class="col1 gap3">
         <div class="col1"><input id="uid" name="uid" type="text" readonly value="{| target.uid |}"></div>
         <div class="col1"><label for="name">name</label><input id="name" class="target_item" type="text" name="name" value="{| target.name |}"></div>
         <div class="col1"><label for="email">email</label><input id="email" class="target_item" type="text" name="email" value="{| target.email |}"></div>
@@ -46,10 +46,14 @@
         <div class="col1">
             <div>multiple</div>
             <select multiple name="multiple[]" id="mmm">
-                <option value="xxx" selected>xxx</option>
+                <option value="xxx" selected>1xx</option>
                 <option value="yyy">yyy</option>
                 <option value="zzz" selected>zzz</option>
             </select>
+        </div>
+        <div class="col1">
+            <div>textarea</div>
+            <textarea rows="5" name="textarea" id="textarea">asdf</textarea>
         </div>
     </form>
     <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/user-update" data-users_url="{| backendFirstPath |}/users">update</button>

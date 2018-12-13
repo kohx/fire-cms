@@ -1,8 +1,6 @@
 :root {
     font-size: 62.5%;
 
-    --default-color: rgb(50, 50, 50);
-    --default-bg-color: rgb(240, 240, 240);
     --info-color: rgb(100, 150, 240);
     --info-bg-color: rgb(200, 200, 240);
     --success-color: rgb(100, 140, 40);
@@ -12,9 +10,9 @@
     --error-color: rgb(200, 100, 100);
     --error-bg-color: rgb(255, 235, 235);
 
-    --button-active-color: rgb(50, 50, 50);
-    --button-inactive-color: rgb(120, 120, 120);
-    --button-bg-color: rgb(230, 230, 230);
+    --default-active-color: rgb(50, 50, 50);
+    --default-negative-color: rgb(120, 120, 120);
+    --default-bg-color: rgb(255, 255, 255);
 }
 
 body {
@@ -31,7 +29,7 @@ body {
 /* [class*="grid"],
 [class*="grid"]>[class*=col] {
     border-radius: 3px;
-    box-shadow: inset 0 0 0 1px var(--default-color);
+    box-shadow: inset 0 0 0 1px var(--default-active-color);
 } */
 
 *:focus {
@@ -46,8 +44,8 @@ a.button {
     position: relative;
     overflow: hidden;
     transition: all .1s linear;
-    color: var(--button-active-color);
-    background-color: var(--button-bg-color);
+    color: var(--default-active-color);
+    background-color: var(--default-bg-color);
 }
 
 a.button:hover {
@@ -71,16 +69,16 @@ button::before,
 a.button::before {
     top: 0;
     left: 0;
-    border-top: 2px solid var(--button-active-color);
-    border-left: 2px solid var(--button-active-color);
+    border-top: 2px solid var(--default-active-color);
+    border-left: 2px solid var(--default-active-color);
 }
 
 button::after,
 a.button::after {
     right: 0;
     bottom: 0;
-    border-right: 2px solid var(--button-active-color);
-    border-bottom: 2px solid var(--button-active-color);
+    border-right: 2px solid var(--default-active-color);
+    border-bottom: 2px solid var(--default-active-color);
 }
 
 button:hover::before,
@@ -93,21 +91,25 @@ button:focus::after,
 a.button:hover::after {
     height: 100%;
     width: 100%;
-    color: var(--button-active-color);
+    color: var(--default-active-color);
 }
 
 button:disabled {
-    background-color: var(--button-active-color);
-    color: var(--button-bg-color);
+    background-color: var(--default-active-color);
+    color: var(--default-bg-color);
 }
 
-/* input default */
 input,
-select,
 textarea {
-    padding: .4rem;
-    border: 1px solid transparent;
-    background-color: var(--default-bg-color);
+    padding: 1.2rem;
+}
+
+select {
+    padding: 1.2rem 0.8rem;
+}
+
+select[multiple] {
+    padding: 1.2rem;
 }
 
 input[type="radio"],
@@ -116,11 +118,20 @@ input[type="checkbox"] {
     height: 0;
 }
 
+/* input default */
+input,
+select,
+textarea {
+    border: medium solid var(--default-negative-color);
+    border-radius: .4rem .4rem 0 0;
+}
+
 input[type="radio"]+label,
 input[type="checkbox"]+label {
-    padding: 0 .4rem;
-    border: 1px solid transparent;
-    background-color: var(--button-bg-color);
+    padding: 0.4rem 0.6rem;
+    border: medium solid var(--default-negative-color);
+    border-radius: .4rem;
+    background-color: var(--default-bg-color);
     cursor: pointer;
 }
 
@@ -129,7 +140,7 @@ input:focus,
 select:focus,
 input[type="radio"]:focus+label,
 input[type="checkbox"]:focus+label {
-    border: 1px solid var(--button-active-color);
+    border-bottom-color: var(--info-color);
 }
 
 /* input checked */
@@ -141,23 +152,19 @@ input[type="checkbox"]+label::before {
 }
 
 input[type="radio"]+label::before {
-    content: '\\f111';
-    /* template engin bug !!!!! */
+    content: '\f111';
 }
 
 input[type="checkbox"]+label::before {
-    content: '\\f0c8';
-    /* template engin bug !!!!! */
+    content: '\f0c8';
 }
 
 input[type="radio"]:checked+label::before {
-    content: '\\f192';
-    /* template engin bug !!!!! */
+    content: '\f192';
 }
 
 input[type="checkbox"]:checked+label::before {
-    content: '\\f14a';
-    /* template engin bug !!!!! */
+    content: '\f14a';
 }
 
 /* wrapper */
@@ -167,7 +174,7 @@ input[type="checkbox"]:checked+label::before {
 
 /* notice */
 .notice {
-    border: solid 1px var(--default-color);
+    border: solid 1px var(--default-active-color);
     background-color: white;
     position: fixed;
     left: 50%;
@@ -190,11 +197,11 @@ input[type="checkbox"]:checked+label::before {
     padding: 0.2rem;
     transition: all .1s linear;
     font-size: 1.4rem;
-    color: var(--button-inactive-color);
+    color: var(--default-negative-color);
 }
 
 .notice-close:hover {
-    color: var(--button-active-color);
+    color: var(--default-active-color);
 }
 
 .notice-messages li {
@@ -251,7 +258,7 @@ input.__warning {
 }
 
 .gnav {
-    border-bottom: 1px solid var(--default-color);
+    border-bottom: 1px solid var(--default-active-color);
 }
 
 .gnav-item {
@@ -261,9 +268,9 @@ input.__warning {
 }
 
 .gnav-item._active {
-    border-left: 1px solid var(--default-color);
-    border-top: 1px solid var(--default-color);
-    border-right: 1px solid var(--default-color);
+    border-left: 1px solid var(--default-active-color);
+    border-top: 1px solid var(--default-active-color);
+    border-right: 1px solid var(--default-active-color);
     background-color: white;
 }
 

@@ -8,7 +8,6 @@ export class Base {
         // httpOnly Cookieを使用するため、クライアントの状態を保持しない
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
 
-        
         /* property */
 
         // prosessing flag
@@ -155,7 +154,9 @@ export class Base {
                 next = this.targets[Number(key) + 1]
             }
 
-            next.focus()
+            if (event.currentTarget.type !== 'textarea') {
+                next.focus()
+            }
 
             if (next.type === 'text' || next.type === 'textarea') {
                 next.setSelectionRange(-1, -1)
