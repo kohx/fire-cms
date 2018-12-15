@@ -44,40 +44,40 @@ const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
         // ユーザー名には、[a-z]、[0-9]、-、_、'、.を使用できます。
         // ユーザー名には、&、=、<、>、+、,を使用できません。
         // また、連続した複数のピリオド（.）を含めることはできません。
-        validate.test('name', 'isRequired')
-        validate.test('name', 'isAlnumunder')
-        validate.test('name', 'isUnique', nameUniqueFlag)
+        validate.valid('name', 'isRequired')
+        validate.valid('name', 'isAlnumunder')
+        validate.valid('name', 'isUnique', nameUniqueFlag)
     }
 
     if (body.email != null) {
-        validate.test('email', 'isRequired')
-        validate.test('email', 'isEmail')
-        validate.test('email', 'isUnique', emailUniqueFlag)
+        validate.valid('email', 'isRequired')
+        validate.valid('email', 'isEmail')
+        validate.valid('email', 'isUnique', emailUniqueFlag)
     }
 
     if (body.password != null) {
         // パスワードには任意の組み合わせの印刷可能な ASCII 文字を使用できます。
         // また、8 文字以上にする必要があります。
-        validate.test('password', 'isRequired')
-        validate.test('password', 'isLength', 8, 20)
-        validate.test('password', 'containsSymbol')
-        validate.test('password', 'containsUppercase')
-        validate.test('password', 'containsNumric')
-        validate.test('password', 'canNotUsedBlank')
+        validate.valid('password', 'isRequired')
+        validate.valid('password', 'isLength', 8, 20)
+        validate.valid('password', 'containsSymbol')
+        validate.valid('password', 'containsUppercase')
+        validate.valid('password', 'containsNumric')
+        validate.valid('password', 'canNotUsedBlank')
 
-        validate.test('confirm', 'isRequired')
-        validate.test('confirm', 'isConfirm', 'password')
+        validate.valid('confirm', 'isRequired')
+        validate.valid('confirm', 'isConfirm', 'password')
     }
 
     if (body.description != null) {
-        validate.test('description', 'isLength', 0, 200)
+        validate.valid('description', 'isLength', 0, 200)
     }
 
     if (body.role != null) {
-        validate.test('role', 'isRequired')
+        validate.valid('role', 'isRequired')
     }
 
-    return validate.check()
+    return validate.get()
 }
 
 /* create user Auth */
@@ -121,7 +121,7 @@ const updateAuth = (uid, name, email, password) => {
 const setUser = (uid, body) => {
 
     const params = {}
-    const allowaKeys = ['name', 'email', 'role', 'description', 'order']
+    const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
 
     Object.keys(body).forEach(key => {
 
@@ -138,7 +138,7 @@ const setUser = (uid, body) => {
 /* update user */
 const updateUser = (uid, body) => {
     const params = {}
-    const allowaKeys = ['name', 'email', 'role', 'description', 'order']
+    const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
 
     Object.keys(body).forEach(key => {
 
@@ -146,6 +146,10 @@ const updateUser = (uid, body) => {
             params[key] = body[key]
         }
     })
+
+    if (Object.keys(params).length === 0) {
+        return
+    }
 
     return admin.firestore().collection('users')
         .doc(uid)
@@ -205,18 +209,17 @@ module.exports.create = (req, res, next) => {
             checkUnique('email', email),
         ])
         .then(results => {
-
             const [nameUniqueFlag, emailUniqueFlag] = results
+
             /* validation */
-            valid = validationBody(body, nameUniqueFlag, emailUniqueFlag)
+            const validationResult = validationBody(body, nameUniqueFlag, emailUniqueFlag)
 
             /* validation not passed */
-            if (!valid.status) {
-
+            if (!validationResult.check) {
                 // translate validation message and rebuild messages
                 let messages = []
-                Object.keys(valid.errors).forEach(key => {
-                    valid.errors[key].forEach(error => {
+                Object.keys(validationResult.errors).forEach(key => {
+                    validationResult.errors[key].forEach(error => {
                         // {path: xxx.xxx, message: 'asdf asdf asdf.'}
                         // change to 
                         // {key: xxx.xxx, content: 'asdf asdf asdf.'}
@@ -232,35 +235,24 @@ module.exports.create = (req, res, next) => {
                     messages: messages
                 })
             } else {
-
-                /* create user */
-                Promise.resolve()
-                    .then(_ => {
-                        return createAuth(name, email, password)
-                    })
-                    .then(user => {
-                        return setUser(user.uid, body)
-                    })
-                    .then(result => {
-                        debug(result, __filename, __line);
-                        res.json({
-                            code: 'success',
-                            messages: [`Successfully created new user.`],
-                            values: valid.values,
-                        })
-                    })
-                    .catch(err => {
-                        res.json({
-                            code: 'error',
-                            messages: [{
-                                key: null,
-                                content: err.message,
-                            }]
-                        })
-                    })
+                return
             }
         })
+        .then(_ => {
+            return createAuth(name, email, password)
+        })
+        .then(_ => {
+            return setUser(user.uid, body)
+        })
+        .then(result => {
+            debug(result, __filename, __line)
+            res.json({
+                code: 'success',
+                messages: [`Successfully created new user.`],
+            })
+        })
         .catch(err => {
+            debug(err, __filename, __line)
             res.json({
                 code: 'error',
                 messages: [{
@@ -315,16 +307,17 @@ module.exports.update = (req, res, next) => {
         .then(results => {
             const nameUniqueFlag = results[0] != null ? results[0] : null
             const emailUniqueFlag = results[1] != null ? results[1] : null
+
             // validation 
-            valid = validationBody(body, nameUniqueFlag, emailUniqueFlag)
+            const validationResult = validationBody(body, nameUniqueFlag, emailUniqueFlag)
 
             // validation invalid
-            if (!valid.status) {
+            if (!validationResult.check) {
 
                 // translate validation message and rebuild messages
                 let messages = []
-                Object.keys(valid.errors).forEach(key => {
-                    valid.errors[key].forEach(error => {
+                Object.keys(validationResult.errors).forEach(key => {
+                    validationResult.errors[key].forEach(error => {
                         // {path: xxx.xxx, message: 'asdf asdf asdf.'}
                         // change to 
                         // {key: xxx.xxx, content: 'asdf asdf asdf.'}
@@ -337,51 +330,42 @@ module.exports.update = (req, res, next) => {
 
                 // return invalid
                 res.json({
-                    code: 'warning',
+                    code: validationResult.status,
                     messages,
                 })
+            } else {
+                return
             }
-            // validation success
-            else {
-                Promise.resolve()
-                    .then(_ => {
-                        // update auth
-                        return updateAuth(uid, name, email, password)
+        })
+        .then(_ => {
+            // update auth
+            return updateAuth(uid, name, email, password)
+        })
+        .then(_ => {
+            // update store users
+            return updateUser(uid, body)
+        })
+        .then(result => {
+            debug(result, __filename, __line)
+
+            let messages = []
+            Object.keys(body).forEach(key => {
+                // {path: xxx.xxx, message: 'asdf asdf asdf.'}
+                // change to 
+                // {key: xxx.xxx, content: 'asdf asdf asdf.'}
+                if (key !== 'uid') {
+                    messages.push({
+                        key,
+                        content: req.__(`{{key}} is updated.`, {key})
                     })
-                    .then(_ => {
-                        // update store users
-                        return updateUser(uid, body)
-                    })
-                    .then(result => {
-                        // create message
-                        let messages = []
-                        Object.keys(body).forEach(key => {
-                            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
-                            // change to 
-                            // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-                            messages.push({
-                                key,
-                                content: req.__(`{{key}} is updated.`, {key})
-                            })
-                        })
-                        debug(messages, __filename, __line);
-                        res.json({
-                            code: 'success',
-                            body,
-                            messages,
-                        })
-                    })
-                    .catch(err => {
-                        debug(err, __filename, __line);
-                        res.json({
-                            code: 'error',
-                            messages: [{
-                                key: null,
-                                content: err.message,
-                            }]
-                        })
-                    })
-            }
+                }
+            })
+
+            res.json({
+                code: 'success',
+                messages,
+                values: body,
+            })
         })
         .catch(err => {
             debug(err, __filename, __line);

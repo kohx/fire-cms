@@ -152,7 +152,9 @@ export class Base {
         // request to server
         this.fetchServer(requestUrl, updateValues)
             .then(result => {
-                
+
+                console.log('===>', result)
+
                 // get code
                 const code = result.code
 
@@ -161,6 +163,7 @@ export class Base {
 
                 // get message
                 let messages = []
+                console.log('===>', result.messages)
                 result.messages.forEach(message => {
 
                     // rebuild message
@@ -170,7 +173,7 @@ export class Base {
                     let key = message.key
 
                     // get selector from message key
-                    let selector = (key = !null) ? `#${message.key}` : false
+                    let selector = key != null ? `#${message.key}` : false
 
                     // has selector
                     if (selector) {
@@ -183,11 +186,10 @@ export class Base {
 
                             // set new value to default
                             this.defaults[key] = body[key]
-                            element.classList.remove('_modified')
 
+                            element.classList.remove('_modified')
                             // set modifier class success whith clear time
                             this.setModifierClass(element, code, 4000)
-
                         } else {
                             if (element) {
                                 // set modifier class error or warning
@@ -196,8 +198,6 @@ export class Base {
                         }
                     }
                 })
-
-                console.log(this.defaults)
 
                 // set notice
                 this.setNotice(result.code, messages)
