@@ -195,9 +195,10 @@ module.exports.edit = (req, res, next) => {
  */
 module.exports.create = (req, res, next) => {
 
-    const name = req.body.name
-    const email = req.body.email
-    const password = req.body.password
+    const body = body
+    const name = body.name
+    const email = body.email
+    const password = body.password
 
     Promise.all([
             checkUnique('name', name),
@@ -206,9 +207,8 @@ module.exports.create = (req, res, next) => {
         .then(results => {
 
             const [nameUniqueFlag, emailUniqueFlag] = results
-
             /* validation */
-            valid = validationBody(req.body, nameUniqueFlag, emailUniqueFlag)
+            valid = validationBody(body, nameUniqueFlag, emailUniqueFlag)
 
             /* validation not passed */
             if (!valid.status) {
@@ -239,9 +239,10 @@ module.exports.create = (req, res, next) => {
                         return createAuth(name, email, password)
                     })
                     .then(user => {
-                        return setUser(user.uid, req.body)
+                        return setUser(user.uid, body)
                     })
                     .then(result => {
+                        debug(result, __filename, __line);
                         res.json({
                             code: 'success',
                             messages: [`Successfully created new user.`],
@@ -275,16 +276,18 @@ module.exports.create = (req, res, next) => {
  */
 module.exports.update = (req, res, next) => {
 
+    // body
+    const body = req.body
+
     // then update uid is requred
-    const uid = req.body.uid != null ? req.body.uid : null
+    const uid = body.uid != null ? body.uid : null
 
     // args
-    const name = req.body.name != null ? req.body.name : null
-    const email = req.body.email != null ? req.body.email : null
-    const password = req.body.password != null ? req.body.epasswordmail : null
-    const role = req.body.role != null ? req.body.role : null
-    const description = req.body.description != null ? req.body.description : null
+    const name = body.name != null ? body.name : null
+    const email = body.email != null ? body.email : null
+    const password = body.password != null ? body.epasswordmail : null
 
+    // if uid undefined return err
     if (!uid) {
         res.json({
             code: 'error',
@@ -295,23 +298,27 @@ module.exports.update = (req, res, next) => {
         })
     }
 
+    // promise all function 
     let funs = []
-    if (req.body.name != null) {
-        funs.push(checkUnique('name', req.body.name, uid))
+
+    // get name for unique check
+    if (body.name != null) {
+        funs.push(checkUnique('name', body.name, uid))
     }
-    if (req.body.email != null) {
-        funs.push(checkUnique('email', req.body.email, uid))
+
+    // get emai for unique check
+    if (body.email != null) {
+        funs.push(checkUnique('email', body.email, uid))
     }
 
     Promise.all(funs)
         .then(results => {
             const nameUniqueFlag = results[0] != null ? results[0] : null
             const emailUniqueFlag = results[1] != null ? results[1] : null
+            // validation 
+            valid = validationBody(body, nameUniqueFlag, emailUniqueFlag)
 
-            /* validation */
-            valid = validationBody(req.body, nameUniqueFlag, emailUniqueFlag)
-
-            /* validation not passed */
+            // validation invalid
             if (!valid.status) {
 
                 // translate validation message and rebuild messages
@@ -328,32 +335,44 @@ module.exports.update = (req, res, next) => {
                     })
                 })
 
+                // return invalid
                 res.json({
                     code: 'warning',
-                    messages: messages
+                    messages,
                 })
-            } else {
-
-                /* create user */
+            }
+            // validation success
+            else {
                 Promise.resolve()
                     .then(_ => {
+                        // update auth
                         return updateAuth(uid, name, email, password)
                     })
-                    .then(user => {
-
-                        return updateUser(user.uid, req.body)
+                    .then(_ => {
+                        // update store users
+                        return updateUser(uid, body)
                     })
                     .then(result => {
+                        // create message
+                        let messages = []
+                        Object.keys(body).forEach(key => {
+                            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
+                            // change to 
+                            // {key: xxx.xxx, content: 'asdf asdf asdf.'}
+                            messages.push({
+                                key,
+                                content: req.__(`{{key}} is updated.`, {key})
+                            })
+                        })
+                        debug(messages, __filename, __line);
                         res.json({
                             code: 'success',
-                            messages: [{
-                                key: null,
-                                content: err.message,
-                            }],
-                            values: valid.values,
+                            body,
+                            messages,
                         })
                     })
                     .catch(err => {
+                        debug(err, __filename, __line);
                         res.json({
                             code: 'error',
                             messages: [{
@@ -365,6 +384,7 @@ module.exports.update = (req, res, next) => {
             }
         })
         .catch(err => {
+            debug(err, __filename, __line);
             res.json({
                 code: 'error',
                 messages: [{

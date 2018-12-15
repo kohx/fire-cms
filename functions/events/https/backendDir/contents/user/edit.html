@@ -56,7 +56,7 @@
             <textarea rows="5" name="textarea" id="textarea">asdf</textarea>
         </div>
     </form>
-    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/user-update" data-users_url="{| backendFirstPath |}/users">update</button>
+    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/user-update">update</button>
 </div>
 
 {|> footer |}
@@ -66,20 +66,12 @@
     import { Base } from '/{| backendFirstPath |}/base.js';
     var base = Base.init()
 
-    // TODO:: ここから
-    // リダイレクトなし
-    // base.jsのvalidation表示
-    // 成功時の表示
     // user createも合わせる
     // settingsも合わせる
-
     // TODO:: validation statusもストリングに変更する？
 
     // get element
     const updateBtnElement = document.querySelector('#update_button')
-
-    // prosess start
-    let processing = false
 
     // click event
     updateBtnElement.addEventListener('click', event => {
@@ -87,83 +79,11 @@
         // get button
         const button = event.currentTarget
 
-        // get button data
-        const requestUrl = `${window.location.origin}/${button.dataset.request_url}`
-        const usersUrl = `${window.location.origin}/${button.dataset.users_url}`
-
-        // processing then can't send request
-        if (processing) {
-            return
-        }
-
-        // start processing
-        processing = true
-        button.disabled = true;
-
         // add uid because uid is not modified
         const uid = base.defaults.uid
 
         // not change then show warnning
-        let body = base.getBody(button, {uid: uid})
-
-        // 仮で止める
-        if(!body) {
-            return
-        }
-
-        // request to server
-        base.fetchServer(requestUrl, body)
-            .then(result => {
-
-                // get code
-                const code = result.code
-
-                let messages = []
-                result.messages.forEach(message => {
-
-                    // rebuild message
-                    messages.push(message.content)
-
-                    // get selector from key
-                    let key = message.key
-                    let selector = (key = ! null) ? `#${message.key}` : false
-
-                    // has selector
-                    if (selector) {
-                        const element = document.querySelector(selector)
-
-                        // code is success
-                        if (code === 'success') {
-                            // set new value
-                            
-
-                            // set modifier class success whith clear time
-                            base.setModifierClass(element, code, 4000)
-                        } else {
-                            if (element) {
-                                // set modifier class error or warning
-                                base.setModifierClass(element, code)
-                            }
-                        }
-                    }
-                })
-
-                // set notice
-                base.setNotice(result.code, messages)
-
-                // end process
-                processing = false
-                event.target.disabled = false;
-            })
-            .catch(err => {
-
-                base.setNotice('error', [err.message])
-                console.log(err)
-
-                // end process
-                processing = false
-                event.target.disabled = false;
-            })
+        let body = base.requestServer(button, {uid})
     })
 
 </script>

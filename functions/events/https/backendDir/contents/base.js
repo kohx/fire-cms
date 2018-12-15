@@ -101,44 +101,122 @@ export class Base {
         return result
     }
 
-    // TODO:: これを新しく入れたよ！！！
-    // ここに表側を追加していく
-    // function名変更
-    getBody(buttonElement, addObjectg = {}) {
+    /**
+     * request server
+     * 
+     * @param {element} buttonElement 
+     * @param {object} addObjectg 
+     */
+    requestServer(buttonElement, addObjectg = {}) {
 
-    console.log('===>', buttonElement)
-        // // processing then can't send request
-        // if (this.processing) {
-        //     return
-        // }
+        // processing then can't send request
+        if (this.processing) {
+            return
+        }
 
-        // // prosess start
-        // this.processing = true
-        // buttonElement.disabled = true
+        // get button data
+        const requestUrl = `${window.location.origin}/${buttonElement.dataset.request_url}`
 
-        let results = {}
+        // prosess start
+        this.processing = true
+
+        // disable button element
+        buttonElement.disabled = true
+
+        // get modified form data
         const modifieds = this.getFormObject()
 
+        // check modified value and get it
+        let updateValues = {}
         Object.keys(this.defaults).forEach(key => {
             const defaultValue = this.defaults[key]
             const modifiedValue = modifieds[key]
 
-            // then change value
+            // if value modified set to result
             if (!this.equalValue(defaultValue, modifiedValue)) {
-                results[key] = modifiedValue
+                updateValues[key] = modifiedValue
             }
         })
 
-        if (Object.keys(results).length === 0) {
+        // if all value not modify then show notice and reset button 
+        if (Object.keys(updateValues).length === 0) {
             this.setNotice('warning', ['Nothing has changed.'])
             this.processing = false
-            // buttonElement.disabled = false
-            return false
+            buttonElement.disabled = false
+            return
         }
 
-        results = Object.assign(results, addObjectg)
-        console.log('===>', results)
-        return results
+        // additional data merge
+        updateValues = Object.assign(updateValues, addObjectg)
+
+        // request to server
+        this.fetchServer(requestUrl, updateValues)
+            .then(result => {
+                
+                // get code
+                const code = result.code
+
+                // get body
+                const body = result.body
+
+                // get message
+                let messages = []
+                result.messages.forEach(message => {
+
+                    // rebuild message
+                    messages.push(message.content)
+
+                    // get message key
+                    let key = message.key
+
+                    // get selector from message key
+                    let selector = (key = !null) ? `#${message.key}` : false
+
+                    // has selector
+                    if (selector) {
+
+                        // get target element
+                        const element = document.querySelector(selector)
+
+                        // code is success
+                        if (code === 'success') {
+
+                            // set new value to default
+                            this.defaults[key] = body[key]
+                            element.classList.remove('_modified')
+
+                            // set modifier class success whith clear time
+                            this.setModifierClass(element, code, 4000)
+
+                        } else {
+                            if (element) {
+                                // set modifier class error or warning
+                                this.setModifierClass(element, code)
+                            }
+                        }
+                    }
+                })
+
+                console.log(this.defaults)
+
+                // set notice
+                this.setNotice(result.code, messages)
+
+                // end process
+                this.processing = false
+                buttonElement.disabled = false;
+            })
+            .catch(err => {
+
+                this.setNotice('error', [err.message])
+                console.log(err)
+
+                // end process
+                this.processing = false
+                buttonElement.disabled = false;
+            })
+
+        return updateValues
     }
 
     modifyValue(event) {
