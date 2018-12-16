@@ -10,6 +10,8 @@ export class Base {
 
         /* property */
 
+        this.showTime = 6000
+
         // prosessing flag
         this.processing = false
 
@@ -107,7 +109,7 @@ export class Base {
             }
         })
 
-        return formObjects
+        return key ? formObjects[key] : formObjects
     }
 
     equalValue(one, two) {
@@ -173,17 +175,14 @@ export class Base {
         this.fetchServer(requestUrl, updateValues)
             .then(result => {
 
-                console.log('===>', result)
-
                 // get code
                 const code = result.code
 
-                // get body
-                const body = result.body
+                // get values
+                const values = result.values
 
                 // get message
                 let messages = []
-                console.log('===>', result.messages)
                 result.messages.forEach(message => {
 
                     // rebuild message
@@ -193,29 +192,33 @@ export class Base {
                     let key = message.key
 
                     // get selector from message key
-                    let selector = key != null ? `#${message.key}` : false
+                    let selector = key != null ? `[name="${message.key}"]` : false
 
                     // has selector
                     if (selector) {
 
                         // get target element
-                        const element = document.querySelector(selector)
+                        const elements = document.querySelectorAll(selector)
 
-                        // code is success
-                        if (code === 'success') {
+                        elements.forEach(element => {
+                            // code is success
+                            if (code === 'success') {
 
-                            // set new value to default
-                            this.defaults[key] = body[key]
+                                // set new value to default
+                                this.defaults[key] = values[key]
 
-                            element.classList.remove('_modified')
-                            // set modifier class success whith clear time
-                            this.setModifierClass(element, code, 4000)
-                        } else {
-                            if (element) {
-                                // set modifier class error or warning
-                                this.setModifierClass(element, code)
+                                // remove class
+                                element.classList.remove('_modified')
+
+                                // set modifier class success whith clear time
+                                this.setModifierClass(element, code, this.showTime)
+                            } else {
+                                if (element) {
+                                    // set modifier class error or warning
+                                    this.setModifierClass(element, code)
+                                }
                             }
-                        }
+                        })
                     }
                 })
 
@@ -244,8 +247,8 @@ export class Base {
         const key = target.name.replace('[]', '')
 
         const defaultValue = this.defaults[key]
+        
         const modifiedValue = this.getFormObject(key)
-
         const modified = !this.equalValue(defaultValue, modifiedValue)
 
         const elements = document.querySelectorAll(`[name="${target.name}"]`)
@@ -327,7 +330,7 @@ export class Base {
     }
 
     /* notice */
-    setNotice(code, messages, title = null, timeout = 6000) {
+    setNotice(code, messages, title = null, timeout = this.showTime) {
         this.clearNotice()
 
         clearTimeout(this.noticeTimer);

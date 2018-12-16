@@ -349,6 +349,7 @@ module.exports.update = (req, res, next) => {
             debug(result, __filename, __line)
 
             let messages = []
+            let values = {}
             Object.keys(body).forEach(key => {
                 // {path: xxx.xxx, message: 'asdf asdf asdf.'}
                 // change to 
@@ -358,13 +359,14 @@ module.exports.update = (req, res, next) => {
                         key,
                         content: req.__(`{{key}} is updated.`, {key})
                     })
+                    values[key] = body[key]
                 }
             })
-
+            
             res.json({
                 code: 'success',
                 messages,
-                values: body,
+                values,
             })
         })
         .catch(err => {

@@ -232,13 +232,14 @@ input[type="checkbox"]:checked+label::before {
 /* modified */
 input._modified,
 select._modified,
-input[type="password"]._modified,
 input[type="radio"]._modified+label,
 input[type="checkbox"]._modified+label {
     background-color: var(--info-bg-color);
 }
 
-input.__success {
+input.__success,
+input[type="radio"].__success+label,
+input[type="checkbox"].__success+label {
     background-color: var(--success-bg-color);
     border-bottom-color: var(--success-color);
 }
