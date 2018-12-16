@@ -46,6 +46,7 @@ a.button {
     transition: all .1s linear;
     color: var(--default-active-color);
     background-color: var(--default-bg-color);
+    border: thin solid var(--default-negative-color)
 }
 
 a.button:hover {

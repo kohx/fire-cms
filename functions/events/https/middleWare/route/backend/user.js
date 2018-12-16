@@ -199,23 +199,34 @@ module.exports.edit = (req, res, next) => {
  */
 module.exports.create = (req, res, next) => {
 
-    const body = body
+    // body
+    const body = req.body
+
+    // args
+    body.name = body.name != null ? body.name : ''
+    body.email = body.email != null ? body.email : ''
+    body.password = body.password != null ? body.password : ''
+    body.confirm = body.confirm != null ? body.confirm : ''
+
     const name = body.name
     const email = body.email
     const password = body.password
 
-    Promise.all([
-            checkUnique('name', name),
-            checkUnique('email', email),
-        ])
+    // promise all function 
+    let funs = [checkUnique('name', body.name), checkUnique('email', body.email)]
+
+    Promise.all(funs)
         .then(results => {
-            const [nameUniqueFlag, emailUniqueFlag] = results
+
+            const nameUniqueFlag = results[0] != null ? results[0] : null
+            const emailUniqueFlag = results[1] != null ? results[1] : null
 
             /* validation */
             const validationResult = validationBody(body, nameUniqueFlag, emailUniqueFlag)
 
-            /* validation not passed */
+            // validation invalid
             if (!validationResult.check) {
+
                 // translate validation message and rebuild messages
                 let messages = []
                 Object.keys(validationResult.errors).forEach(key => {
@@ -230,9 +241,10 @@ module.exports.create = (req, res, next) => {
                     })
                 })
 
+                // return invalid
                 res.json({
-                    code: 'warning',
-                    messages: messages
+                    code: validationResult.status,
+                    messages,
                 })
             } else {
                 return
@@ -241,14 +253,16 @@ module.exports.create = (req, res, next) => {
         .then(_ => {
             return createAuth(name, email, password)
         })
-        .then(_ => {
+        .then(user => {
             return setUser(user.uid, body)
         })
         .then(result => {
-            debug(result, __filename, __line)
             res.json({
                 code: 'success',
-                messages: [`Successfully created new user.`],
+                messages: [{
+                    key: null,
+                    content: req.__(`Successfully created new user.`),
+                }],
             })
         })
         .catch(err => {
@@ -277,7 +291,7 @@ module.exports.update = (req, res, next) => {
     // args
     const name = body.name != null ? body.name : null
     const email = body.email != null ? body.email : null
-    const password = body.password != null ? body.epasswordmail : null
+    const password = body.password != null ? body.password : null
 
     // if uid undefined return err
     if (!uid) {
@@ -285,7 +299,7 @@ module.exports.update = (req, res, next) => {
             code: 'error',
             messages: [{
                 key: null,
-                content: ['uid is undefined!'],
+                content: req.__('uid is undefined!'),
             }],
         })
     }
@@ -294,13 +308,13 @@ module.exports.update = (req, res, next) => {
     let funs = []
 
     // get name for unique check
-    if (body.name != null) {
-        funs.push(checkUnique('name', body.name, uid))
+    if (name != null) {
+        funs.push(checkUnique('name', name, uid))
     }
 
     // get emai for unique check
-    if (body.email != null) {
-        funs.push(checkUnique('email', body.email, uid))
+    if (email != null) {
+        funs.push(checkUnique('email', email, uid))
     }
 
     Promise.all(funs)
@@ -357,12 +371,13 @@ module.exports.update = (req, res, next) => {
                 if (key !== 'uid') {
                     messages.push({
                         key,
-                        content: req.__(`{{key}} is updated.`, {key})
+                        content: req.__(`{{key}} is updated.`, {
+                            key
+                        })
                     })
                     values[key] = body[key]
                 }
             })
-            
             res.json({
                 code: 'success',
                 messages,

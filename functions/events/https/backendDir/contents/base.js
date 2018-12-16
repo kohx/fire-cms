@@ -60,7 +60,12 @@ export class Base {
         return new Base()
     }
 
-    /* get form object */
+    /**
+     * get form object
+     * 
+     * @param {string} key 
+     * @returns {*}
+     */
     getFormObject(key = null) {
         const elements = document.querySelectorAll('input, select, textarea')
 
@@ -112,6 +117,13 @@ export class Base {
         return key ? formObjects[key] : formObjects
     }
 
+    /**
+     * check value one is equal value two
+     * 
+     * @param {*} one 
+     * @param {*} two 
+     * @returns {boolean}
+     */
     equalValue(one, two) {
         let result = null
         if (Array.isArray(one) && Array.isArray(two)) {
@@ -124,130 +136,14 @@ export class Base {
     }
 
     /**
-     * request server
-     * 
-     * @param {element} buttonElement 
-     * @param {object} addObjectg 
+     * add class _modified to element
+     * @param {object} event 
      */
-    requestServer(buttonElement, addObjectg = {}) {
-
-        // processing then can't send request
-        if (this.processing) {
-            return
-        }
-
-        // get button data
-        const requestUrl = `${window.location.origin}/${buttonElement.dataset.request_url}`
-
-        // prosess start
-        this.processing = true
-
-        // disable button element
-        buttonElement.disabled = true
-
-        // get modified form data
-        const modifieds = this.getFormObject()
-
-        // check modified value and get it
-        let updateValues = {}
-        Object.keys(this.defaults).forEach(key => {
-            const defaultValue = this.defaults[key]
-            const modifiedValue = modifieds[key]
-
-            // if value modified set to result
-            if (!this.equalValue(defaultValue, modifiedValue)) {
-                updateValues[key] = modifiedValue
-            }
-        })
-
-        // if all value not modify then show notice and reset button 
-        if (Object.keys(updateValues).length === 0) {
-            this.setNotice('warning', ['Nothing has changed.'])
-            this.processing = false
-            buttonElement.disabled = false
-            return
-        }
-
-        // additional data merge
-        updateValues = Object.assign(updateValues, addObjectg)
-
-        // request to server
-        this.fetchServer(requestUrl, updateValues)
-            .then(result => {
-
-                // get code
-                const code = result.code
-
-                // get values
-                const values = result.values
-
-                // get message
-                let messages = []
-                result.messages.forEach(message => {
-
-                    // rebuild message
-                    messages.push(message.content)
-
-                    // get message key
-                    let key = message.key
-
-                    // get selector from message key
-                    let selector = key != null ? `[name="${message.key}"]` : false
-
-                    // has selector
-                    if (selector) {
-
-                        // get target element
-                        const elements = document.querySelectorAll(selector)
-
-                        elements.forEach(element => {
-                            // code is success
-                            if (code === 'success') {
-
-                                // set new value to default
-                                this.defaults[key] = values[key]
-
-                                // remove class
-                                element.classList.remove('_modified')
-
-                                // set modifier class success whith clear time
-                                this.setModifierClass(element, code, this.showTime)
-                            } else {
-                                if (element) {
-                                    // set modifier class error or warning
-                                    this.setModifierClass(element, code)
-                                }
-                            }
-                        })
-                    }
-                })
-
-                // set notice
-                this.setNotice(result.code, messages)
-
-                // end process
-                this.processing = false
-                buttonElement.disabled = false;
-            })
-            .catch(err => {
-
-                this.setNotice('error', [err.message])
-                console.log(err)
-
-                // end process
-                this.processing = false
-                buttonElement.disabled = false;
-            })
-
-        return updateValues
-    }
-
     modifyValue(event) {
         const target = event.currentTarget
-        const key = target.name.replace('[]', '')
-
+        const key = target.name
         const defaultValue = this.defaults[key]
-        
+
         const modifiedValue = this.getFormObject(key)
         const modified = !this.equalValue(defaultValue, modifiedValue)
 
@@ -263,6 +159,12 @@ export class Base {
         })
     }
 
+    /**
+     * to next element
+     * 
+     * @param {object} event 
+     * @param {number} key 
+     */
     toNext(event, key) {
         /* if enter key up then next one focused */
         if (event.keyCode === 13) {
@@ -366,7 +268,13 @@ export class Base {
         this.notice.classList.remove('_active')
     }
 
-    /* fetche */
+    /**
+     * fetche
+     * 
+     * @param {string} url 
+     * @param {object} body 
+     * @param {object} addHeader 
+     */
     fetchServer(url, body = {}, addHeader = {}) {
 
         // default headers
@@ -402,6 +310,131 @@ export class Base {
                     })
                 })
         })
+    }
+
+    /**
+     * request server
+     * 
+     * @param {element} buttonElement 
+     * @param {object} addObjectg 
+     */
+    requestServer(buttonElement, addObjectg = {}) {
+
+        // processing then can't send request
+        if (this.processing) {
+            return
+        }
+
+        // get button data
+        const data = buttonElement.dataset
+        const requestUrl = data.request_url != null ? `${window.location.origin}/${data.request_url}` : null
+        const redirectUrl = data.redirect_url != null ? `${window.location.origin}/${data.redirect_url}` : null
+
+        // prosess start
+        this.processing = true
+
+        // disable button element
+        buttonElement.disabled = true
+
+        // get modified form data
+        const modifieds = this.getFormObject()
+
+        // check modified value and get it
+        let updateValues = {}
+        Object.keys(this.defaults).forEach(key => {
+            const defaultValue = this.defaults[key]
+            const modifiedValue = modifieds[key]
+
+            // if value modified set to result
+            if (!this.equalValue(defaultValue, modifiedValue)) {
+                updateValues[key] = modifiedValue
+            }
+        })
+
+        // if all value not modify then show notice and reset button 
+        if (Object.keys(updateValues).length === 0) {
+            this.setNotice('warning', ['Nothing has changed.'])
+            this.processing = false
+            buttonElement.disabled = false
+            return
+        }
+
+        // additional data merge
+        updateValues = Object.assign(updateValues, addObjectg)
+
+        // request to server
+        this.fetchServer(requestUrl, updateValues)
+            .then(result => {
+
+                // get code
+                const code = result.code
+
+                // then there is redirect url
+                if (code === 'success' && redirectUrl) {
+                    // redirect to
+                    window.location.assign(redirectUrl)
+                }
+
+                // get values
+                const values = result.values
+
+                // get message
+                let messages = []
+                result.messages.forEach(message => {
+
+                    // rebuild message
+                    messages.push(message.content)
+
+                    // get message key
+                    let key = message.key
+
+                    // get selector from message key
+                    let selector = key != null ? `[name="${message.key}"]` : false
+
+                    // has selector
+                    if (selector) {
+
+                        // get target element
+                        const elements = document.querySelectorAll(selector)
+
+                        elements.forEach(element => {
+                            // code is success
+                            if (code === 'success') {
+
+                                // set new value to default
+                                this.defaults[key] = values[key]
+
+                                // remove class
+                                element.classList.remove('_modified')
+
+                                // set modifier class success whith clear time
+                                this.setModifierClass(element, code, this.showTime)
+                            } else {
+                                if (element) {
+                                    // set modifier class error or warning
+                                    this.setModifierClass(element, code)
+                                }
+                            }
+                        })
+                    }
+                })
+
+                // set notice
+                this.setNotice(result.code, messages)
+
+                // end process
+                this.processing = false
+                buttonElement.disabled = false;
+            })
+            .catch(err => {
+
+                this.setNotice('error', [err.message])
+                console.log(err)
+
+                // end process
+                this.processing = false
+                buttonElement.disabled = false;
+            })
     }
 
     /**
