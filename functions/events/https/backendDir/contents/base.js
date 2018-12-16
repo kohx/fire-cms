@@ -340,6 +340,7 @@ export class Base {
         const modifieds = this.getFormObject()
 
         // check modified value and get it
+        // TODO:: クリエートのときは全部送る！！
         let updateValues = {}
         Object.keys(this.defaults).forEach(key => {
             const defaultValue = this.defaults[key]
@@ -369,14 +370,15 @@ export class Base {
                 // get code
                 const code = result.code
 
+                // get values
+                const values = result.values
+
                 // then there is redirect url
                 if (code === 'success' && redirectUrl) {
                     // redirect to
-                    window.location.assign(redirectUrl)
+                    window.location.assign(`${redirectUrl}?uid=${values.uid}`)
+                    return
                 }
-
-                // get values
-                const values = result.values
 
                 // get message
                 let messages = []
