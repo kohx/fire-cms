@@ -60,34 +60,54 @@ export class Base {
 
     /* get form object */
     getFormObject(key = null) {
+        const elements = document.querySelectorAll('input, select, textarea')
+
         let formObjects = {}
-
-        // get data from form
-        const formElement = document.querySelector('form')
-        const formData = new FormData(formElement)
-        // itelator to array and unique
-        let keys = Array.from(formData.keys()).filter(function (val, idx, arr) {
-            return arr.indexOf(val) === idx;
-        })
-
-        keys.forEach(key => {
-            let value = formData.get(key)
-            const finded = key.match(/.+(\[\])/)
-            if (finded != null) {
-                // get first
-                value = formData.getAll(key)
-                // remove brakets
-                key = key.replace('[]', '')
+        elements.forEach(element => {
+            let key = element.name
+            const type = element.type
+            let value = ''
+            if (['radio', 'checkbox'].includes(type)) {
+                if (element.checked) {
+                    value = element.value
+                }
+            } else if (type === 'select-multiple') {
+                value = []
+                element.querySelectorAll('option').forEach(option => {
+                    if (option.selected) {
+                        value.push(option.value)
+                    }
+                })
+            } else {
+                value = element.value
             }
-            formObjects[key] = value
+
+            if (formObjects.hasOwnProperty(key)) {
+                if (Array.isArray(formObjects[key])) {
+                    formObjects[key].push(value)
+                } else {
+                    if (type === 'radio') {
+                        if (value !== '') {
+                            formObjects[key] = value
+                        }
+                    } else {
+                        formObjects[key] = [formObjects[key], value]
+                    }
+                }
+            } else {
+                formObjects[key] = value
+            }
         })
 
-        let reslt = formObjects
-        if (key) {
-            reslt = formObjects[key] != null ? formObjects[key] : null
-        }
+        Object.keys(formObjects).forEach(key => {
+            if (Array.isArray(formObjects[key])) {
+                formObjects[key] = formObjects[key].filter(value => {
+                    return value !== "";
+                })
+            }
+        })
 
-        return reslt
+        return formObjects
     }
 
     equalValue(one, two) {
