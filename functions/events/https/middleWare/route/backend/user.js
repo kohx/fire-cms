@@ -177,6 +177,10 @@ module.exports.index = (req, res, next) => {
 }
 
 /**
+ * user add
+ */
+
+/**
  * user edit
  */
 module.exports.edit = (req, res, next) => {
@@ -201,13 +205,6 @@ module.exports.create = (req, res, next) => {
 
     // body
     const body = req.body
-
-    // args
-    body.name = body.name != null ? body.name : ''
-    body.email = body.email != null ? body.email : ''
-    body.password = body.password != null ? body.password : ''
-    body.confirm = body.confirm != null ? body.confirm : ''
-
     const name = body.name
     const email = body.email
     const password = body.password
@@ -254,6 +251,7 @@ module.exports.create = (req, res, next) => {
             return createAuth(name, email, password)
         })
         .then(user => {
+            debug(user.uid, __filename, __line)
             return setUser(user.uid, body)
         })
         .then(result => {
@@ -263,6 +261,7 @@ module.exports.create = (req, res, next) => {
                     key: null,
                     content: req.__(`Successfully created new user.`),
                 }],
+                user
             })
         })
         .catch(err => {

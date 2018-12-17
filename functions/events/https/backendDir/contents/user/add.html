@@ -2,21 +2,25 @@
 {|> header |}
 
 <div class="col12 grid1 gap3">
-<div class="col1"> <label for="name">name</label> <input id="name" name="name" class="target_item" type="text"></div>
-<div class="col1"> <label for="email">email</label> <input id="email" name="email" class="target_item" type="text"></div>
-<div class="col1"> <label for="password">password</label> <input id="password" name="password" class=" target_item" type="password"></div>
-<div class="col1"> <label for="confirm">confirm</label> <input id="confirm" name="confirm" class="target_item" type="password"></div>
-<div class="col1"> <label for="description">description</label> <input id="description" name="description" class="target_item" type="text"></div>
+    <div class="col1"> <label for="name">name</label> <input id="name" name="name" class="target_item" type="text"></div>
+    <div class="col1"> <label for="email">email</label> <input id="email" name="email" class="target_item" type="text"></div>
+    <div class="col1"> <label for="password">password</label> <input id="password" name="password" class=" target_item"
+            type="password"></div>
+    <div class="col1"> <label for="confirm">confirm</label> <input id="confirm" name="confirm" class="target_item" type="password"></div>
+    <div class="col1"> <label for="description">description</label> <input id="description" name="description" class="target_item"
+            type="text"></div>
     <div class="col1"> <span>role</span>
-        <div>
+        <div class="col1 grid6 gap1">
             {|* roles : key : role |}
-            <input class="target_item role_item" id="{|role|}" name='role' type="radio" value="{|role|}">
-            <label for="{|role|}">{|role|}</label>
+            <div>
+                <input class="target_item role_item" id="{|role|}" name='role' type="radio" value="{|role|}"><label for="{|role|}">{|role|}</label>
+            </div>
             {|/*|}
         </div>
     </div>
-<div class="col1"> <label for="order">order</label> <input id="order" name='order' class="target_item" type="text"></div>
-    <button class="col1 target_item" type="button" id="create_button" data-request_url="{| backendFirstPath |}/user-create" data-redirect_url="{| backendFirstPath |}/users">create</button>
+    <div class="col1"> <label for="order">order</label> <input id="order" name='order' class="target_item" type="text"></div>
+    <button class="col1 target_item" type="button" id="create_button" data-request_url="{| backendFirstPath |}/user-create"
+        data-redirect_url="{| backendFirstPath |}/users">create</button>
 </div>
 
 {|> footer |}
@@ -25,7 +29,7 @@
 
     import { Base } from '/{| backendFirstPath |}/base.js';
     var base = Base.init()
-    
+
     // get element
     const createBtnElement = document.querySelector('#create_button')
 
@@ -35,11 +39,8 @@
         // get button
         const button = event.currentTarget
 
-        // add uid because uid is not modified
-        const uid = base.defaults.uid
-
         // not change then show warnning
-        base.requestServer(button, {uid})
+        base.requestServer(button)
     })
 
 </script>

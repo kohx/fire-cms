@@ -318,7 +318,7 @@ export class Base {
      * @param {element} buttonElement 
      * @param {object} addObjectg 
      */
-    requestServer(buttonElement, addObjectg = {}) {
+    requestServer(buttonElement, sendAll = true, addObjectg = {}) {
 
         // processing then can't send request
         if (this.processing) {
@@ -337,34 +337,39 @@ export class Base {
         buttonElement.disabled = true
 
         // get modified form data
-        const modifieds = this.getFormObject()
+        const presents = this.getFormObject()
 
         // check modified value and get it
         // TODO:: クリエートのときは全部送る！！
-        let updateValues = {}
+        let modifiedValues = {}
         Object.keys(this.defaults).forEach(key => {
             const defaultValue = this.defaults[key]
-            const modifiedValue = modifieds[key]
+            const modifiedValue = presents[key]
 
             // if value modified set to result
             if (!this.equalValue(defaultValue, modifiedValue)) {
-                updateValues[key] = modifiedValue
+                modifiedValues[key] = modifiedValue
             }
         })
 
         // if all value not modify then show notice and reset button 
-        if (Object.keys(updateValues).length === 0) {
+        if (Object.keys(modifiedValues).length === 0) {
             this.setNotice('warning', ['Nothing has changed.'])
             this.processing = false
             buttonElement.disabled = false
             return
         }
 
+        // if sendAll is true then send all value
+        if(sendAll){
+            modifiedValues = presents
+        }
+
         // additional data merge
-        updateValues = Object.assign(updateValues, addObjectg)
+        modifiedValues = Object.assign(modifiedValues, addObjectg)
 
         // request to server
-        this.fetchServer(requestUrl, updateValues)
+        this.fetchServer(requestUrl, modifiedValues)
             .then(result => {
 
                 // get code
@@ -375,8 +380,12 @@ export class Base {
 
                 // then there is redirect url
                 if (code === 'success' && redirectUrl) {
+
+                    const uid = values.uid != null ? values.uid : false 
+
+                    
                     // redirect to
-                    window.location.assign(`${redirectUrl}?uid=${values.uid}`)
+                    window.location.assign(`${redirectUrl}?uid=${uid}`)
                     return
                 }
 

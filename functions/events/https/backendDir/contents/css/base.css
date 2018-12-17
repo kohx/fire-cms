@@ -1,6 +1,8 @@
 :root {
     font-size: 62.5%;
 
+    --default-radius: 0.4rem;
+
     --info-color: rgb(100, 150, 240);
     --info-bg-color: rgb(200, 200, 240);
     --success-color: rgb(100, 140, 40);
@@ -13,6 +15,9 @@
     --default-active-color: rgb(50, 50, 50);
     --default-negative-color: rgb(120, 120, 120);
     --default-bg-color: rgb(255, 255, 255);
+
+    --button-color: rgb(50, 50, 50);
+    --button-bg-color: rgb(220, 220, 220);
 }
 
 body {
@@ -40,13 +45,13 @@ body {
 button,
 a.button {
     border: none;
-    padding: 1rem;
+    padding: 1.4rem;
     position: relative;
     overflow: hidden;
     transition: all .1s linear;
-    color: var(--default-active-color);
-    background-color: var(--default-bg-color);
-    border: thin solid var(--default-negative-color)
+    color: var(--button-color);
+    background-color: var(--button-bg-color);
+    border-radius: var(--default-radius)
 }
 
 a.button:hover {
@@ -123,15 +128,15 @@ input[type="checkbox"] {
 input,
 select,
 textarea {
-    border: medium solid var(--default-negative-color);
-    border-radius: .4rem .4rem 0 0;
+    border: thin solid var(--default-negative-color);
+    border-radius: var(--default-radius) var(--default-radius) 0 0;
 }
 
 input[type="radio"]+label,
 input[type="checkbox"]+label {
     padding: 0.4rem 0.6rem;
-    border: medium solid var(--default-negative-color);
-    border-radius: .4rem;
+    border: thin solid var(--default-negative-color);
+    border-radius: var(--default-radius);
     background-color: var(--default-bg-color);
     cursor: pointer;
 }
@@ -274,6 +279,7 @@ input.__warning {
     border-top: 1px solid var(--default-active-color);
     border-right: 1px solid var(--default-active-color);
     background-color: white;
+    border-radius: var(--default-radius) var(--default-radius) 0 0;
 }
 
 /* クリック可能な範囲を広げる */
