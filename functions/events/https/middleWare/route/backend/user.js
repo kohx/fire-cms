@@ -130,6 +130,9 @@ const setUser = (uid, body) => {
         }
     })
 
+    // add uid
+    params.uid = uid
+
     return admin.firestore().collection('users')
         .doc(uid)
         .set(params)
@@ -209,9 +212,11 @@ module.exports.create = (req, res, next) => {
     const email = body.email
     const password = body.password
 
+    let user = {}
+
     // promise all function 
     let funs = [checkUnique('name', body.name), checkUnique('email', body.email)]
-
+    
     Promise.all(funs)
         .then(results => {
 
@@ -250,18 +255,18 @@ module.exports.create = (req, res, next) => {
         .then(_ => {
             return createAuth(name, email, password)
         })
-        .then(user => {
-            debug(user.uid, __filename, __line)
+        .then(userRecord => {
+            user = userRecord
             return setUser(user.uid, body)
         })
-        .then(result => {
+        .then(_ => {
             res.json({
                 code: 'success',
                 messages: [{
                     key: null,
                     content: req.__(`Successfully created new user.`),
                 }],
-                user
+                values: {unique: user.uid},
             })
         })
         .catch(err => {
@@ -397,15 +402,15 @@ module.exports.update = (req, res, next) => {
 
 module.exports.delete = (req, res, next) => {
 
-    debug('update', __filename, __line)
+    debug(req.body, __filename, __line)
 
-    admin.auth().deleteUser(uid)
-        .then(function () {
-            console.log("Successfully deleted user");
-        })
-        .catch(function (error) {
-            console.log("Error deleting user:", error);
-        });
+    // admin.auth().deleteUser(uid)
+    //     .then(function () {
+    //         console.log("Successfully deleted user");
+    //     })
+    //     .catch(function (error) {
+    //         console.log("Error deleting user:", error);
+    //     });
 
     next()
 }

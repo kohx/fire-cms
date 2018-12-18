@@ -289,13 +289,13 @@ export class Base {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                    method: 'post',
-                    mode: 'cors',
-                    credentials: 'include',
-                    cache: 'no-cache',
-                    headers: headers,
-                    body: JSON.stringify(body)
-                })
+                method: 'post',
+                mode: 'cors',
+                credentials: 'include',
+                cache: 'no-cache',
+                headers: headers,
+                body: JSON.stringify(body)
+            })
                 .then(data => {
                     return data.json()
                 })
@@ -328,7 +328,7 @@ export class Base {
         // get button data
         const data = buttonElement.dataset
         const requestUrl = data.request_url != null ? `${window.location.origin}/${data.request_url}` : null
-        const redirectUrl = data.redirect_url != null ? `${window.location.origin}/${data.redirect_url}` : null
+        let redirectUrl = data.redirect_url != null ? `${window.location.origin}/${data.redirect_url}` : null
 
         // prosess start
         this.processing = true
@@ -336,33 +336,34 @@ export class Base {
         // disable button element
         buttonElement.disabled = true
 
-        // get modified form data
+        // get present value form data
         const presents = this.getFormObject()
 
-        // check modified value and get it
-        // TODO:: クリエートのときは全部送る！！
+        // modified value
         let modifiedValues = {}
-        Object.keys(this.defaults).forEach(key => {
-            const defaultValue = this.defaults[key]
-            const modifiedValue = presents[key]
-
-            // if value modified set to result
-            if (!this.equalValue(defaultValue, modifiedValue)) {
-                modifiedValues[key] = modifiedValue
-            }
-        })
-
-        // if all value not modify then show notice and reset button 
-        if (Object.keys(modifiedValues).length === 0) {
-            this.setNotice('warning', ['Nothing has changed.'])
-            this.processing = false
-            buttonElement.disabled = false
-            return
-        }
 
         // if sendAll is true then send all value
-        if(sendAll){
+        if (sendAll) {
             modifiedValues = presents
+        } else {
+            // check modified value and get it
+            Object.keys(this.defaults).forEach(key => {
+                const defaultValue = this.defaults[key]
+                const modifiedValue = presents[key]
+
+                // if value modified set to result
+                if (!this.equalValue(defaultValue, modifiedValue)) {
+                    modifiedValues[key] = modifiedValue
+                }
+            })
+
+            // if all value not modify then show notice and reset button 
+            if (Object.keys(modifiedValues).length === 0) {
+                this.setNotice('warning', ['Nothing has changed.'])
+                this.processing = false
+                buttonElement.disabled = false
+                return
+            }
         }
 
         // additional data merge
@@ -381,11 +382,13 @@ export class Base {
                 // then there is redirect url
                 if (code === 'success' && redirectUrl) {
 
-                    const uid = values.uid != null ? values.uid : false 
+                    // get path
+                    if (values.unique != null) {
+                        redirectUrl = `${redirectUrl}/${values.unique}`
+                    }
 
-                    
                     // redirect to
-                    window.location.assign(`${redirectUrl}?uid=${uid}`)
+                    window.location.assign(redirectUrl)
                     return
                 }
 

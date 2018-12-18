@@ -9,11 +9,14 @@
 
     <ul class="user-list col0 grid1">
         {|* targets: target |}
-        <li class="user-item col0 grid1 gap1 pad1">
-            <h2>{| target.name |}</h2>
-            <div>{| key |}: {| target.name |}</div>
-            <div>role: {| target.role |}</div>
-            <div><a class="stretched_link" href="/{| backendFirstPath |}/user/{| key |}">edit</a></div>
+        <li class="user-item col0">
+            <div class="stretched_parent">
+                <h2>{| target.name |}</h2>
+                <div>{| key |}: {| target.name |}</div>
+                <div>role: {| target.role |}</div>
+                <div><a class="stretched_link" href="/{| backendFirstPath |}/user/{| key |}">edit</a></div>
+            </div>
+            <button type="button" class="delete_button" data-request_url="{| backendFirstPath |}/user-delete" data-uid="{| key |}">update</button>
         </li>
         {|/*|}
     </ul>
@@ -21,3 +24,32 @@
 </div>
 
 {|> footer |}
+
+<script type="module">
+
+    import { Base } from '/{| backendFirstPath |}/base.js';
+    var base = Base.init()
+
+    // settingsも合わせる
+    // TODO:: validation statusもストリングに変更する？
+
+    // get element
+    const updateBtnElements = document.querySelectorAll('.delete_button')
+
+    updateBtnElements.forEach(updateBtnElement => {
+
+        // click event
+        updateBtnElement.addEventListener('click', event => {
+
+            // get button
+            const button = event.currentTarget
+
+            // add uid fore delete
+            const uid = button.dataset.uid != null ? button.dataset.uid : null
+
+            // not change then show warnning
+            base.requestServer(button, true, { uid })
+        })
+    });
+
+</script>

@@ -143,7 +143,7 @@ module.exports.get = (unique) => {
             contentType: 'json',
         },
         'user-delete': {
-            unique: 'thing-delete',
+            unique: 'user-delete',
             roles: {
                 owner: true,
                 direct: true,
