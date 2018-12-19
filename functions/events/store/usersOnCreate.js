@@ -11,15 +11,15 @@ exports.usersOnCreate = functions.firestore
     .onCreate((doc, context) => {
 
         debug(doc, __filename, __line)
-        // const id = doc.id
-        // const data = doc.data()
+        const id = doc.id
+        const data = doc.data()
 
-        // return admin.auth().createUser({
-        //     uid: id, // set store user id to auth uid
-        //     displayName: data.name,
-        //     email: data.email,
-        //     password: data.password,
-        //     emailVerified: false,
-        //     disabled: false
-        // })
+        return admin.auth().createUser({
+            uid: id, // set store user id to auth uid
+            displayName: data.name,
+            email: data.email,
+            password: data.password,
+            emailVerified: false,
+            disabled: false
+        })
     })

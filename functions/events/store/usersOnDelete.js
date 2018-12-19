@@ -12,6 +12,4 @@ exports.usersOnDelete = functions.firestore
 
         const data = doc.data()
         return admin.auth().deleteUser(data.uid)
-
-        // perform desired operations ...
     })

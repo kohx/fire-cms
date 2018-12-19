@@ -10,19 +10,20 @@ exports.usersOnUpdate = functions.firestore
     .document('users/{uid}')
     .onUpdate((change, context) => {
 
-        const afterID = change.after.id
+        const uid = change.after.id
+        const beforeData = change.before.data()
         const afterData = change.after.data()
-        debug(afterID, __filename, __line)
-        debug(afterData, __filename, __line)
 
-        // // ...or the previous value before this update
-        // const previousValue = change.before.data()
-        // debug(previousValue, __filename, __line)
+        const params = {}
+        if (beforeData.name !== afterData.name) {
+            params.name = afterData.name
+        }
+        if (beforeData.email !== afterData.email) {
+            params.email = afterData.email
+        }
+        if (beforeData.password !== afterData.password) {
+            params.password = afterData.password
+        }
 
-
-        // const name = body.name != null ? body.name : null
-        // const email = body.email != null ? body.email : null
-        // const password = body.password != null ? body.password : null
-
-        // return admin.auth().updateUser(data.uid, params)
+        return admin.auth().updateUser(uid, params)
     })
