@@ -216,7 +216,7 @@ module.exports.create = (req, res, next) => {
 
     // promise all function 
     let funs = [checkUnique('name', body.name), checkUnique('email', body.email)]
-    
+
     Promise.all(funs)
         .then(results => {
 
@@ -266,7 +266,7 @@ module.exports.create = (req, res, next) => {
                     key: null,
                     content: req.__(`Successfully created new user.`),
                 }],
-                values: {unique: user.uid},
+                values: { unique: user.uid },
             })
         })
         .catch(err => {
@@ -400,17 +400,61 @@ module.exports.update = (req, res, next) => {
         })
 }
 
+/**
+ * user delete (post)
+ */
 module.exports.delete = (req, res, next) => {
 
-    debug(req.body, __filename, __line)
+    const uid = req.body.uid != null ? req.body.uid : null
 
-    // admin.auth().deleteUser(uid)
-    //     .then(function () {
-    //         console.log("Successfully deleted user");
-    //     })
-    //     .catch(function (error) {
-    //         console.log("Error deleting user:", error);
-    //     });
+    // if uid undefined return err
+    if (!uid) {
+        res.json({
+            code: 'error',
+            messages: [{
+                key: null,
+                content: req.__('uid is undefined!'),
+            }],
+        })
+    }
 
-    next()
+    admin.firestore().collection('users').doc(uid).get()
+        .then(doc => {
+            debug(doc, __filename, __line)
+            if (doc.exists) {
+                return doc.ref.delete()
+            } else {
+                res.json({
+                    code: 'error',
+                    messages: [{
+                        key: null,
+                        content: req.__('uid is undefined!'),
+                    }],
+                })
+            }
+        })
+        .then(result => {
+            debug(result, __filename, __line)
+            return admin.auth().deleteUser(uid)
+        })
+        .then(user => {
+            debug(user, __filename, __line)
+            res.json({
+                code: 'success',
+                messages: [{
+                    key: null,
+                    content: req.__(`Successfully deleted user.`),
+                }]
+            })
+        })
+        .catch(err => {
+            console.log("Error deleting user:", err);
+            res.json({
+                code: 'error',
+                messages: [{
+                    key: null,
+                    content: err.message,
+                }]
+            })
+        });
 }

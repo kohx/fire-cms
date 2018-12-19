@@ -1,7 +1,8 @@
 // registor modules
 const modules = {
-    userOnCreate: require('./events/auth/userOnCreate'),
-    userOnDelete: require('./events/auth/userOnDelete'),
+    storeUsersOnCreate: require('./events/store/usersOnCreate'),
+    storeUsersOnUpdate: require('./events/store/usersOnUpdate'),
+    storeUsersOnDelete: require('./events/store/usersOnDelete'),
     assetOnFinalize: require('./events/storage/assetOnFinalize'),
     assetOnDelete: require('./events/storage/assetOnDelete'),
     app: require('./events/https/app'),

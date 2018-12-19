@@ -35,5 +35,6 @@
 	"{{param1}} is already used.": "{{param1}} is already used.",
 	"check {{thing}}.": "check {{thing}}.",
 	"{{key}} is updated.": "{{key}} is updated.",
-	"Successfully created new user.": "Successfully created new user."
+	"Successfully created new user.": "Successfully created new user.",
+	"user is undefined!": "user is undefined!"
 }
