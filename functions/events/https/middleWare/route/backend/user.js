@@ -80,27 +80,6 @@ const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
     return validate.get()
 }
 
-/* update user */
-const updateUser = (uid, body) => {
-    const params = {}
-    const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
-
-    Object.keys(body).forEach(key => {
-
-        if (allowaKeys.includes(key)) {
-            params[key] = body[key]
-        }
-    })
-
-    if (Object.keys(params).length === 0) {
-        return
-    }
-
-    return admin.firestore().collection('users')
-        .doc(uid)
-        .update(params)
-}
-
 /**
  * user index (users)
  */
@@ -245,7 +224,6 @@ module.exports.update = (req, res, next) => {
     // args
     const name = body.name != null ? body.name : null
     const email = body.email != null ? body.email : null
-    const password = body.password != null ? body.password : null
 
     // if uid undefined return err
     if (!uid) {
@@ -306,8 +284,30 @@ module.exports.update = (req, res, next) => {
             }
         })
         .then(_ => {
-            // update store users
-            return updateUser(uid, body)
+            const params = {}
+            const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
+
+            Object.keys(body).forEach(key => {
+
+                if (allowaKeys.includes(key)) {
+                    params[key] = body[key]
+                }
+            })
+
+            // if (Object.keys(params).length === 0) {
+            if (true) {
+                res.json({
+                    code: 'warning',
+                    messages: [{
+                        key: null,
+                        content: 'no change!',
+                    }]
+                })
+            }
+
+            return admin.firestore().collection('users')
+                .doc(uid)
+                .update(params)
         })
         .then(result => {
             debug(result, __filename, __line)
