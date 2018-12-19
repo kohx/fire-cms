@@ -7,16 +7,14 @@
         <a class="col3 pad1 cen mid button" href="/{| backendFirstPath |}/user-add">add user</a>
     </div>
 
-    <ul class="user-list col0 grid1">
+    <ul class="user-list col0 grid3">
         {|* targets: target |}
-        <li class="user-item col0">
-            <div class="stretched_parent">
-                <h2>{| target.name |}</h2>
-                <div>{| key |}: {| target.name |}</div>
-                <div>role: {| target.role |}</div>
-                <div><a class="stretched_link" href="/{| backendFirstPath |}/user/{| key |}">edit</a></div>
-            </div>
-            <button type="button" class="delete_button" data-request_url="{| backendFirstPath |}/user-delete" data-uid="{| key |}">update</button>
+        <li class="user-item col0 grid2 gap1">
+            <h2>{| target.name |}</h2>
+            <div>{| key |}: {| target.name |}</div>
+            <div>role: {| target.role |}</div>
+            <a class="" href="/{| backendFirstPath |}/user/{| key |}">edit</a>
+            <button type="button" class="delete_button" data-request_url="{| backendFirstPath |}/user-delete" data-uid="{| key |}">delete</button>
         </li>
         {|/*|}
     </ul>

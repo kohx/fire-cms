@@ -45,7 +45,7 @@ const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
         // ユーザー名には、&、=、<、>、+、,を使用できません。
         // また、連続した複数のピリオド（.）を含めることはできません。
         validate.valid('name', 'isRequired')
-        validate.valid('name', 'isAlnumunder')
+        validate.valid('name', 'isAlnumunspace')
         validate.valid('name', 'isUnique', nameUniqueFlag)
     }
 
@@ -78,64 +78,6 @@ const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
     }
 
     return validate.get()
-}
-
-/* create user Auth */
-const createAuth = (name, email, password) => {
-
-    return admin.auth().createUser({
-        displayName: name,
-        email: email,
-        password: password,
-        emailVerified: false,
-        disabled: false
-    })
-}
-
-/* update user Auth */
-const updateAuth = (uid, name, email, password) => {
-
-    const params = {}
-
-    if (name != null) {
-        params.displayName = name
-    }
-    if (email != null) {
-        params.email = email
-    }
-    if (password != null) {
-        params.password = password
-    }
-
-    if (Object.keys(params).length === 0) {
-        return
-    }
-
-    params.emailVerified = false
-    params.disabled = false
-
-    return admin.auth().updateUser(uid, params)
-}
-
-/* set user */
-const setUser = (uid, body) => {
-
-    const params = {}
-    const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
-
-    Object.keys(body).forEach(key => {
-
-        if (allowaKeys.includes(key)) {
-            params[key] = body[key]
-        }
-    })
-
-    // add uid
-    params.uid = uid
-
-    return admin.firestore().collection('users')
-        .doc(uid)
-        .set(params)
 }
 
 /* update user */
@@ -208,11 +150,7 @@ module.exports.create = (req, res, next) => {
 
     // body
     const body = req.body
-    const name = body.name
-    const email = body.email
-    const password = body.password
-
-    let user = {}
+    let uid = null
 
     // promise all function 
     let funs = [checkUnique('name', body.name), checkUnique('email', body.email)]
@@ -253,11 +191,21 @@ module.exports.create = (req, res, next) => {
             }
         })
         .then(_ => {
-            return createAuth(name, email, password)
-        })
-        .then(userRecord => {
-            user = userRecord
-            return setUser(user.uid, body)
+            const params = {}
+            const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
+
+            Object.keys(body).forEach(key => {
+
+                if (allowaKeys.includes(key)) {
+                    params[key] = body[key]
+                }
+            })
+
+            // add uid
+            const userDoc = admin.firestore().collection('users').doc()
+            uid = userDoc.id
+            params.uid = uid
+            return userDoc.set(params)
         })
         .then(_ => {
             res.json({
@@ -266,7 +214,9 @@ module.exports.create = (req, res, next) => {
                     key: null,
                     content: req.__(`Successfully created new user.`),
                 }],
-                values: { unique: user.uid },
+                values: {
+                    unique: uid
+                },
             })
         })
         .catch(err => {
@@ -356,10 +306,6 @@ module.exports.update = (req, res, next) => {
             }
         })
         .then(_ => {
-            // update auth
-            return updateAuth(uid, name, email, password)
-        })
-        .then(_ => {
             // update store users
             return updateUser(uid, body)
         })
@@ -433,10 +379,6 @@ module.exports.delete = (req, res, next) => {
                 })
             }
         })
-        .then(result => {
-            debug(result, __filename, __line)
-            return admin.auth().deleteUser(uid)
-        })
         .then(user => {
             debug(user, __filename, __line)
             res.json({
@@ -444,11 +386,14 @@ module.exports.delete = (req, res, next) => {
                 messages: [{
                     key: null,
                     content: req.__(`Successfully deleted user.`),
+                    values: {
+                        uid
+                    }
                 }]
             })
         })
         .catch(err => {
-            console.log("Error deleting user:", err);
+            debug(err, __filename, __line)
             res.json({
                 code: 'error',
                 messages: [{

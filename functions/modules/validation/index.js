@@ -46,6 +46,7 @@ module.exports = class validation {
             isLength: `{{param1}} length is min {{param2}}, max {{param3}}.`,
             isByteLength: `{{param1}} byte is min {{param2}}, max {{param3}}.`,
             isAlnumunder: `{{param1}} is not alphanumeric and underscore.`,
+            isAlnumunspace: `{{param1}} is not alphanumeric and space.`,
             isNumunder: `{{param1}} is not numeric and underscore.`,
             isBase64: `{{param1}} is not base64 encoded.`,
             isArray: `{{param1}} is not array.`,
@@ -95,6 +96,11 @@ module.exports = class validation {
                 case 'isAlnumunder':
                     // \w
                     flag = validator.matches(value, /^[a-zA-Z0-9_]+$/)
+                    break
+
+                case 'isAlnumunspace':
+                    // \w
+                    flag = validator.matches(value, /^[a-zA-Z0-9 ]+$/)
                     break
 
                 case 'isNumunder':
