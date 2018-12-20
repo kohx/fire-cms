@@ -37,5 +37,6 @@
 	"{{key}} is updated.": "{{key}} is updated.",
 	"Successfully created new user.": "Successfully created new user.",
 	"user is undefined!": "user is undefined!",
-	"Successfully deleted user.": "Successfully deleted user."
+	"Successfully deleted user.": "Successfully deleted user.",
+	"uid is undefined!": "uid is undefined!"
 }

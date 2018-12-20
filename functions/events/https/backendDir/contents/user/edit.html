@@ -2,23 +2,35 @@
 {|> header |}
 
 <div class="col12 grid1 gap1">
-    <form class="col1 gap3">
-        <div class="col1"><input id="uid" name="uid" type="text" readonly value="{| target.uid |}"></div>
-        <div class="col1"><label for="name">name</label><input id="name" class="target_item" type="text" name="name" value="{| target.name |}"></div>
-        <div class="col1"><label for="email">email</label><input id="email" class="target_item" type="text" name="email" value="{| target.email |}"></div>
-        <div class="col1"><label for="password">password</label><input id="password" class="target_item" type="password" name="password" value=""></div>
-        <div class="col1"><label for="confirm">confirm</label><input id="confirm" class="target_item" type="password" name="confirm" value=""></div>
-        <div class="col1"><label for="description">description</label><input id="description" class="target_item" type="text" name="description" value="asdf1"></div>
+    <form class="col0 grid1 gap2">
+        <div class="col1"><label>uid</label><input id="uid" name="uid" type="text" readonly value="{| target.uid |}"></div>
+        <div class="col1"><label for="name">name</label><input id="name" class="target_item" type="text" name="name"
+                value="{| target.name |}"></div>
+        <div class="col1"><label for="email">email</label><input id="email" class="target_item" type="text" name="email"
+                value="{| target.email |}"></div>
+        <div class="col1"><label for="password">password</label><input id="password" class="target_item" type="password"
+                name="password" value=""></div>
+        <div class="col1"><label for="confirm">confirm</label><input id="confirm" class="target_item" type="password"
+                name="confirm" value=""></div>
+        <div class="col1">
+            <div>description</div>
+            <textarea rows="5" name="textarea" id="description">{| target.description |}</textarea>
+        </div>
         <div class="col1">
             <div>role</div>
-            <div>
+            <div class="grid6 gap1">
                 {|* roles : key : role |}
-                <input {|# equal(role, target.role)|} checked{|/#|} class="target_item role_item" id="{|role|}" name='role' type="radio" value="{|role|}"><label for="{|role|}">{|role|}</label>
+                <div class="col1">
+                    <input {|# equal(role, target.role)|} checked{|/#|} class="target_item role_item" id="{|role|}"
+                        name='role' type="radio" value="{|role|}"><label for="{|role|}">{|role|}</label>
+                </div>
                 {|/*|}
             </div>
         </div>
-        <div class="col1"><label for="order">order</label><input id="order" class="target_item" type="text" name="order" value="{| target.order |}">
+        <div class="col1">
+            <label for="order">order</label><input id="order" class="target_item" type="text" name="order" value="{| target.order |}">
         </div>
+
         <div class="col1">
             <div>radio</div>
             <div>
@@ -83,7 +95,7 @@
         const uid = base.defaults.uid
 
         // not change then show warnning
-        base.requestServer(button, false, {uid})
+        base.requestServer(button, false, { uid })
     })
 
 </script>

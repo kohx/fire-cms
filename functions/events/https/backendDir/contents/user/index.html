@@ -10,11 +10,14 @@
     <ul class="user-list col0 grid3">
         {|* targets: target |}
         <li class="user-item col0 grid2 gap1">
-            <h2>{| target.name |}</h2>
-            <div>{| key |}: {| target.name |}</div>
-            <div>role: {| target.role |}</div>
-            <a class="" href="/{| backendFirstPath |}/user/{| key |}">edit</a>
-            <button type="button" class="delete_button" data-request_url="{| backendFirstPath |}/user-delete" data-uid="{| key |}">delete</button>
+            <h2 class="col2">{| target.name |}</h2>
+            <div class="col2 grid3 gap1"><span class="col1">order <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.order |}</span></div>
+            <div class="col2 grid3 gap1"><span class="col1">uid <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.uid |}</span></div>
+            <div class="col2 grid3 gap1"><span class="col1">email <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.email |}</span></div>
+            <div class="col2 grid3 gap1"><span class="col1">role <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.role |}</span></div>
+            <div class="col2 grid3 gap1"><span class="col1">description <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.description |}</span></div>
+            <a class="col1 button" href="/{| backendFirstPath |}/user/{| key |}">edit</a>
+            <button class="col1 delete_button" type="button" class="delete_button" data-request_url="{| backendFirstPath |}/user-delete" data-uid="{| key |}">delete</button>
         </li>
         {|/*|}
     </ul>
@@ -29,7 +32,6 @@
     var base = Base.init()
 
     // settingsも合わせる
-    // TODO:: validation statusもストリングに変更する？
 
     // get element
     const updateBtnElements = document.querySelectorAll('.delete_button')

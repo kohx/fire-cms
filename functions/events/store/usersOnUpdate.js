@@ -25,5 +25,9 @@ exports.usersOnUpdate = functions.firestore
             params.password = afterData.password
         }
 
-        return admin.auth().updateUser(uid, params)
+        if(Object.keys(params) !== 0) {
+            return admin.auth().updateUser(uid, params)
+        }
+
+        return true
     })

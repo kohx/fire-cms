@@ -85,7 +85,7 @@ const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
  */
 module.exports.index = (req, res, next) => {
 
-    admin.firestore().collection('users').get()
+    admin.firestore().collection('users').orderBy('order', "asc").get()
         .then(docs => {
             const targets = {}
             docs.forEach(doc => {
@@ -166,37 +166,44 @@ module.exports.create = (req, res, next) => {
                     messages,
                 })
             } else {
-                return
+                const params = {}
+                const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
+
+                Object.keys(body).forEach(key => {
+
+                    if (allowaKeys.includes(key)) {
+                        params[key] = body[key]
+                    }
+                })
+
+                // add uid
+                const userDoc = admin.firestore().collection('users').doc()
+                uid = userDoc.id
+                params.uid = uid
+                return userDoc.set(params)
+                    .then(_ => {
+                        res.json({
+                            code: 'success',
+                            messages: [{
+                                key: null,
+                                content: req.__(`Successfully created new user.`),
+                            }],
+                            values: {
+                                unique: uid
+                            },
+                        })
+                    })
+                    .catch(err => {
+                        debug(err, __filename, __line)
+                        res.json({
+                            code: 'error',
+                            messages: [{
+                                key: null,
+                                content: err.message,
+                            }]
+                        })
+                    })
             }
-        })
-        .then(_ => {
-            const params = {}
-            const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
-
-            Object.keys(body).forEach(key => {
-
-                if (allowaKeys.includes(key)) {
-                    params[key] = body[key]
-                }
-            })
-
-            // add uid
-            const userDoc = admin.firestore().collection('users').doc()
-            uid = userDoc.id
-            params.uid = uid
-            return userDoc.set(params)
-        })
-        .then(_ => {
-            res.json({
-                code: 'success',
-                messages: [{
-                    key: null,
-                    content: req.__(`Successfully created new user.`),
-                }],
-                values: {
-                    unique: uid
-                },
-            })
         })
         .catch(err => {
             debug(err, __filename, __line)
@@ -280,59 +287,49 @@ module.exports.update = (req, res, next) => {
                     messages,
                 })
             } else {
-                return
-            }
-        })
-        .then(_ => {
-            const params = {}
-            const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
 
-            Object.keys(body).forEach(key => {
-
-                if (allowaKeys.includes(key)) {
-                    params[key] = body[key]
-                }
-            })
-
-            // if (Object.keys(params).length === 0) {
-            if (true) {
-                res.json({
-                    code: 'warning',
-                    messages: [{
-                        key: null,
-                        content: 'no change!',
-                    }]
+                const params = {}
+                const allowaKeys = ['name', 'email', 'password', 'role', 'order', 'description']
+                Object.keys(body).forEach(key => {
+                    if (allowaKeys.includes(key)) {
+                        params[key] = body[key]
+                    }
                 })
-            }
 
-            return admin.firestore().collection('users')
-                .doc(uid)
-                .update(params)
-        })
-        .then(result => {
-            debug(result, __filename, __line)
-
-            let messages = []
-            let values = {}
-            Object.keys(body).forEach(key => {
-                // {path: xxx.xxx, message: 'asdf asdf asdf.'}
-                // change to 
-                // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-                if (key !== 'uid') {
-                    messages.push({
-                        key,
-                        content: req.__(`{{key}} is updated.`, {
-                            key
+                return admin.firestore().collection('users').doc(uid)
+                    .update(params)
+                    .then(_ => {
+                        let messages = []
+                        let values = {}
+                        Object.keys(body).forEach(key => {
+                            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
+                            // change to 
+                            // {key: xxx.xxx, content: 'asdf asdf asdf.'}
+                            if (key !== 'uid') {
+                                messages.push({
+                                    key,
+                                    content: req.__(`{{key}} is updated.`, {key})
+                                })
+                                values[key] = body[key]
+                            }
+                        })
+                        res.json({
+                            code: 'success',
+                            messages,
+                            values,
                         })
                     })
-                    values[key] = body[key]
-                }
-            })
-            res.json({
-                code: 'success',
-                messages,
-                values,
-            })
+                    .catch(err => {
+                        debug(err, __filename, __line);
+                        res.json({
+                            code: 'error',
+                            messages: [{
+                                key: null,
+                                content: err.message,
+                            }]
+                        })
+                    })
+            }
         })
         .catch(err => {
             debug(err, __filename, __line);

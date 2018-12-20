@@ -77,7 +77,7 @@ module.exports.update = (req, res, next) => {
         settings.general.roles = newRoles
     }
 
-    /* set balidation */
+    /* set validation */
     const validate = validation.list(req.body)
 
     /* assets */
