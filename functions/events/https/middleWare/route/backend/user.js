@@ -13,6 +13,9 @@ const debug = require('../../../../../modules/debug').debug
 
 /* check unique at user */
 const checkUnique = (key, value, uid = null) => {
+    if (value === null) {
+        Promise.resolve(true)
+    }
     return new Promise((resolve, reject) => {
         admin.firestore().collection('users')
             .where(key, '==', value).get()
@@ -31,6 +34,24 @@ const checkUnique = (key, value, uid = null) => {
                 resolve(flag)
             })
             .catch(err => reject(err))
+    })
+}
+
+/* promise catch error message json */
+const errorMessageJson = (res, err = null, content = null, filename = null, line = null) => {
+    if (err) {
+        content = err.message
+        debug(err.message, filename, line)
+    }
+
+    content = content != null ? content : 'error !'
+
+    res.json({
+        code: 'error',
+        messages: [{
+            key: null,
+            content,
+        }]
     })
 }
 
@@ -78,6 +99,29 @@ const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
     }
 
     return validate.get()
+}
+
+/* build json messages from validation invalid messages */
+const invalidMessageJson = (res, req, validationResult) => {
+    // translate validation message and rebuild messages
+    let messages = []
+    Object.keys(validationResult.errors).forEach(key => {
+        validationResult.errors[key].forEach(error => {
+            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
+            // change to 
+            // {key: xxx.xxx, content: 'asdf asdf asdf.'}
+            messages.push({
+                key: error.path,
+                content: req.__(error.message, error.params)
+            })
+        })
+    })
+
+    // send json
+    res.json({
+        code: validationResult.status,
+        messages,
+    })
 }
 
 /**
@@ -145,26 +189,8 @@ module.exports.create = (req, res, next) => {
 
             // validation invalid
             if (!validationResult.check) {
-
-                // translate validation message and rebuild messages
-                let messages = []
-                Object.keys(validationResult.errors).forEach(key => {
-                    validationResult.errors[key].forEach(error => {
-                        // {path: xxx.xxx, message: 'asdf asdf asdf.'}
-                        // change to 
-                        // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-                        messages.push({
-                            key: error.path,
-                            content: req.__(error.message, error.params)
-                        })
-                    })
-                })
-
-                // return invalid
-                res.json({
-                    code: validationResult.status,
-                    messages,
-                })
+                // send invalid messages json
+                invalidMessageJson(res, req, validationResult)
             } else {
                 const params = {}
                 const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
@@ -180,10 +206,12 @@ module.exports.create = (req, res, next) => {
                 const userDoc = admin.firestore().collection('users').doc()
                 uid = userDoc.id
                 params.uid = uid
-                return userDoc.set(params)
+
+                userDoc.set(params)
                     .then(_ => {
                         res.json({
                             code: 'success',
+                            mode: 'create',
                             messages: [{
                                 key: null,
                                 content: req.__(`Successfully created new user.`),
@@ -193,28 +221,10 @@ module.exports.create = (req, res, next) => {
                             },
                         })
                     })
-                    .catch(err => {
-                        debug(err, __filename, __line)
-                        res.json({
-                            code: 'error',
-                            messages: [{
-                                key: null,
-                                content: err.message,
-                            }]
-                        })
-                    })
+                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
         })
-        .catch(err => {
-            debug(err, __filename, __line)
-            res.json({
-                code: 'error',
-                messages: [{
-                    key: null,
-                    content: err.message,
-                }]
-            })
-        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
 /**
@@ -228,33 +238,15 @@ module.exports.update = (req, res, next) => {
     // then update uid is requred
     const uid = body.uid != null ? body.uid : null
 
-    // args
-    const name = body.name != null ? body.name : null
-    const email = body.email != null ? body.email : null
-
     // if uid undefined return err
     if (!uid) {
-        res.json({
-            code: 'error',
-            messages: [{
-                key: null,
-                content: req.__('uid is undefined!'),
-            }],
-        })
+        errorMessageJson(res, null, req.__('uid is undefined!'))
     }
 
     // promise all function 
-    let funs = []
-
-    // get name for unique check
-    if (name != null) {
-        funs.push(checkUnique('name', name, uid))
-    }
-
-    // get emai for unique check
-    if (email != null) {
-        funs.push(checkUnique('email', email, uid))
-    }
+    const name = body.name != null ? body.name : null
+    const email = body.email != null ? body.email : null
+    let funs = [checkUnique('name', name, uid), checkUnique('email', email, uid)]
 
     Promise.all(funs)
         .then(results => {
@@ -266,26 +258,8 @@ module.exports.update = (req, res, next) => {
 
             // validation invalid
             if (!validationResult.check) {
-
-                // translate validation message and rebuild messages
-                let messages = []
-                Object.keys(validationResult.errors).forEach(key => {
-                    validationResult.errors[key].forEach(error => {
-                        // {path: xxx.xxx, message: 'asdf asdf asdf.'}
-                        // change to 
-                        // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-                        messages.push({
-                            key: error.path,
-                            content: req.__(error.message, error.params)
-                        })
-                    })
-                })
-
-                // return invalid
-                res.json({
-                    code: validationResult.status,
-                    messages,
-                })
+                // send invalid messages json
+                invalidMessageJson(res, req, validationResult)
             } else {
 
                 const params = {}
@@ -308,39 +282,22 @@ module.exports.update = (req, res, next) => {
                             if (key !== 'uid') {
                                 messages.push({
                                     key,
-                                    content: req.__(`{{key}} is updated.`, {key})
+                                    content: req.__(`{{key}} is updated.`, { key })
                                 })
                                 values[key] = body[key]
                             }
                         })
                         res.json({
                             code: 'success',
+                            mode: 'update',
                             messages,
                             values,
                         })
                     })
-                    .catch(err => {
-                        debug(err, __filename, __line);
-                        res.json({
-                            code: 'error',
-                            messages: [{
-                                key: null,
-                                content: err.message,
-                            }]
-                        })
-                    })
+                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
         })
-        .catch(err => {
-            debug(err, __filename, __line);
-            res.json({
-                code: 'error',
-                messages: [{
-                    key: null,
-                    content: err.message,
-                }]
-            })
-        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
 /**
@@ -350,8 +307,8 @@ module.exports.delete = (req, res, next) => {
 
     const uid = req.body.uid != null ? req.body.uid : null
 
-    // if uid undefined return err
     if (!uid) {
+        // if uid undefined return err
         res.json({
             code: 'error',
             messages: [{
@@ -359,44 +316,34 @@ module.exports.delete = (req, res, next) => {
                 content: req.__('uid is undefined!'),
             }],
         })
+    } else {
+        // get user by uid
+        admin.firestore().collection('users').doc(uid).get()
+            .then(doc => {
+                // check user exist
+                if (doc.exists) {
+                    // delete user
+                    doc.ref.delete()
+                        .then(user => {
+                            console.log(user)
+                            res.json({
+                                code: 'success',
+                                mode: 'delete',
+                                messages: [{
+                                    key: null,
+                                    content: req.__(`Successfully deleted user.`),
+                                }],
+                                values: {
+                                    unique: uid
+                                }
+                            })
+                        })
+                        .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                } else {
+                    // not exist user
+                    errorMessageJson(res, null, req.__('uid is undefined!'))
+                }
+            })
+            .catch(err => errorMessageJson(res, err, null, __filename, __line))
     }
-
-    admin.firestore().collection('users').doc(uid).get()
-        .then(doc => {
-            debug(doc, __filename, __line)
-            if (doc.exists) {
-                return doc.ref.delete()
-            } else {
-                res.json({
-                    code: 'error',
-                    messages: [{
-                        key: null,
-                        content: req.__('uid is undefined!'),
-                    }],
-                })
-            }
-        })
-        .then(user => {
-            debug(user, __filename, __line)
-            res.json({
-                code: 'success',
-                messages: [{
-                    key: null,
-                    content: req.__(`Successfully deleted user.`),
-                    values: {
-                        uid
-                    }
-                }]
-            })
-        })
-        .catch(err => {
-            debug(err, __filename, __line)
-            res.json({
-                code: 'error',
-                messages: [{
-                    key: null,
-                    content: err.message,
-                }]
-            })
-        });
 }

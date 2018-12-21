@@ -62,7 +62,7 @@ button::before, button::after, a.button::before, a.button::after {
     display: block;
     position: absolute;
     background-color: transparent;
-    transition: all .2s linear;
+    transition: all .1s linear;
     height: 10px;
     width: 10px;
 }
@@ -237,6 +237,26 @@ input.__success, input[type="radio"].__success+label, input[type="checkbox"].__s
 input.__warning {
     background-color: var(--warning-bg-color);
     border-bottom-color: var(--warning-color);
+}
+
+/* list */
+
+@keyframes slideup {
+    0% {
+        padding: 1;
+        height: 100%;
+    } 
+    100% {
+        opacity: 0;
+        height: 0;
+    }
+}
+.list-item.__success {
+    overflow: hidden;
+    color: var(--success-color);
+    border-color: var(--success-color);
+    background-color: var(--success-bg-color);
+    animation: slideup 1s linear 0s
 }
 
 /* header */

@@ -376,6 +376,9 @@ export class Base {
                 // get code
                 const code = result.code
 
+                // get mode
+                const mode = result.mode
+
                 // get values
                 const values = result.values
 
@@ -390,6 +393,15 @@ export class Base {
                     // redirect to
                     window.location.assign(redirectUrl)
                     return
+                }
+                if(code === 'success' && mode === 'delete'){
+                    const target = document.querySelector(`#id_${result.values.unique}`)
+                    if(target){
+                        target.classList.add('__success');
+                        setTimeout(() => {
+                            target.remove()
+                        }, 1000);
+                    }
                 }
 
                 // get message
