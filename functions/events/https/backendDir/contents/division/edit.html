@@ -1,16 +1,47 @@
 {|@ wrapper |}
 {|> header |}
 
-<div class="col0 grid1 gap1">
-
-    <ul>
-        {|* targets: target |}
-        <li class="col0 grid1 gap1 pad1">
-            <div>{| key |}: {| target.name |}</div>
-            <div>role: {| target.role |}</div>
-        </li>
-        {|/*|}
-    </ul>
-
+<div class="col12 grid1 gap1">
+    <div class="col1">
+        <label for="order">order</label>
+        <input id="order" name='order' class="target_item" type="text" value="{| target.order |}">
+    </div>
+    <div class="col1">
+        <label for="unique">unique</label>
+        <input id="unique" name="unique" class="target_item" type="text" value="{| target.unique |}">
+    </div>
+    <div class="col1">
+        <label for="name">name</label>
+        <input id="name" name="name" class="target_item" type="text" value="{| target.name |}">
+    </div>
+    <div class="col1">
+        <label for="description">description</label>
+        <textarea id="description" name="description" class="target_item">{| target.description |}</textarea>
+    </div>
+    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/division-update">update</button>
 </div>
+
 {|> footer |}
+
+<script type="module">
+
+    import { Base } from '/{| backendFirstPath |}/base.js';
+    var base = Base.init()
+
+    // get element
+    const updateBtnElement = document.querySelector('#update_button')
+
+    // click event
+    updateBtnElement.addEventListener('click', event => {
+
+        // get button
+        const button = event.currentTarget
+
+        // add unique because uid is not modified
+        const unique = base.defaults.unique
+
+        // not change then show warnning
+        base.requestServer(button, false, { unique })
+    })
+
+</script>

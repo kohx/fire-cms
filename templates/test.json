@@ -1,0 +1,146 @@
+{
+  "frontendBase": "http://localhost:5000",
+  "backendBase": "http://localhost:5000/backend",
+  "settings": {
+    "asset": {
+      "squareSize": "640x640",
+      "landscapeSize": "800x640",
+      "thumbSize": "100x100",
+      "squarePrefix": "s_",
+      "portraitPrefix": "p_",
+      "landscapePrefix": "l_",
+      "portraitSize": "640x800",
+      "thumbPrefix": "t_"
+    },
+    "backend": {
+      "lang": "en",
+      "firstPath": "backend",
+      "signinUnique": "signin",
+      "signinLImit": 86400,
+      "topUnique": "index",
+      "expiresIn": "432000000"
+    },
+    "cart": {},
+    "chat": {},
+    "comment": {},
+    "frontend": {
+      "lang": "en",
+      "topUnique": "home",
+      "signinUnique": "signin"
+    },
+    "general": {
+      "baseUrl": "",
+      "roles": [
+        "owner",
+        "direct",
+        "admin",
+        "editor",
+        "writer",
+        "user"
+      ]
+    },
+    "lang": {
+      "dirname": "locales",
+      "locales": [
+        "en",
+        "ja",
+        "id",
+        "nl"
+      ],
+      "default": "ja"
+    },
+    "mail": {}
+  },
+  "templates": {
+    "footer": "<footer class=\"footer col0 cen mid pad1\">\r\n    <div>&copy; fire cms</div>\r\n</footer>",
+    "header":"<header
+  class=\"header col0 grid12 gap1\">\r\n    <div class=\"hedder-topline col0\">\r\n        <h1>backend <span>{| name |}</span></h1>\r\n        {|# sign.status |}\r\n        <button class=\"sign_out_button col3 row1 mid cen\" id=\"sign_out_button\" data-request_url=\"/{|backendFirstPath|}/sign-out\">sign out</button>\r\n
+     {|/#|
+    }\r\n    </div>\r\n\r\n    <div class=\"col0 row1 mid pad1\">\r\n        {|# sign.status |}\r\n
+     <div>uid: {| user.uid |
+    }</div>\r\n        <div>name: {| user.name |
+    }</div>\r\n        <div>email: {| user.email |
+    }</div>\r\n        {|/#|
+    }\r\n    </div>\r\n    \r\n    {|# sign.status |
+    }\r\n    <ul class=\"gnav col12 grid7 gap1\">\r\n        <li class=\"gnav-item col1 row1 cen mid{|#
+  inParents('index') |
+  } _active{|/#|
+  }\">\r\n            {|# is('index') |}\r\n            <span>index</span>\r\n            {|/#|}\r\n
+  {|^ is('index') |
+  }\r\n            <a href=\"/{|backendFirstPath|}/index\">index</a>\r\n            {|/^|}\r\n        </li>\r\n        <li class=\"gnav-item col1 row1 cen mid{|# inParents('settings') |} _active{|/#|}\">\r\n            {|# is('settings') |}\r\n            <span>settings</span>\r\n            {|/#|}\r\n
+        {|^ is('settings') |
+  }\r\n
+         <a href=\"/{|backendFirstPath|}/settings\">settings</a>\r\n
+        {|/^|
+  }\r\n        </li>\r\n
+       <li class=\"gnav-item col1 row1 cen mid{|# inParents('users') |} _active{|/#|}\">\r\n            {|# is('users') |}\r\n            <span>users</span>\r\n            {|/#|}\r\n            {|^ is('users') |}\r\n
+            <a href=\"/{|backendFirstPath|}/users\">users</a>\r\n
+     {|/^|
+  }\r\n        </li>\r\n
+    <li class=\"gnav-item col1 row1 cen mid{|# inParents('divisions') |} _active{|/#|}\">\r\n            {|# is('divisions') |}\r\n            <span>divisions</span>\r\n            {|/#|}\r\n            {|^ is('divisions') |}\r\n            <a href=\"/{|backendFirstPath|}/divisions\">divisions</a>\r\n            {|/^|}\r\n
+        </li>\r\n        <li class=\"gnav-item col1 row1 cen mid{|# inParents('templates') |} _active{|/#|}\">\r\n            {|# is('templates')
+  |
+}\r\n            <span>templates</span>\r\n            {|/#|
+}\r\n
+        {|^ is('templates') |
+}\r\n
+          <a href=\"/{|backendFirstPath|}/templates\">templates</a>\r\n
+           {|/^|
+}\r\n        </li>\r\n        <li class=\"gnav-item col1 row1 cen mid{|# inParents('things') |} _active{|/#|}\">\r\n            {|# is('things') |}\r\n            <span>things</span>\r\n            {|/#|}\r\n            {|^ is('things') |}\r\n            <a href=\"/{|backendFirstPath|}/things\">things</a>\r\n            {|/^|}\r\n        </li>\r\n        <li class=\"gnav-item col1 row1 cen mid{|# inParents('assets') |} _active{|/#|}\">\r\n
+   {|# is('assets') |
+}\r\n
+  <span>assets</span>\r\n            {|/#|
+}\r\n            {|^ is('assets') |
+}\r\n            <a href=\"/{|backendFirstPath|}/assets\">assets</a>\r\n            {|/^|}\r\n        </li>\r\n    </ul>\r\n    {|/#|}\r\n</header>",
+"notice": "<div class=\"notice\">\r\n<div class=\"notice-close\"><i class=\"far fa-times-circle\"></i></div>\r\n    <h3 class=\"notice-title\"></h3>\r\n    <ul class=\"notice-messages\"></ul>\r\n</div>",
+"thingMenu":"<ul class=\"col12 grid8 gap1\">\r\n    <li class=\"col1 cen mid\">\r\n        {|# is(`thing`) |}\r\n
+         <span>edit</span>\r\n
+  {|/#|
+}\r\n        {|^ is(`thing`) |
+}\r\n        <a href=\"/{|backendFirstPath|}/thing/{| target.unique |}\">edit</a>\r\n        {|/^|}\r\n    </li>\r\n    <li class=\"col1 cen mid\">\r\n        {|# is(`thing-content`) |}\r\n        <span>content</span>\r\n        {|/#|}\r\n        {|^ is(`thing-content`) |}\r\n        <a href=\"/{|backendFirstPath|}/thing-content/{| target.unique |}\">content</a>\r\n        {|/^|}\r\n    </li>\r\n</ul>",
+"wrapper":"<!DOCTYPE html>\r\n<html>\r\n\r\n<head>\r\n    <meta charset=\"utf-8\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <title>{| name |}</title>\r\n    <link rel=\"apple-touch-icon\" href=\"/images/favicon.png\">\r\n\r\n    <link href=\"https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c\" rel=\"stylesheet\">\r\n    <link href=\"/{|backendFirstPath|}/reset.css\" rel=\"stylesheet\">\r\n    <link href=\"/{|backendFirstPath|}/std-grid.css\" rel=\"stylesheet\">\r\n    <link href=\"/{|backendFirstPath|}/std-grid-mq.css\" rel=\"stylesheet\">\r\n
+     <link href=\"/{|backendFirstPath|}/base.css\" rel=\"stylesheet\">\r\n    \r\n    <link rel=\"stylesheet\" href=\"https://use.fontawesome.com/releases/v5.5.0/css/all.css\" integrity=\"sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU\" crossorigin=\"anonymous\">\r\n    <!-- <script defer src=\"https://use.fontawesome.com/releases/v5.5.0/js/all.js\" integrity=\"sha384-GqVMZRt5Gn7tB9D9q7ONtcp4gtHIUEW/yG7h98J7IpE3kpi+srfFyyB/04OV6pG0\" crossorigin=\"anonymous\"></script> -->\r\n\r\n    <!-- <script src=\"https://unpkg.com/v8n/dist/v8n.min.js\"></script> -->\r\n\r\n    <script src=\"https://cdn.jsdelivr.net/npm/vue/dist/vue.js\"></script>\r\n    <!-- <script src=\"https://cdn.jsdelivr.net/npm/vue\"></script> -->\r\n\r\n    <script src=\"/__/firebase/5.5.8/firebase-app.js\"></script>\r\n    <script src=\"/__/firebase/5.5.8/firebase-auth.js\"></script>\r\n    <script src=\"/__/firebase/5.5.8/firebase-firestore.js\"></script>\r\n    <script
+  src=\"/__/firebase/5.5.8/firebase-storage.js\"></script>\r\n    <script
+  src=\"/__/firebase/5.5.8/firebase-messaging.js\"></script>\r\n    <script src=\"/__/firebase/5.5.8/firebase-functions.js\"></script>\r\n    <script src=\"/__/firebase/init.js\"></script>\r\n\r\n    <script>\r\n
+    const firestore = firebase.firestore()\r\n        const settings = {\r\n            timestampsInSnapshots: true\r\n
+}\r\n        firestore.settings(settings);\r\n    </script>\r\n\r\n</head>\r\n\r\n<body>\r\n    <div class=\"wrapper grid12 gap1 pad1\">\r\n        {|@ wrapper |}\r\n        {|> notice |}\r\n    </div>\r\n    {|> notice |}\r\n</body>\r\n\r\n</html>"
+},
+"paths": {
+"isFrontend": false,
+"isBackend": true,
+"segments": [],
+"first": "backend",
+"last": "division-create",
+"number": "",
+"unique": "division-create"
+},
+"thing": {
+"unique": "division-create",
+"roles": {
+  "owner": true,
+  "direct": true,
+  "admin": true,
+  "editor": true,
+  "writer": true,
+  "user": true
+},
+"contentType": "html",
+"content": "",
+"isSigninPage": false,
+"isFreeRole": false,
+"hasRole": true
+},
+"sign": {
+"status": true,
+"message": "sign in success."
+},
+"csrfToken": "",
+"date": "",
+"baseUrl": "http://localhost:5000",
+"user": {
+"uid": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1",
+"name": "kohei",
+"email": "kohei0728@gmail.com",
+"role": "admin"
+}
+}

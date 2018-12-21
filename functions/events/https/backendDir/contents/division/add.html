@@ -1,14 +1,43 @@
 {|@ wrapper |}
 {|> header |}
 
-<div class="col12 grid1 gap1">
-    <div class="col1"> <label>name</label> <input id="name" type="text"></div>
-    <div class="col1"> <label>description</label> <input id="description" type="text"></div>
-    <div class="col1"> <label>keywords</label> <input id="keywords" type="text"></div>
-    <div class="col1"> <label>summary</label> <input id="summary" type="text"></div>
-    <div class="col1"> <label>order</label> <input id="order" type="text"></div>
-    <div class="col1"> <label>date of issue</label> <input id="date_of_issue" type="date"></div>
-    <button class="col1" type="button" id="create">create</button>
+<div class="col12 grid1 gap3">
+    <div class="col1">
+        <label for="order">order</label> <input id="order" name='order' class="target_item" type="text">
+    </div>
+    <div class="col1">
+        <label for="unique">unique</label> <input id="unique" name="unique" class="target_item" type="text">
+    </div>
+    <div class="col1">
+        <label for="name">name</label>
+        <input id="name" name="name" class="target_item" type="text">
+    </div>
+    <div class="col1">
+        <label for="description">description</label>
+        <textarea id="description" name="description" class="target_item"></textarea>
+    </div>
+    <button class="col1 target_item" type="button" id="create_button" data-request_url="{| backendFirstPath |}/division-create"
+        data-redirect_url="{| backendFirstPath |}/division">create</button>
 </div>
 
 {|> footer |}
+
+<script type="module">
+
+    import { Base } from '/{| backendFirstPath |}/base.js';
+    var base = Base.init()
+
+    // get element
+    const createBtnElement = document.querySelector('#create_button')
+
+    // click event
+    createBtnElement.addEventListener('click', event => {
+
+        // get button
+        const button = event.currentTarget
+
+        // not change then show warnning
+        base.requestServer(button)
+    })
+
+</script>

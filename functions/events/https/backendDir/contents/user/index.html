@@ -16,8 +16,8 @@
             <div class="col2 grid3 gap1"><span class="col1">email <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.email |}</span></div>
             <div class="col2 grid3 gap1"><span class="col1">role <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.role |}</span></div>
             <div class="col2 grid3 gap1"><span class="col1">description <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.description |}</span></div>
-            <a class="col1 button" href="/{| backendFirstPath |}/user/{| key |}">edit</a>
-            <button class="col1 delete_button" type="button" class="delete_button" data-request_url="{| backendFirstPath |}/user-delete" data-uid="{| key |}">delete</button>
+            <a class="col1 button" href="/{| backendFirstPath |}/user/{| target.uid |}">edit</a>
+            <button class="col1 delete_button" type="button" class="delete_button" data-request_url="{| backendFirstPath |}/user-delete" data-uid="{| target.uid |}">delete</button>
         </li>
         {|/*|}
     </ul>

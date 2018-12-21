@@ -3,8 +3,6 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-const url = require('url')
-
 const validation = require('../../../../../modules/validation')
 const debug = require('../../../../../modules/debug').debug
 
@@ -96,6 +94,11 @@ const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
 
     if (body.role != null) {
         validate.valid('role', 'isRequired')
+    }
+
+    if (body.order != null) {
+        validate.valid('order', 'isNumeric')
+        validate.valid('order', 'isRequired')
     }
 
     return validate.get()
@@ -193,12 +196,17 @@ module.exports.create = (req, res, next) => {
                 invalidMessageJson(res, req, validationResult)
             } else {
                 const params = {}
-                const allowaKeys = ['name', 'email', 'role', 'description', 'order', 'check']
+                const allowaKeys = ['name', 'email', 'password', 'role', 'order', 'description']
+                const intKeys = ['order']
 
                 Object.keys(body).forEach(key => {
 
                     if (allowaKeys.includes(key)) {
-                        params[key] = body[key]
+                        let value = body[key]
+                        if (intKeys.includes(key)) {
+                            value = Number(value)
+                        }
+                        params[key] = value
                     }
                 })
 
@@ -264,9 +272,14 @@ module.exports.update = (req, res, next) => {
 
                 const params = {}
                 const allowaKeys = ['name', 'email', 'password', 'role', 'order', 'description']
+                const intKeys = ['order']
                 Object.keys(body).forEach(key => {
                     if (allowaKeys.includes(key)) {
-                        params[key] = body[key]
+                        let value = body[key]
+                        if (intKeys.includes(key)) {
+                            value = Number(value)
+                        }
+                        params[key] = value
                     }
                 })
 

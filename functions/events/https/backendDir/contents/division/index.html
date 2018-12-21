@@ -3,15 +3,54 @@
 
 <div class="col0 grid1 gap1">
 
-    <ul>
-        {|* targets: target |}
-        <li class="col0 grid1 gap1 pad1">
-            <a href="/{| backendFirstPath |}/division/{| target.unique |}">
-                {| target.name |}
-            </a>
-        </li>
-        {|/*|}
-    </ul>
+    <div class="col0 grid1 gap1">
+
+        <div class="col0 grid12">
+            <a class="col3 pad1 cen mid button" href="/{| backendFirstPath |}/division-add">add division</a>
+        </div>
+    
+        <ul class="list col0 grid3 gap2">
+            {|* targets: target |}
+            <li id="id_{| target.unique |}" class="list-item col0 grid2 gap1 pad1">
+                <h2 class="col2">{| target.name |}</h2>
+                <div class="col2 grid3 gap1"><span class="col1">order <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.order |}</span></div>
+                <div class="col2 grid3 gap1"><span class="col1">unique <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.unique |}</span></div>
+                <a class="col1 button" href="/{| backendFirstPath |}/division/{| target.unique |}">edit</a>
+                <button class="col1 delete_button" type="button" class="delete_button" data-request_url="{| backendFirstPath |}/division-delete" data-unique="{| target.unique |}">delete</button>
+            </li>
+            {|/*|}
+        </ul>
+    
+    </div>
 
 </div>
 {|> footer |}
+
+
+<script type="module">
+
+    import { Base } from '/{| backendFirstPath |}/base.js';
+    var base = Base.init()
+
+    // settingsも合わせる
+
+    // get element
+    const updateBtnElements = document.querySelectorAll('.delete_button')
+
+    updateBtnElements.forEach(updateBtnElement => {
+
+        // click event
+        updateBtnElement.addEventListener('click', event => {
+
+            // get button
+            const button = event.currentTarget
+
+            // add unique fore delete
+            const unique = button.dataset.unique != null ? button.dataset.unique : null
+            
+            // not change then show warnning
+            base.requestServer(button, true, { unique })
+        })
+    });
+
+</script>

@@ -1,8 +1,7 @@
 {|@ wrapper |}
 {|> header |}
 
-<div class="col12 grid1 gap1">
-    <form class="col0 grid1 gap2">
+<div class="col0 grid1 gap2">
         <div class="col1"><label>uid</label><input id="uid" name="uid" type="text" readonly value="{| target.uid |}"></div>
         <div class="col1"><label for="name">name</label><input id="name" class="target_item" type="text" name="name"
                 value="{| target.name |}"></div>
@@ -67,7 +66,6 @@
             <div>textarea</div>
             <textarea rows="5" name="textarea" id="textarea">asdf</textarea>
         </div>
-    </form>
     <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/user-update">update</button>
 </div>
 
