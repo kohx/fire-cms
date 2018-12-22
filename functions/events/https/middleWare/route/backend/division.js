@@ -202,7 +202,7 @@ module.exports.update = (req, res, next) => {
                         params[key] = value
                     }
                 })
-debug(params, __filename, __line)
+                debug(params, __filename, __line)
                 admin.firestore().collection('divisions').doc(id)
                     .update(params)
                     .then(_ => {
@@ -234,4 +234,51 @@ debug(params, __filename, __line)
             }
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
+}
+
+/**
+ * division delete (post)
+ */
+module.exports.delete = (req, res, next) => {
+
+    const id = req.body.id != null ? req.body.id : null
+
+    if (!id) {
+        // if id undefined return err
+        res.json({
+            code: 'error',
+            messages: [{
+                key: null,
+                content: req.__('id is undefined!'),
+            }],
+        })
+    } else {
+        // get division by id
+        admin.firestore().collection('divisions').doc(id).get()
+            .then(doc => {
+                // check division exist
+                if (doc.exists) {
+                    // delete division
+                    doc.ref.delete()
+                        .then(_ => {
+                            res.json({
+                                code: 'success',
+                                mode: 'delete',
+                                messages: [{
+                                    key: null,
+                                    content: req.__(`Successfully deleted division.`),
+                                }],
+                                values: {
+                                    unique: id
+                                }
+                            })
+                        })
+                        .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                } else {
+                    // not exist division
+                    errorMessageJson(res, null, req.__('id is undefined!'))
+                }
+            })
+            .catch(err => errorMessageJson(res, err, null, __filename, __line))
+    }
 }

@@ -305,8 +305,7 @@ module.exports.delete = (req, res, next) => {
                 if (doc.exists) {
                     // delete user
                     doc.ref.delete()
-                        .then(user => {
-                            console.log(user)
+                        .then(_ => {
                             res.json({
                                 code: 'success',
                                 mode: 'delete',
