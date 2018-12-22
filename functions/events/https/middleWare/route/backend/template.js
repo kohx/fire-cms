@@ -13,7 +13,7 @@ const errorMessageJson = util.errorMessageJson
 /* build json messages from validation invalid messages */
 const invalidMessageJson = util.invalidMessageJson
 
-/* validation division */
+/* validation template */
 const validationBody = (body, uniqueFlag) => {
 
     /* set orderbalidation */
@@ -34,11 +34,15 @@ const validationBody = (body, uniqueFlag) => {
         validate.valid('order', 'isNumeric')
     }
 
+    if (body.type != null) {
+        validate.valid('type', 'isRequired')
+    }
+
     return validate.get()
 }
 
 /**
- * template index (division)
+ * template index (templates)
  */
 module.exports.index = (req, res, next) => {
     return admin.firestore().collection('templates').orderBy('order', "asc").get()
@@ -58,7 +62,7 @@ module.exports.index = (req, res, next) => {
 }
 
 /**
- * division add
+ * template add
  */
 module.exports.add = (req, res, next) => {
     const templateTypes = req.vessel.get('settings.general.template_types')
@@ -67,7 +71,7 @@ module.exports.add = (req, res, next) => {
 }
 
 /**
- * division edit
+ * template edit
  */
 module.exports.edit = (req, res, next) => {
 
@@ -80,7 +84,7 @@ module.exports.edit = (req, res, next) => {
         .limit(1)
         .get()
         .then(docs => {
-            // division is not found
+            // template is not found
             if (docs.size === 0) {
                 let err = new Error('template unique Not Found!')
                 err.status = 404
@@ -104,27 +108,221 @@ module.exports.edit = (req, res, next) => {
 
 }
 
+/**
+ * template create(post)
+ */
+module.exports.create = (req, res, next) => {
+
+    // body
+    const body = req.body
+    let id = null
+
+    // get unique from body
+    const unique = body.unique ? body.unique : ''
+
+    // get unique from store
+    admin.firestore().collection('templates').where('unique', '==', unique).limit(1).get()
+        .then(docs => {
+            const uniqueFlag = docs.size === 0 ? true : false
+
+            const validationResult = validationBody(body, uniqueFlag)
+
+            // validation invalid
+            if (!validationResult.check) {
+                // send invalid messages json
+                invalidMessageJson(res, req, validationResult)
+            } else {
+                const params = {}
+                const allowaKeys = ['name', 'unique', 'order', 'type', 'content']
+                const intKeys = ['order']
+
+                Object.keys(body).forEach(key => {
+                    if (allowaKeys.includes(key)) {
+                        let value = body[key]
+                        if (intKeys.includes(key)) {
+                            value = Number(value)
+                        }
+                        params[key] = value
+                    }
+                })
+
+                // add id
+                const templateDoc = admin.firestore().collection('templates').doc()
+                id = templateDoc.id
+                params.id = id
+
+                templateDoc.set(params)
+                    .then(_ => {
+                        res.json({
+                            code: 'success',
+                            mode: 'create',
+                            messages: [{
+                                key: null,
+                                content: req.__(`Successfully created new template.`),
+                            }],
+                            values: {
+                                unique: params.unique
+                            },
+                        })
+                    })
+                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+            }
+        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
+}
+
+
+// module.exports.update = (req, res, next) => {
+
+//     let content = req.body.content != null ? req.body.content : ''
+//     content = content.replace(/\n/g, '\\n')
+//     let unique = req.body.unique != null ? req.body.unique : ''
+
+//     return admin.firestore().collection('templates').doc(unique)
+//         .update({
+//             content
+//         })
+//         .then(result => {
+//             res.json({
+//                 status: true,
+//                 message: `ok.`
+//             })
+//         })
+//         .catch(err => {
+//             debug('in', __filename, __line)
+//             res.json({
+//                 status: false,
+//                 message: err.message
+//             })
+//         })
+// }
+
+/**
+ * template update(post)
+ */
 module.exports.update = (req, res, next) => {
 
-    let content = req.body.content != null ? req.body.content : ''
-    content = content.replace(/\n/g, '\\n')
-    let unique = req.body.unique != null ? req.body.unique : ''
+    // body
+    const body = req.body
 
-    return admin.firestore().collection('templates').doc(unique)
-        .update({
-            content
+    debug(body, __filename, __line)
+
+    // then update id is requred
+    const id = body.id != null ? body.id : null
+
+    // if id undefined return err
+    if (!id) {
+        errorMessageJson(res, null, req.__('id is undefined!'))
+    }
+
+    // get unique from body
+    const unique = body.unique ? body.unique : ''
+
+    debug(unique, __filename, __line)
+
+    // get unique from store
+    admin.firestore().collection('templates').where('unique', '==', unique).limit(1).get()
+        .then(docs => {
+            const uniqueFlag = docs.size === 0 ? true : false
+
+            const validationResult = validationBody(body, uniqueFlag)
+            debug(validationResult, __filename, __line)
+
+            // validation invalid
+            if (!validationResult.check) {
+                // send invalid messages json
+                invalidMessageJson(res, req, validationResult)
+            } else {
+                const params = {}
+                const allowaKeys = ['name', 'unique', 'order', 'type', 'content']
+                const intKeys = ['order']
+
+                Object.keys(body).forEach(key => {
+                    if (allowaKeys.includes(key)) {
+                        let value = body[key]
+                        if (intKeys.includes(key)) {
+                            value = Number(value)
+                        }
+                        params[key] = value
+                    }
+                })
+                debug(params, __filename, __line)
+                admin.firestore().collection('templates').doc(id)
+                    .update(params)
+                    .then(_ => {
+                        let messages = []
+                        let values = {}
+                        debug(body, __filename, __line)
+                        Object.keys(body).forEach(key => {
+                            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
+                            // change to 
+                            // {key: xxx.xxx, content: 'asdf asdf asdf.'}
+                            if (key !== 'id') {
+                                messages.push({
+                                    key,
+                                    content: req.__(`{{key}} is updated.`, {
+                                        key
+                                    })
+                                })
+                                values[key] = body[key]
+                            }
+                        })
+                        res.json({
+                            code: 'success',
+                            mode: 'update',
+                            messages,
+                            values,
+                        })
+                    })
+                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+            }
         })
-        .then(result => {
-            res.json({
-                status: true,
-                message: `ok.`
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
+}
+
+/**
+ * template delete (post)
+ */
+module.exports.delete = (req, res, next) => {
+
+    const id = req.body.id != null ? req.body.id : null
+
+    if (!id) {
+        // if id undefined return err
+        res.json({
+            code: 'error',
+            messages: [{
+                key: null,
+                content: req.__('id is undefined!'),
+            }],
+        })
+    } else {
+        // get template by id
+        admin.firestore().collection('templates').doc(id).get()
+            .then(doc => {
+                // check template exist
+                if (doc.exists) {
+                    // delete template
+                    doc.ref.delete()
+                        .then(_ => {
+                            res.json({
+                                code: 'success',
+                                mode: 'delete',
+                                messages: [{
+                                    key: null,
+                                    content: req.__(`Successfully deleted template.`),
+                                }],
+                                values: {
+                                    unique: id
+                                }
+                            })
+                        })
+                        .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                } else {
+                    // not exist template
+                    errorMessageJson(res, null, req.__('id is undefined!'))
+                }
             })
-        })
-        .catch(err => {
-            debug('in', __filename, __line)
-            res.json({
-                status: false,
-                message: err.message
-            })
-        })
+            .catch(err => errorMessageJson(res, err, null, __filename, __line))
+    }
 }

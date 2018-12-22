@@ -31,7 +31,7 @@
         <label for="content">content</label>
         <textarea id="content" name="content" class="target_item">{| target.content |}</textarea>
     </div>
-    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/division-update">update</button>
+    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/template-update">update</button>
 </div>
 
 {|> footer |}
@@ -50,6 +50,9 @@
 
     // click event
     updateBtnElement.addEventListener('click', event => {
+
+        // codemirror to textarea
+        editor.save()
 
         // get button
         const button = event.currentTarget

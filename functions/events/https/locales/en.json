@@ -42,5 +42,7 @@
 	"{{param1}} is not alphanumeric and space.": "{{param1}} is not alphanumeric and space.",
 	"Successfully created new division.": "Successfully created new division.",
 	"id is undefined!": "id is undefined!",
-	"Successfully deleted division.": "Successfully deleted division."
+	"Successfully deleted division.": "Successfully deleted division.",
+	"Successfully created new template.": "Successfully created new template.",
+	"Successfully deleted template.": "Successfully deleted template."
 }

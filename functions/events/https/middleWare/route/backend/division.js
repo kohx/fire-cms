@@ -48,7 +48,6 @@ module.exports.index = (req, res, next) => {
             docs.forEach(doc => {
                 targets[doc.id] = doc.data()
             })
-            debug(targets, __filename, __line)
             req.vessel.thing.targets = targets
             next()
         })
@@ -168,8 +167,6 @@ module.exports.update = (req, res, next) => {
     // body
     const body = req.body
 
-    debug(body, __filename, __line)
-
     // then update id is requred
     const id = body.id != null ? body.id : null
 
@@ -181,15 +178,12 @@ module.exports.update = (req, res, next) => {
     // get unique from body
     const unique = body.unique ? body.unique : ''
 
-    debug(unique, __filename, __line)
-
     // get unique from store
     admin.firestore().collection('divisions').where('unique', '==', unique).limit(1).get()
         .then(docs => {
             const uniqueFlag = docs.size === 0 ? true : false
 
             const validationResult = validationBody(body, uniqueFlag)
-            debug(validationResult, __filename, __line)
 
             // validation invalid
             if (!validationResult.check) {
@@ -209,13 +203,13 @@ module.exports.update = (req, res, next) => {
                         params[key] = value
                     }
                 })
-                debug(params, __filename, __line)
+
                 admin.firestore().collection('divisions').doc(id)
                     .update(params)
                     .then(_ => {
                         let messages = []
                         let values = {}
-                        debug(body, __filename, __line)
+
                         Object.keys(body).forEach(key => {
                             // {path: xxx.xxx, message: 'asdf asdf asdf.'}
                             // change to 
