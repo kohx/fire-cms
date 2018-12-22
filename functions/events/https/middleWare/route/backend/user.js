@@ -3,8 +3,15 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-const validation = require('../../../../../modules/validation')
 const debug = require('../../../../../modules/debug').debug
+const validation = require('../../../../../modules/validation')
+const util = require('../util')
+
+/* promise catch error message json */
+const errorMessageJson = util.errorMessageJson
+
+/* build json messages from validation invalid messages */
+const invalidMessageJson = util.invalidMessageJson
 
 // TODO:: カスタムのメール アクション ハンドラの作成
 // https://firebase.google.com/docs/auth/custom-email-handler?hl=ja
@@ -32,24 +39,6 @@ const checkUnique = (key, value, uid = null) => {
                 resolve(flag)
             })
             .catch(err => reject(err))
-    })
-}
-
-/* promise catch error message json */
-const errorMessageJson = (res, err = null, content = null, filename = null, line = null) => {
-    if (err) {
-        content = err.message
-        debug(err.message, filename, line)
-    }
-
-    content = content != null ? content : 'error !'
-
-    res.json({
-        code: 'error',
-        messages: [{
-            key: null,
-            content,
-        }]
     })
 }
 
@@ -102,29 +91,6 @@ const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
     }
 
     return validate.get()
-}
-
-/* build json messages from validation invalid messages */
-const invalidMessageJson = (res, req, validationResult) => {
-    // translate validation message and rebuild messages
-    let messages = []
-    Object.keys(validationResult.errors).forEach(key => {
-        validationResult.errors[key].forEach(error => {
-            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
-            // change to 
-            // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-            messages.push({
-                key: error.path,
-                content: req.__(error.message, error.params)
-            })
-        })
-    })
-
-    // send json
-    res.json({
-        code: validationResult.status,
-        messages,
-    })
 }
 
 /**

@@ -38,5 +38,7 @@
 	"Successfully created new user.": "Successfully created new user.",
 	"user is undefined!": "user is undefined!",
 	"Successfully deleted user.": "Successfully deleted user.",
-	"uid is undefined!": "uid is undefined!"
+	"uid is undefined!": "uid is undefined!",
+	"{{param1}} is not alphanumeric and space.": "{{param1}} is not alphanumeric and space.",
+	"Successfully created new division.": "Successfully created new division."
 }
