@@ -3,49 +3,105 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-const url = require('url')
-
 const debug = require('../../../../../modules/debug').debug
+const validation = require('../../../../../modules/validation')
+const util = require('../util')
 
+/* promise catch error message json */
+const errorMessageJson = util.errorMessageJson
+
+/* build json messages from validation invalid messages */
+const invalidMessageJson = util.invalidMessageJson
+
+/* validation division */
+const validationBody = (body, uniqueFlag) => {
+
+    /* set orderbalidation */
+    const validate = validation.list(body)
+
+    if (body.name != null) {
+        validate.valid('name', 'isRequired')
+    }
+
+    if (body.unique != null) {
+        validate.valid('unique', 'isRequired')
+        validate.valid('unique', 'isAlnumunder')
+        validate.valid('unique', 'isUnique', uniqueFlag)
+    }
+
+    if (body.order != null) {
+        validate.valid('order', 'isRequired')
+        validate.valid('order', 'isNumeric')
+    }
+
+    return validate.get()
+}
+
+/**
+ * template index (division)
+ */
 module.exports.index = (req, res, next) => {
-    return admin.firestore().collection('templates').get()
+    return admin.firestore().collection('templates').orderBy('order', "asc").get()
         .then(docs => {
-            const targets = []
+            const targets = {}
             docs.forEach(doc => {
-                targets.push(doc.data())
+                targets[doc.id] = doc.data()
             })
+            debug(targets, __filename, __line)
             req.vessel.thing.targets = targets
             next()
         })
         .catch(err => {
+            debug(err, __filename, __line)
             next(err)
         })
 }
 
+/**
+ * division add
+ */
+module.exports.add = (req, res, next) => {
+    const templateTypes = req.vessel.get('settings.general.template_types')
+    req.vessel.thing.templateTypes = templateTypes
+    next()
+}
+
+/**
+ * division edit
+ */
 module.exports.edit = (req, res, next) => {
 
+    // get unique
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
-    const thing = req.vessel.get('thing')
 
-    if (!target) {
-        next()
-    } else {
-
-        admin.firestore().collection('templates').doc(target).get()
-            .then(doc => {
-                const target = doc.data()
-
-                target.content = target.content.replace(/\\n/g, '\n')
-
-                thing.target = target
-                next()
-            })
-            .catch(err => {
-                debug(err, __filename, __line)
+    return admin.firestore().collection('templates')
+        .where('unique', '==', target)
+        .limit(1)
+        .get()
+        .then(docs => {
+            // division is not found
+            if (docs.size === 0) {
+                let err = new Error('template unique Not Found!')
+                err.status = 404
                 next(err)
-            })
-    }
+                return
+            } else {
+                let docData = null
+                docs.forEach(doc => {
+                    docData = doc.data()
+                })
+                req.vessel.thing.target = docData
+                const templateTypes = req.vessel.get('settings.general.template_types')
+                req.vessel.thing.templateTypes = templateTypes
+                next()
+            }
+        })
+        .catch(err => {
+            debug(err, __filename, __line)
+            next(err)
+        })
+
 }
 
 module.exports.update = (req, res, next) => {

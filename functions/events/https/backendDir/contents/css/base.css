@@ -1,6 +1,6 @@
 :root {
     font-size: 62.5%;
-    --default-radius: 0.4rem;
+    --default-radius: 0;
     --info-color: rgb(100, 150, 240);
     --info-bg-color: rgb(200, 200, 240);
     --success-color: rgb(100, 140, 40);
@@ -39,7 +39,8 @@ body {
 
 /* button */
 
-button, a.button {
+button,
+a.button {
     border: none;
     padding: 1.0rem;
     position: relative;
@@ -57,7 +58,10 @@ a.button:hover {
     text-decoration: none;
 }
 
-button::before, button::after, a.button::before, a.button::after {
+button::before,
+button::after,
+a.button::before,
+a.button::after {
     content: '';
     display: block;
     position: absolute;
@@ -67,21 +71,30 @@ button::before, button::after, a.button::before, a.button::after {
     width: 10px;
 }
 
-button::before, a.button::before {
+button::before,
+a.button::before {
     top: 0;
     left: 0;
     border-top: 2px solid var(--default-active-color);
     border-left: 2px solid var(--default-active-color);
 }
 
-button::after, a.button::after {
+button::after,
+a.button::after {
     right: 0;
     bottom: 0;
     border-right: 2px solid var(--default-active-color);
     border-bottom: 2px solid var(--default-active-color);
 }
 
-button:hover::before, button:disabled::before, a.button:hover::before, button:hover::after, button:disabled::after, button:focus::before, button:focus::after, a.button:hover::after {
+button:hover::before,
+button:disabled::before,
+a.button:hover::before,
+button:hover::after,
+button:disabled::after,
+button:focus::before,
+button:focus::after,
+a.button:hover::after {
     height: 100%;
     width: 100%;
     color: var(--default-active-color);
@@ -92,7 +105,8 @@ button:disabled {
     color: var(--default-bg-color);
 }
 
-input, textarea {
+input,
+textarea {
     padding: 1.0rem;
 }
 
@@ -104,20 +118,24 @@ select[multiple] {
     padding: 1.2rem;
 }
 
-input[type="radio"], input[type="checkbox"] {
+input[type="radio"],
+input[type="checkbox"] {
     width: 0;
     height: 0;
 }
 
 /* input default */
 
-input, select, textarea {
+input,
+select,
+textarea {
     border: thin solid var(--default-negative-color);
     border-radius: var(--default-radius);
     width: 100%;
 }
 
-input[type="radio"]+label, input[type="checkbox"]+label {
+input[type="radio"]+label,
+input[type="checkbox"]+label {
     padding: 0.4rem 0.6rem;
     border: thin solid var(--default-negative-color);
     border-radius: var(--default-radius);
@@ -127,13 +145,17 @@ input[type="radio"]+label, input[type="checkbox"]+label {
 
 /* input focus */
 
-input:focus, select:focus, input[type="radio"]:focus+label, input[type="checkbox"]:focus+label {
+input:focus,
+select:focus,
+input[type="radio"]:focus+label,
+input[type="checkbox"]:focus+label {
     border-bottom-color: var(--info-color);
 }
 
 /* input checked */
 
-input[type="radio"]+label::before, input[type="checkbox"]+label::before {
+input[type="radio"]+label::before,
+input[type="checkbox"]+label::before {
     font-family: "Font Awesome 5 Free";
     display: inline-block;
     margin-right: 0.6rem;
@@ -225,11 +247,16 @@ input[type="checkbox"]:checked+label::before {
 
 /* modified */
 
-input._modified, select._modified, input[type="radio"]._modified+label, input[type="checkbox"]._modified+label {
+input._modified,
+select._modified,
+input[type="radio"]._modified+label,
+input[type="checkbox"]._modified+label {
     background-color: var(--info-bg-color);
 }
 
-input.__success, input[type="radio"].__success+label, input[type="checkbox"].__success+label {
+input.__success,
+input[type="radio"].__success+label,
+input[type="checkbox"].__success+label {
     background-color: var(--success-bg-color);
     border-bottom-color: var(--success-color);
 }
@@ -245,12 +272,14 @@ input.__warning {
     0% {
         padding: 1;
         height: 100%;
-    } 
+    }
+
     100% {
         opacity: 0;
         height: 0;
     }
 }
+
 .list-item.__success {
     overflow: hidden;
     color: var(--success-color);
@@ -306,4 +335,11 @@ input.__warning {
 
 .stretched_parent {
     position: relative;
+}
+
+/* CodeMirror */
+.CodeMirror {
+    font-family: Monaco, 'Andale Mono', 'Lucida Console', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
+    font-size: 1.6rem;
+    height: 80vh;
 }

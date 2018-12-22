@@ -197,7 +197,7 @@ module.exports.getThing = (req, res, next) => {
                     templates = {}
                     docs.forEach(doc => {
                         const data = doc.data()
-                        templates[doc.id] = data.content
+                        templates[data.unique] = data.content
                     })
                     // キャッシュに入れる 
                     jsonCache.set('templates', templates)

@@ -98,7 +98,7 @@ const validationBody = (body, nameUniqueFlag, emailUniqueFlag) => {
  */
 module.exports.index = (req, res, next) => {
 
-    admin.firestore().collection('users').orderBy('order', "asc").get()
+    return admin.firestore().collection('users').orderBy('order', "asc").get()
         .then(docs => {
             const targets = {}
             docs.forEach(doc => {
@@ -124,10 +124,18 @@ module.exports.edit = (req, res, next) => {
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
 
-    admin.firestore().collection('users').doc(target).get()
+    return admin.firestore().collection('users').doc(target).get()
         .then(doc => {
-            req.vessel.thing.target = doc.data()
-            next()
+            // user is not found
+            if (!doc.exists) {
+                let err = new Error('user Not Found!')
+                err.status = 404
+                next(err)
+                return
+            } else {
+                req.vessel.thing.target = doc.data()
+                next()
+            }
         })
         .catch(err => {
             debug(err, __filename, __line)

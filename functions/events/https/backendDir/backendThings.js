@@ -158,6 +158,7 @@ module.exports.get = (unique) => {
         'divisions': {
             unique: 'divisions',
             name: 'divisions',
+            parents: [],
             roles: {
                 owner: true,
                 direct: true,
@@ -239,6 +240,7 @@ module.exports.get = (unique) => {
         'templates': {
             unique: 'templates',
             name: 'templates',
+            parents: [],
             roles: {
                 owner: true,
                 direct: true,

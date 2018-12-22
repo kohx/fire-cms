@@ -42,7 +42,7 @@ const validationBody = (body, uniqueFlag) => {
  */
 module.exports.index = (req, res, next) => {
 
-    admin.firestore().collection('divisions').orderBy('order', "asc").get()
+    return admin.firestore().collection('divisions').orderBy('order', "asc").get()
         .then(docs => {
             const targets = {}
             docs.forEach(doc => {
@@ -71,18 +71,25 @@ module.exports.edit = (req, res, next) => {
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
 
-    admin.firestore().collection('divisions')
+    return admin.firestore().collection('divisions')
         .where('unique', '==', target)
         .limit(1)
         .get()
         .then(docs => {
-            let docData = null
-            docs.forEach(doc => {
-                docData = doc.data()
-            })
-            debug(docData, __filename, __line)
-            req.vessel.thing.target = docData
-            next()
+            // division is not found
+            if (docs.size === 0) {
+                let err = new Error('division unique Not Found!')
+                err.status = 404
+                next(err)
+                return
+            } else {
+                let docData = null
+                docs.forEach(doc => {
+                    docData = doc.data()
+                })
+                req.vessel.thing.target = docData
+                next()
+            }
         })
         .catch(err => {
             debug(err, __filename, __line)

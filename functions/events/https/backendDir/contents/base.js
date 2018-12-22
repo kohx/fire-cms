@@ -369,6 +369,8 @@ export class Base {
         // additional data merge
         modifiedValues = Object.assign(modifiedValues, addObjectg)
 
+        console.log(modifiedValues)
+
         // request to server
         this.fetchServer(requestUrl, modifiedValues)
             .then(result => {

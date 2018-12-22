@@ -87,6 +87,7 @@ function subGetRoute(req, res, next) {
         'division': division.edit,
         // template
         'templates': template.index,
+        'template-add': template.add,
         'template': template.edit,
         // thing
         'things': thing.index,

@@ -12,24 +12,62 @@
     <link href="/{|backendFirstPath|}/std-grid.css" rel="stylesheet">
     <link href="/{|backendFirstPath|}/std-grid-mq.css" rel="stylesheet">
     <link href="/{|backendFirstPath|}/base.css" rel="stylesheet">
-    
+
+    <script src="/__/firebase/5.7.1/firebase-app.js"></script>
+    <script src="/__/firebase/5.7.1/firebase-auth.js"></script>
+    <script src="/__/firebase/5.7.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/5.7.1/firebase-storage.js"></script>
+    <script src="/__/firebase/5.7.1/firebase-messaging.js"></script>
+    <script src="/__/firebase/5.7.1/firebase-functions.js"></script>
+    <script src="/__/firebase/init.js"></script>
+
+    <!-- fontawesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <!-- <script defer src="https://use.fontawesome.com/releases/v5.5.0/js/all.js" integrity="sha384-GqVMZRt5Gn7tB9D9q7ONtcp4gtHIUEW/yG7h98J7IpE3kpi+srfFyyB/04OV6pG0" crossorigin="anonymous"></script> -->
 
+    <!-- v8n validation -->
     <!-- <script src="https://unpkg.com/v8n/dist/v8n.min.js"></script> -->
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
 
-    <script src="/__/firebase/5.5.8/firebase-app.js"></script>
-    <script src="/__/firebase/5.5.8/firebase-auth.js"></script>
-    <script src="/__/firebase/5.5.8/firebase-firestore.js"></script>
-    <script src="/__/firebase/5.5.8/firebase-storage.js"></script>
-    <script src="/__/firebase/5.5.8/firebase-messaging.js"></script>
-    <script src="/__/firebase/5.5.8/firebase-functions.js"></script>
-    <script src="/__/firebase/init.js"></script>
+    <!-- CodeMirror -->
+    <script src="/codemirror-5.40.2/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="/codemirror-5.40.2/lib/codemirror.css">
+    <!-- CodeMirror mode -->
+    <script src="/codemirror-5.40.2/mode/xml/xml.js"></script>
+    <script src="/codemirror-5.40.2/mode/javascript/javascript.js"></script>
+    <script src="/codemirror-5.40.2/mode/css/css.js"></script>
+    <script src="/codemirror-5.40.2/mode/htmlmixed/htmlmixed.js"></script>
+    <!-- CodeMirror addon -->
+    <script src="/codemirror-5.40.2/addon/hint/show-hint.js"></script>
+    <script src="/codemirror-5.40.2/addon/hint/xml-hint.js"></script>
+    <script src="/codemirror-5.40.2/addon/hint/html-hint.js"></script>
+
+    <script src="/codemirror-5.40.2/addon/selection/active-line.js"></script>
+    <script src="/codemirror-5.40.2/addon/edit/matchbrackets.js"></script>
+    <link rel="stylesheet" href="/codemirror-5.40.2/addon/hint/show-hint.css">
+    <!-- CodeMirror theme -->
+    <link rel="stylesheet" href="/codemirror-5.40.2/theme/base16-light.css">
 
     <script>
+        // CodeMirror init
+        CodeMirror.commands.autocomplete = cm => {
+            CodeMirror.showHint(cm, CodeMirror.hint.html);
+        }
+
+        CodeMirror.defaults.mode = 'text/html'
+        CodeMirror.defaults.theme = 'base16-light'
+        CodeMirror.defaults.indentUnit = 4
+        CodeMirror.defaults.lineWrapping = true
+        CodeMirror.defaults.lineNumbers = true
+        CodeMirror.defaults.styleActiveLine = true
+        CodeMirror.defaults.matchBrackets = true
+        CodeMirror.defaults.extraKeys = {
+            'Ctrl-Space': 'autocomplete'
+        }
+
+        // firebase init
         const firestore = firebase.firestore()
         const settings = {
             timestampsInSnapshots: true

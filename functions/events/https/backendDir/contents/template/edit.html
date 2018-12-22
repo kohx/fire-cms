@@ -1,36 +1,64 @@
 {|@ wrapper |}
 {|> header |}
 
-<div class="col12 grid1 gap1 pad1">
+<div class="col0 grid1 gap2">
     <div class="col1">
-        <h2><label for="name">name</label></h2>
-        <input id="name" type="text" value="{| target.name |}">
+        <label for="id">id</label>
+        <input id="id" name="id" class="target_item" type="text" readonly value="{| target.id |}">
     </div>
     <div class="col1">
-        <h2><label for="description">description</label></h2>
-        <input id="description" type="text" value="{| target.description |}">
+        <label for="order">order</label>
+        <input id="order" name='order' class="target_item" type="text" value="{| target.order |}">
     </div>
     <div class="col1">
-        <h2><label for="keywords">keywords</label></h2>
-        <input id="keywords" type="text" value="{| target.keywords |}">
+        <label for="unique">unique</label>
+        <input id="unique" name="unique" class="target_item" type="text" value="{| target.unique |}">
     </div>
     <div class="col1">
-        <h2> <label for="summary">summary</label></h2>
-        <input id="summary" type="text" value="{| target.summary |}">
+        <label for="name">name</label>
+        <input id="name" name="name" class="target_item" type="text" value="{| target.name |}">
     </div>
     <div class="col1">
-        <h2> <label for="order">order</label></h2>
-        <input id="order" type="text" value="{| order |}">
+        <div>type</div>
+        <div>
+            {|* templateTypes : key : type |}
+            <input {|# equal(type, target.type)|} checked{|/#|} class="target_item" id="{|type|}" name='type' type="radio" value="{|type|}">
+            <label for="{|type|}">{|type|}</label>
+            {|/*|}
+        </div>
     </div>
     <div class="col1">
-        <h2> <label for="date_of_issue">date of issue</label></h2>
-        <input id="date_of_issue" type="date" value="{| target.dateOfIssue |}">
+        <label for="content">content</label>
+        <textarea id="content" name="content" class="target_item">{| target.content |}</textarea>
     </div>
-    <div class="col1">
-        <h2><label for="content">content</label></h2>
-        <textarea id="content" class="col1 row5">{| target.content |}</textarea>
-    </div>
-    <button class="col1" type="button" id="create">create</button>
+    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/division-update">update</button>
 </div>
 
 {|> footer |}
+
+<script type="module">
+
+    import { Base } from '/{| backendFirstPath |}/base.js';
+    var base = Base.init()
+
+    // codemirror
+    const contentElement = document.querySelector('#content')
+    const editor = CodeMirror.fromTextArea(contentElement)
+
+    // get element
+    const updateBtnElement = document.querySelector('#update_button')
+
+    // click event
+    updateBtnElement.addEventListener('click', event => {
+
+        // get button
+        const button = event.currentTarget
+
+        // add unique because id is not modified
+        const id = base.defaults.id
+
+        // not change then show warnning
+        base.requestServer(button, false, { id })
+    })
+
+</script>
