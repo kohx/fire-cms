@@ -3,6 +3,10 @@
 
 <div class="col12 grid1 gap1">
     <div class="col1">
+        <label for="id">id</label>
+        <input id="id" name="id" class="target_item" type="text" readonly value="{| target.id |}">
+    </div>
+    <div class="col1">
         <label for="order">order</label>
         <input id="order" name='order' class="target_item" type="text" value="{| target.order |}">
     </div>
@@ -37,11 +41,11 @@
         // get button
         const button = event.currentTarget
 
-        // add unique because uid is not modified
-        const unique = base.defaults.unique
+        // add unique because id is not modified
+        const id = base.defaults.id
 
         // not change then show warnning
-        base.requestServer(button, false, { unique })
+        base.requestServer(button, false, { id })
     })
 
 </script>

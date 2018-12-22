@@ -249,7 +249,7 @@ module.exports.update = (req, res, next) => {
                     }
                 })
 
-                return admin.firestore().collection('users').doc(uid)
+                admin.firestore().collection('users').doc(uid)
                     .update(params)
                     .then(_ => {
                         let messages = []
@@ -261,7 +261,9 @@ module.exports.update = (req, res, next) => {
                             if (key !== 'uid') {
                                 messages.push({
                                     key,
-                                    content: req.__(`{{key}} is updated.`, { key })
+                                    content: req.__(`{{key}} is updated.`, {
+                                        key
+                                    })
                                 })
                                 values[key] = body[key]
                             }
@@ -284,9 +286,9 @@ module.exports.update = (req, res, next) => {
  */
 module.exports.delete = (req, res, next) => {
 
-    const uid = req.body.uid != null ? req.body.uid : null
+    const id = req.body.id != null ? req.body.id : null
 
-    if (!uid) {
+    if (!id) {
         // if uid undefined return err
         res.json({
             code: 'error',
@@ -313,7 +315,7 @@ module.exports.delete = (req, res, next) => {
                                     content: req.__(`Successfully deleted user.`),
                                 }],
                                 values: {
-                                    unique: uid
+                                    unique: id
                                 }
                             })
                         })

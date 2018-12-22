@@ -40,5 +40,6 @@
 	"Successfully deleted user.": "Successfully deleted user.",
 	"uid is undefined!": "uid is undefined!",
 	"{{param1}} is not alphanumeric and space.": "{{param1}} is not alphanumeric and space.",
-	"Successfully created new division.": "Successfully created new division."
+	"Successfully created new division.": "Successfully created new division.",
+	"id is undefined!": "id is undefined!"
 }

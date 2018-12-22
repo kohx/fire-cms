@@ -42,7 +42,7 @@ const validationBody = (body, uniqueFlag) => {
  */
 module.exports.index = (req, res, next) => {
 
-    admin.firestore().collection('divisions').get()
+    admin.firestore().collection('divisions').orderBy('order', "asc").get()
         .then(docs => {
             const targets = {}
             docs.forEach(doc => {
@@ -103,7 +103,7 @@ module.exports.create = (req, res, next) => {
     const unique = body.unique ? body.unique : ''
 
     // get unique from store
-    admin.firestore().collection('divisions').where('unique', '==', '').limit(1).get()
+    admin.firestore().collection('divisions').where('unique', '==', unique).limit(1).get()
         .then(docs => {
             const uniqueFlag = docs.size === 0 ? true : false
 
@@ -145,6 +145,89 @@ module.exports.create = (req, res, next) => {
                             values: {
                                 unique: params.unique
                             },
+                        })
+                    })
+                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+            }
+        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
+}
+
+/**
+ * division update (post)
+ */
+module.exports.update = (req, res, next) => {
+
+    // body
+    const body = req.body
+
+    debug(body, __filename, __line)
+
+    // then update id is requred
+    const id = body.id != null ? body.id : null
+
+    // if id undefined return err
+    if (!id) {
+        errorMessageJson(res, null, req.__('id is undefined!'))
+    }
+
+    // get unique from body
+    const unique = body.unique ? body.unique : ''
+
+    debug(unique, __filename, __line)
+
+    // get unique from store
+    admin.firestore().collection('divisions').where('unique', '==', unique).limit(1).get()
+        .then(docs => {
+            const uniqueFlag = docs.size === 0 ? true : false
+
+            const validationResult = validationBody(body, uniqueFlag)
+            debug(validationResult, __filename, __line)
+
+            // validation invalid
+            if (!validationResult.check) {
+                // send invalid messages json
+                invalidMessageJson(res, req, validationResult)
+            } else {
+                const params = {}
+                const allowaKeys = ['name', 'unique', 'order', 'description']
+                const intKeys = ['order']
+
+                Object.keys(body).forEach(key => {
+                    if (allowaKeys.includes(key)) {
+                        let value = body[key]
+                        if (intKeys.includes(key)) {
+                            value = Number(value)
+                        }
+                        params[key] = value
+                    }
+                })
+debug(params, __filename, __line)
+                admin.firestore().collection('divisions').doc(id)
+                    .update(params)
+                    .then(_ => {
+                        let messages = []
+                        let values = {}
+                        debug(body, __filename, __line)
+                        Object.keys(body).forEach(key => {
+                            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
+                            // change to 
+                            // {key: xxx.xxx, content: 'asdf asdf asdf.'}
+                            if (key !== 'id') {
+                                messages.push({
+                                    key,
+                                    content: req.__(`{{key}} is updated.`, {
+                                        key
+                                    })
+                                })
+                                values[key] = body[key]
+                            }
+                        })
+                        res.json({
+                            code: 'success',
+                            mode: 'update',
+                            messages,
+                            values,
                         })
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
