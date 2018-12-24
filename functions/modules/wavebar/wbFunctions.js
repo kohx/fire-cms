@@ -71,6 +71,13 @@ module.exports.funcs = {
         return result
     },
 
+    /**
+     * date
+     * {|~ date(value) |}
+     * TODO:: 
+     */
+
+
     test: () => {
         return 'test'
     }

@@ -136,6 +136,7 @@ textarea {
 
 input[type="radio"]+label,
 input[type="checkbox"]+label {
+    margin: 0.1rem;
     padding: 0.4rem 0.6rem;
     border: thin solid var(--default-negative-color);
     border-radius: var(--default-radius);

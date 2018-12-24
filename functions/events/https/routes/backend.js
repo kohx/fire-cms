@@ -91,6 +91,7 @@ function subGetRoute(req, res, next) {
         'template': template.edit,
         // thing
         'things': thing.index,
+        'thing-add': thing.add,
         'thing': thing.edit,
         'thing-content': thing.content,
         'thing-assets': thing.assets,

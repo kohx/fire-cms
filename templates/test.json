@@ -1,7 +1,9 @@
 {
-    "unique": "template-add",
-    "name": "template-add",
-    "parents": ["templates"],
+    "unique": "thing",
+    "name": "thing",
+    "parents": [
+        "things"
+    ],
     "roles": {
         "owner": true,
         "direct": true,
@@ -10,9 +12,31 @@
         "writer": true,
         "user": true
     },
-    "contentType": "",
-    "isSigninPage": false,
-    "isFreeRole": false,
-    "hasRole": true,
-    "templateTypes": ["wrap", "part"]
+    "contentType": "html",
+    "contentFile": "thing/edit.html",
+    "content": "",
+    "summary": "home summary",
+    "unique": "home",
+    "description": "home description",
+    "roles": {
+        "owner": true,
+        "admin": true,
+        "user": true,
+        "writer": true,
+        "direct": true,
+        "editor": true
+    },
+    "keywords": [
+        " aaa",
+        "bbb"
+    ],
+    "name": "ホーム",
+    "parents": [
+        "aaa",
+        "bbb"
+    ],
+    "id": "Q6bPvQM67MRrIbCH3HnG",
+    "dateOfIssue": "2018-12-24 00:00:00",
+    "order": 1
+}
 }

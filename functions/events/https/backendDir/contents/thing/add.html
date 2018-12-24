@@ -1,14 +1,95 @@
 {|@ wrapper |}
 {|> header |}
 
-<div class="col12 grid1 gap1">
-    <div class="col1"> <label>name</label> <input id="name" type="text"></div>
-    <div class="col1"> <label>description</label> <input id="description" type="text"></div>
-    <div class="col1"> <label>keywords</label> <input id="keywords" type="text"></div>
-    <div class="col1"> <label>summary</label> <input id="summary" type="text"></div>
-    <div class="col1"> <label>order</label> <input id="order" type="text"></div>
-    <div class="col1"> <label>date of issue</label> <input id="date_of_issue" type="date"></div>
-    <button class="col1" type="button" id="create">create</button>
+<div class="col0 grid1 gap2">
+    <div class="col1">
+        <label for="order">order</label>
+        <input id="order" name='order' class="target_item" type="text">
+    </div>
+    <div class="col1">
+        <label for="unique">unique</label>
+        <input id="unique" name="unique" class="target_item" type="text">
+    </div>
+    <div class="col1">
+        <label for="name">name</label>
+        <input id="name" name="name" class="target_item" type="text">
+    </div>
+    <div class="col1">
+        <span for="parents">parents</span>
+        <input id="parents" name="parents" class="target_item" type="text">
+    </div>
+    <div class="col1">
+        <span>roles</span>
+        <div>
+            {| *roles : role |}<input id="{| role |}" type="checkbox" name="roles" value="{| role |}"><label for="{| role |}">{| role |}</label>{| /* |}
+        </div>
+    </div>
+    <div class="col1">
+        <label for="parents">date of issue</label>
+        <input id="date_of_issue" name="date_of_issue" class="target_item" type="datetime">
+    </div>
+    <div class="col1">
+        <label for="description">description</label>
+        <textarea id="description" name="description" class="target_item"></textarea>
+    </div>
+    <div class="col1">
+        <label for="summary">summary</label>
+        <textarea id="summary" name="summary" class="target_item"></textarea>
+    </div>
+    <div class="col1">
+        <label for="summary">keywords</label>
+        <i class="fas fa-plus-circle plus"></i>
+        <div>
+            <input id="keywords" name="keywords" class="target_item" type="text">
+        </div>
+    </div>
+    <div class="col1">
+        <label for="content">content</label>
+        <textarea id="content" name="content" class="target_item"></textarea>
+    </div>
+    <button class="col1 target_item" type="button" id="create_button" data-request_url="{| backendFirstPath |}/thing-create" data-redirect_url="{| backendFirstPath |}/thing">create</button>
 </div>
 
 {|> footer |}
+<script type="module">
+
+    import { Base } from '/{| backendFirstPath |}/base.js';
+    var base = Base.init()
+
+    const plusElements = document.querySelectorAll('.plus')
+    plusElements.forEach(plusElement => {
+        plusElement.addEventListener('click', event => {
+            const element = event.currentTarget.nextElementSibling
+            const copy = element.cloneNode(true)
+            const minusElement = document.createElement('i')
+            minusElement.classList.add('fas', 'fa-minus-circle')
+            minusElement.addEventListener('click', minusEvent => {
+                minusEvent.currentTarget.parentElement.remove()
+            })
+            copy.querySelector('input').value = ''
+            copy.insertAdjacentElement('afterbegin', minusElement)
+            element.parentElement.insertAdjacentElement('beforeend', copy)
+        })
+    })
+
+    // codemirror
+    const contentElement = document.querySelector('#content')
+    const editor = CodeMirror.fromTextArea(contentElement)
+
+    // get element
+    const createBtnElement = document.querySelector('#create_button')
+
+    // click event
+    createBtnElement.addEventListener('click', event => {
+
+        // codemirror to textarea
+        editor.save()
+
+        // get button
+        const button = event.currentTarget
+
+        // not change then show warnning
+        base.requestServer(button)
+    })
+
+</script>
