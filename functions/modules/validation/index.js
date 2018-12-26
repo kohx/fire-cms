@@ -1,4 +1,9 @@
 // https://www.npmjs.com/package/validator
+
+// TODO:: change to v8n https://www.npmjs.com/package/v8n#architecture
+// https://co.bsnws.net/article/182
+// const v8n = require('v8n')
+
 const validator = require('validator')
 const debug = require('../debug').debug
 
@@ -32,6 +37,7 @@ module.exports = class validation {
             'toInt',
             'whitelist',
         ]
+
         this.validationTypes = {
             isRequired: `{{param1}} is required.`,
             isAlpha: `{{param1}} is not alpha.`,
@@ -57,6 +63,8 @@ module.exports = class validation {
             isConfirm: `{{param1}} is not same with {{param2}}.`,
             canNotUsedBlank: `{{param1}} can not used blank.`,
             isUnique: `{{param1}} is already used.`,
+            isDate: `{{param1}} is not date.`,
+            isAllString: `{{param1}} array elements are not string.`,
         }
     }
 
@@ -67,104 +75,136 @@ module.exports = class validation {
 
     valid(path, type, ...args) {
 
+        // there is not value at list
         if (!this.existValue(path)) {
             throw new Error(`error at validation module: list has not key ${path}.`)
         }
 
+        // there is not type
         if (!Object.keys(this.validationTypes).includes(type)) {
             throw new Error(`error at validation module: validation type ${type} is not ture.`)
         }
 
+        // get value
         const value = this.getValue(path)
+
+        // check flag
         let flag = true
+        let isRequired = false
 
-        try {
+        // non value chack
+        const isEmpty = value === null || value === '' ? true : false
 
-            switch (type) {
-                case 'isRequired':
-                    flag = !validator.isEmpty(value)
-                    break
+        // if type is required
+        if (type === 'isRequired') {
+            isRequired = true
+            flag = !isEmpty
+        }
+        // other than required
+        else {
 
-                case 'notEquals':
-                    flag = !validator.equals(value, ...args)
-                    break
+            // if not required and value is null
+            // then all through
+            if (!isRequired && isEmpty) {
+                flag = true
+            } else {
 
-                case 'isUnique':
-                    flag = args[0]
-                    break
+                try {
+                    switch (type) {
+                        case 'notEquals':
+                            flag = !validator.equals(value, ...args)
+                            break
 
-                case 'isAlnumunder':
-                    // \w
-                    flag = validator.matches(value, /^[a-zA-Z0-9_]+$/)
-                    break
+                        case 'isUnique':
+                            flag = args[0]
+                            break
 
-                case 'isAlnumunspace':
-                    // \w
-                    flag = validator.matches(value, /^[a-zA-Z0-9 ]+$/)
-                    break
+                        case 'isAlnumunder':
+                            // \w
+                            flag = validator.matches(value, /^[a-zA-Z0-9_]+$/)
+                            break
 
-                case 'isNumunder':
-                    flag = validator.matches(value, /^[0-9_]+$/)
-                    break
+                        case 'isAlnumunspace':
+                            // \w
+                            flag = validator.matches(value, /^[a-zA-Z0-9 ]+$/)
+                            break
 
-                case 'isBase64':
-                    const [head, body] = value.split(',')
-                    flag = validator.isBase64(body)
-                    break
+                        case 'isNumunder':
+                            flag = validator.matches(value, /^[0-9_]+$/)
+                            break
 
-                case 'isArray':
-                    flag = typeof value === 'object' && Array.isArray(value)
-                    break
+                        case 'isBase64':
+                            const [head, body] = value.split(',')
+                            flag = validator.isBase64(body)
+                            break
 
-                case 'isNotBlankObject':
-                    if (typeof value === 'object') {
-                        let objectValues = []
-                        Object.keys(value).forEach(key => {
-                            objectValues.push(value[key])
-                        })
-                        objectValues = objectValues.filter(objectValue => objectValue.length > 0)
-                        flag = objectValues.length > 0
-                    } else {
-                        flag = false
+                        case 'isArray':
+                            flag = typeof value === 'object' && Array.isArray(value)
+                            break
+
+                        case 'isNotBlankObject':
+                            if (typeof value === 'object') {
+                                let objectValues = []
+                                Object.keys(value).forEach(key => {
+                                    objectValues.push(value[key])
+                                })
+                                objectValues = objectValues.filter(objectValue => objectValue.length > 0)
+                                flag = objectValues.length > 0
+                            } else {
+                                flag = false
+                            }
+                            break
+
+                        case 'containsSymbol':
+                            // ! " # $ % & ' ( ) * + - . , / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
+                            const regSymbol = new RegExp(/[!"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]/g)
+                            flag = regSymbol.test(value)
+                            break
+
+                        case 'containsUppercase':
+                            const regUppercase = new RegExp(/[A-Z]/g)
+                            flag = regUppercase.test(value)
+                            break
+
+                        case 'containsNumric':
+                            const regNumric = new RegExp(/[0-9]/g)
+                            flag = regNumric.test(value)
+                            break
+
+                        case 'isConfirm':
+                            const targetKey = args[0]
+                            const targetValue = this.getValue(targetKey)
+                            flag = value === targetValue
+                            break
+
+                        case 'canNotUsedBlank':
+                            const regBlank = new RegExp(/\s/g)
+                            flag = !regBlank.test(value)
+                            break
+
+                        case 'isAllString':
+                            Object.keys(value).forEach(index => {
+                                flag = typeof value[index] === 'string'
+                            })
+                            break
+
+                        case 'isDate':                        
+                            const iosO8601 = new RegExp(/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/)
+                            flag = iosO8601.test(value.toISOString())
+                            // flag = validator.isISO8601(value.toISOString())
+                            break
+
+                        default:
+                            // There is no error even if there is args!
+                            flag = validator[type](value, ...args)
+                            break
                     }
-                    break
 
-                case 'containsSymbol':
-                    // ! " # $ % & ' ( ) * + - . , / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
-                    const regSymbol = new RegExp(/[!"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]/g)
-                    flag = regSymbol.test(value)
-                    break
+                } catch (err) {
 
-                case 'containsUppercase':
-                    const regUppercase = new RegExp(/[A-Z]/g)
-                    flag = regUppercase.test(value)
-                    break
-
-                case 'containsNumric':
-                    const regNumric = new RegExp(/[0-9]/g)
-                    flag = regNumric.test(value)
-                    break
-
-                case 'isConfirm':
-                    const targetKey = args[0]
-                    const targetValue = this.getValue(targetKey)
-                    flag = value === targetValue
-                    break
-
-                case 'canNotUsedBlank':
-                    const regBlank = new RegExp(/\s/g)
-                    flag = !regBlank.test(value)
-                    break
-
-                default:
-                    // There is no error even if there is args!
-                    flag = validator[type](value, ...args)
-                    break
+                    throw new Error(`error at validation module: ${err.message}`)
+                }
             }
-
-        } catch (err) {
-
-            throw new Error(`error at validation module: ${err.message}`)
         }
 
         if (!flag) {
@@ -217,7 +257,7 @@ module.exports = class validation {
         return this
     }
 
-    get(){
+    get() {
         return {
             check: this.validity,
             status: this.validity ? 'success' : 'warning',

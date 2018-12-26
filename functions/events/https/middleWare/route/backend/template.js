@@ -170,32 +170,6 @@ module.exports.create = (req, res, next) => {
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
-
-// module.exports.update = (req, res, next) => {
-
-//     let content = req.body.content != null ? req.body.content : ''
-//     content = content.replace(/\n/g, '\\n')
-//     let unique = req.body.unique != null ? req.body.unique : ''
-
-//     return admin.firestore().collection('templates').doc(unique)
-//         .update({
-//             content
-//         })
-//         .then(result => {
-//             res.json({
-//                 status: true,
-//                 message: `ok.`
-//             })
-//         })
-//         .catch(err => {
-//             debug('in', __filename, __line)
-//             res.json({
-//                 status: false,
-//                 message: err.message
-//             })
-//         })
-// }
-
 /**
  * template update(post)
  */

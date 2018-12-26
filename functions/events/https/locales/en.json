@@ -44,5 +44,9 @@
 	"id is undefined!": "id is undefined!",
 	"Successfully deleted division.": "Successfully deleted division.",
 	"Successfully created new template.": "Successfully created new template.",
-	"Successfully deleted template.": "Successfully deleted template."
+	"Successfully deleted template.": "Successfully deleted template.",
+	"{{param1}} is not date string.": "{{param1}} is not date string.",
+	"Successfully created new thing.": "Successfully created new thing.",
+	"{{param1}} is not date.": "{{param1}} is not date.",
+	"{{param1}} array elements are not string.": "{{param1}} array elements are not string."
 }

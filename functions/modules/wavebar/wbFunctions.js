@@ -76,9 +76,9 @@ module.exports.funcs = {
      * {|~ date(value) |}
      * TODO:: 
      */
-
-
-    test: () => {
-        return 'test'
-    }
+    // date: (value) => {
+    //     if(value != null){
+            
+    //     }
+    // }
 }

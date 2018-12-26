@@ -23,20 +23,20 @@
         <i class="fas fa-plus-circle plus"></i>
         {| * target.parents : parent |}
         <div>
-            <input id="keywords" name="keywords" class="target_item" type="text" value="{| parent |}">
-            <i class="fas fa-minus-circle minus"></i>
+            {| ^ equal(0, key) |}<i class="fas fa-minus-circle minus"></i>{| /^ |}
+            <input id="parents" name="parents" class="target_item" type="text" value="{| parent |}">
         </div>
         {| /* |}
     </div>
     <div class="col1">
-        <label for="parents">date of issue</label>
-        <input id="date_of_issue" name="date_of_issue" class="target_item" type="datetime" value="{| target.dateOfIssue |}">
+        <label for="parents">issue</label>
+        <input id="issue" name="issue" class="target_item" type="datetime" value="{| target.issue |}">
     </div>
     <div class="col1">
         <span>roles</span>
-{|~(roles)|}
         <div>
-        {| * roles : role |}<input {|# equal(role, target.role)|} checked{|/#|} id="{| role |}" type="checkbox" name="roles" value="{| role |}"><label for="{| role |}">{| role |}</label>{| /* |}
+            {| * target.roles : key : role |}<input {|# role |} checked{|/#|} id="{| key |}" type="checkbox" name="{| key |}"
+                value="{| role |}"><label for="{| key |}">{| key |}</label>{| /* |}
         </div>
     </div>
     <div class="col1">
@@ -48,12 +48,12 @@
         <textarea id="summary" name="summary" class="target_item">{| target.summary |}</textarea>
     </div>
     <div class="col1">
-        <label for="summary">keywords</label>
+        <label for="keywords">keywords</label>
         <i class="fas fa-plus-circle plus"></i>
-        {| * target.parents : parent |}
+        {| * target.keywords : key : keyword |}
         <div>
-            <input id="keywords" name="keywords" class="target_item" type="text">
-            <i class="fas fa-minus-circle minus"></i>
+            {| ^ equal(0, key) |}<i class="fas fa-minus-circle minus"></i>{| /^ |}
+            <input id="keywords" name="keywords" class="target_item" type="text" value="{| keyword |}">
         </div>
         {| /* |}
     </div>
@@ -70,6 +70,29 @@
 
     import { Base } from '/{| backendFirstPath |}/base.js';
     var base = Base.init()
+
+    const minusElements = document.querySelectorAll('.minus')
+    minusElements.forEach(minusElement => {
+        minusElement.addEventListener('click', minusEvent => {
+            minusEvent.currentTarget.parentElement.remove()
+        })
+    })
+
+    const plusElements = document.querySelectorAll('.plus')
+    plusElements.forEach(plusElement => {
+        plusElement.addEventListener('click', event => {
+            const element = event.currentTarget.nextElementSibling
+            const copy = element.cloneNode(true)
+            const minusElement = document.createElement('i')
+            minusElement.classList.add('fas', 'fa-minus-circle')
+            minusElement.addEventListener('click', minusEvent => {
+                minusEvent.currentTarget.parentElement.remove()
+            })
+            copy.querySelector('input').value = ''
+            copy.insertAdjacentElement('afterbegin', minusElement)
+            element.parentElement.insertAdjacentElement('beforeend', copy)
+        })
+    })
 
     // codemirror
     const contentElement = document.querySelector('#content')

@@ -1,3 +1,5 @@
+const debug = require('../../../../modules/debug').debug
+
 exports.errorMessageJson = (res, err = null, content = null, filename = null, line = null) => {
     if (err) {
         content = err.message

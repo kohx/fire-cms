@@ -17,6 +17,7 @@ const invalidMessageJson = util.invalidMessageJson
 // https://firebase.google.com/docs/auth/custom-email-handler?hl=ja
 
 /* check unique at user */
+// TODO:: メソッド化しない？
 const checkUnique = (key, value, uid = null) => {
     if (value === null) {
         Promise.resolve(true)

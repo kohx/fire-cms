@@ -34,8 +34,8 @@
                     </span>
                 </div>
                 <div class="col2 grid3 gap1">
-                    <span class="col1">date of issue <i class="fas fa-caret-right"></i> </span>
-                    <span class="col2">{| target.dateOfIssue |}</span>
+                    <span class="col1">issue <i class="fas fa-caret-right"></i> </span>
+                    <span class="col2">{| target.issue |}</span>
                 </div>
                 <div class="col2 grid3 gap1">
                     <span class="col1">description <i class="fas fa-caret-right"></i> </span>
@@ -51,7 +51,7 @@
                 </div>
                 <div class="col2">
                     <label for="content">content</label>
-                    <textarea id="content" name="content" class="target_item"></textarea>
+                    <textarea id="content" name="content" class="target_item">{| target.content |}</textarea>
                 </div>
                 <a class="col1 button" href="/{| backendFirstPath |}/thing/{| target.unique |}">edit</a>
                 <button class="col1 delete_button" type="button" class="delete_button" data-request_url="{| backendFirstPath |}/thing-delete" data-id="{| target.id |}">delete</button>
