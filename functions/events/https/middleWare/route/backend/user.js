@@ -159,7 +159,7 @@ module.exports.create = (req, res, next) => {
 }
 
 /* validation create user */
-const validationCreate = (body, nameUniqueFlag, emailUniqueFlag) => {
+function validationCreate(body, nameUniqueFlag, emailUniqueFlag) {
 
     /* set orderbalidation */
     const validate = validation.list(body)
@@ -231,8 +231,6 @@ module.exports.update = (req, res, next) => {
                 // send invalid messages json
                 invalidMessageJson(res, validationResult)
             } else {
-
-                const params = {}
                 const allowaKeys = [
                     'name',
                     'email',
@@ -257,7 +255,9 @@ module.exports.update = (req, res, next) => {
 }
 
 /* validation update user */
-const validationUpdate = (body, nameUniqueFlag, emailUniqueFlag) => {
+function validationUpdate(body, nameUniqueFlag, emailUniqueFlag) {
+
+    // TODO:: 自分自身は変更できなくする、またはサインアウトする
 
     /* set orderbalidation */
     const validate = validation.list(body)
@@ -272,7 +272,7 @@ const validationUpdate = (body, nameUniqueFlag, emailUniqueFlag) => {
             .valid('name', 'isUnique', nameUniqueFlag)
     }
     // email
-    if (body.hasOwnProperty('name')) {
+    if (body.hasOwnProperty('email')) {
         validate
             .valid('email', 'isRequired')
             .valid('email', 'isEmail')
@@ -281,7 +281,7 @@ const validationUpdate = (body, nameUniqueFlag, emailUniqueFlag) => {
     // パスワードには任意の組み合わせの印刷可能な ASCII 文字を使用できます。
     // また、8 文字以上にする必要があります。
     // password
-    if (body.hasOwnProperty('name')) {
+    if (body.hasOwnProperty('password')) {
         validate
             .valid('password', 'isRequired')
             .valid('password', 'isLength', 8, 20)
@@ -317,6 +317,8 @@ const validationUpdate = (body, nameUniqueFlag, emailUniqueFlag) => {
  * user delete (post)
  */
 module.exports.delete = (req, res, next) => {
+
+    // TODO:: 自分自身は削除できなくする、またはサインアウトする
 
     const id = req.body.id != null ? req.body.id : null
 

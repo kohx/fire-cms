@@ -254,7 +254,9 @@ module.exports.out = (req, res, next) => {
 
     // セッション Cookie を取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
+    debug(session, __filename, __line)
     const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
+    debug(sessionCookie, __filename, __line)
 
     if (!sessionCookie) {
         res.json({

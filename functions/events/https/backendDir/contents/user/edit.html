@@ -2,70 +2,79 @@
 {|> header |}
 
 <div class="col0 grid1 gap2">
-        <div class="col1"><label>uid</label><input id="uid" name="uid" type="text" readonly value="{| target.uid |}"></div>
-        <div class="col1"><label for="name">name</label><input id="name" class="target_item" type="text" name="name"
-                value="{| target.name |}"></div>
-        <div class="col1"><label for="email">email</label><input id="email" class="target_item" type="text" name="email"
-                value="{| target.email |}"></div>
-        <div class="col1"><label for="password">password</label><input id="password" class="target_item" type="password"
-                name="password" value=""></div>
-        <div class="col1"><label for="confirm">confirm</label><input id="confirm" class="target_item" type="password"
-                name="confirm" value=""></div>
-        <div class="col1">
-            <div>description</div>
-            <textarea rows="5" name="textarea" id="description">{| target.description |}</textarea>
+    <div class="col1">
+        <label>id</label>
+        <input id="id" name="id" type="text" readonly value="{| target.id |}">
+    </div>
+    <div class="col1">
+        <label for="name">name</label>
+        <input id="name" class="target_item" type="text" name="name" value="{| target.name |}">
+    </div>
+    <div class="col1">
+        <label for="email">email</label>
+        <input id="email" class="target_item" type="text" name="email" value="{| target.email |}">
+    </div>
+    <div class="col1">
+        <label for="password">password</label>
+        <input id="password" class="target_item" type="password" name="password">
+    </div>
+    <div class="col1">
+        <label for="confirm">confirm</label><input id="confirm" class="target_item" type="password" name="confirm">
+    </div>
+    <div class="col1">
+        <div>description</div>
+        <textarea rows="5" name="textarea" id="description">{| target.description |}</textarea>
+    </div>
+    <div class="col1">
+        <div>role</div>
+        <div>
+            {|* roles : key : role |}
+            <input {|# equal(role, target.role)|} checked{|/#|} class="target_item role_item" id="{|role|}" name='role'
+                type="radio" value="{|role|}"><label for="{|role|}">{|role|}</label>
+            {|/*|}
         </div>
-        <div class="col1">
-            <div>role</div>
-            <div class="grid6 gap1">
-                {|* roles : key : role |}
-                <div class="col1">
-                    <input {|# equal(role, target.role)|} checked{|/#|} class="target_item role_item" id="{|role|}"
-                        name='role' type="radio" value="{|role|}"><label for="{|role|}">{|role|}</label>
-                </div>
-                {|/*|}
-            </div>
-        </div>
-        <div class="col1">
-            <label for="order">order</label><input id="order" class="target_item" type="text" name="order" value="{| target.order |}">
-        </div>
+    </div>
+    <div class="col1">
+        <label for="order">order</label>
+        <input id="order" class="target_item" type="text" name="order" value="{| target.order |}">
+    </div>
 
-        <div class="col1">
-            <div>radio</div>
-            <div>
-                <input type="radio" id="iii" name='radio' value="iii"><label for="iii">iii</label>
-                <input type="radio" id="jjj" name='radio' value="jjj"><label for="jjj">jjj</label>
-                <input type="radio" id="kkk" name='radio' value="kkk"><label for="kkk">kkk</label>
-            </div>
+    <div class="col1">
+        <div>radio</div>
+        <div>
+            <input type="radio" id="iii" name='radio' value="iii"><label for="iii">iii</label>
+            <input type="radio" id="jjj" name='radio' value="jjj"><label for="jjj">jjj</label>
+            <input type="radio" id="kkk" name='radio' value="kkk"><label for="kkk">kkk</label>
         </div>
-        <div class="col1">
-            <div>check</div>
-            <div>
-                <input type="checkbox" id="aaa" name='check' value="aaa" checked><label for="aaa">aaa</label>
-                <input type="checkbox" id="bbb" name='check' value="bbb" checked><label for="bbb">bbb</label>
-                <input type="checkbox" id="ccc" name='check' value="ccc"><label for="ccc">ccc</label>
-            </div>
+    </div>
+    <div class="col1">
+        <div>check</div>
+        <div>
+            <input type="checkbox" id="aaa" name='check' value="aaa" checked><label for="aaa">aaa</label>
+            <input type="checkbox" id="bbb" name='check' value="bbb" checked><label for="bbb">bbb</label>
+            <input type="checkbox" id="ccc" name='check' value="ccc"><label for="ccc">ccc</label>
         </div>
-        <div class="col1">
-            <div>select</div>
-            <select name="select" id="sss">
-                <option value="111">111</option>
-                <option value="222" selected>222</option>
-                <option value="333">333</option>
-            </select>
-        </div>
-        <div class="col1">
-            <div>multiple</div>
-            <select multiple name="multiple" id="mmm">
-                <option value="xxx" selected>1xx</option>
-                <option value="yyy">yyy</option>
-                <option value="zzz" selected>zzz</option>
-            </select>
-        </div>
-        <div class="col1">
-            <div>textarea</div>
-            <textarea rows="5" name="textarea" id="textarea">asdf</textarea>
-        </div>
+    </div>
+    <div class="col1">
+        <div>select</div>
+        <select name="select" id="sss">
+            <option value="111">111</option>
+            <option value="222" selected>222</option>
+            <option value="333">333</option>
+        </select>
+    </div>
+    <div class="col1">
+        <div>multiple</div>
+        <select multiple name="multiple" id="mmm">
+            <option value="xxx" selected>1xx</option>
+            <option value="yyy">yyy</option>
+            <option value="zzz" selected>zzz</option>
+        </select>
+    </div>
+    <div class="col1">
+        <div>textarea</div>
+        <textarea rows="5" name="textarea" id="textarea">asdf</textarea>
+    </div>
     <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/user-update">update</button>
 </div>
 
@@ -89,11 +98,11 @@
         // get button
         const button = event.currentTarget
 
-        // add uid because uid is not modified
-        const uid = base.defaults.uid
+        // add id because id is not modified
+        const id = base.defaults.id
 
         // not change then show warnning
-        base.requestServer(button, false, { uid })
+        base.requestServer(button, false, { id })
     })
 
 </script>

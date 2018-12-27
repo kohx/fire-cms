@@ -2,23 +2,38 @@
 {|> header |}
 
 <div class="col0 grid1 gap2">
-    <div class="col1"> <label for="name">name</label> <input id="name" name="name" class="target_item" type="text"></div>
-    <div class="col1"> <label for="email">email</label> <input id="email" name="email" class="target_item" type="text"></div>
-    <div class="col1"> <label for="password">password</label> <input id="password" name="password" class=" target_item"
-            type="password"></div>
-    <div class="col1"> <label for="confirm">confirm</label> <input id="confirm" name="confirm" class="target_item" type="password"></div>
-    <div class="col1"> <label for="description">description</label> <input id="description" name="description" class="target_item"
-            type="text"></div>
-    <div class="col1"> <span>role</span>
-        <div class="col1 grid6 gap1">
+    <div class="col1">
+        <label for="name">name</label>
+        <input id="name" name="name" class="target_item" type="text">
+    </div>
+    <div class="col1">
+        <label for="email">email</label>
+        <input id="email" name="email" class="target_item" type="text">
+    </div>
+    <div class="col1">
+        <label for="password">password</label>
+        <input id="password" name="password" class=" target_item" type="password">
+    </div>
+    <div class="col1">
+        <label for="confirm">confirm</label>
+        <input id="confirm" name="confirm" class="target_item" type="password">
+    </div>
+    <div class="col1">
+        <label for="description">description</label>
+        <input id="description" name="description" class="target_item" type="text">
+    </div>
+    <div class="col1">
+        <span>role</span>
+        <div class="col1 gap1">
             {|* roles : key : role |}
-            <div>
-                <input class="target_item role_item" id="{|role|}" name='role' type="radio" value="{|role|}"><label for="{|role|}">{|role|}</label>
-            </div>
+            <input class="target_item role_item" id="{|role|}" name='role' type="radio" value="{|role|}"><label for="{|role|}">{|role|}</label>
             {|/*|}
         </div>
     </div>
-    <div class="col1"> <label for="order">order</label> <input id="order" name='order' class="target_item" type="text"></div>
+    <div class="col1">
+        <label for="order">order</label>
+        <input id="order" name='order' class="target_item" type="text">
+    </div>
     <button class="col1 target_item" type="button" id="create_button" data-request_url="{| backendFirstPath |}/user-create"
         data-redirect_url="{| backendFirstPath |}/user">create</button>
 </div>

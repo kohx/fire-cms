@@ -49,5 +49,9 @@
 	"{{param1}} is blank.": "{{param1}} is blank.",
 	"{{key}} {{key}} is updated.": "{{key}} {{key}} is updated.",
 	"{{param1}} is not map.": "{{param1}} is not map.",
-	"{{param1}} array elements are not boolean.": "{{param1}} array elements are not boolean."
+	"{{param1}} array elements are not boolean.": "{{param1}} array elements are not boolean.",
+	"{{param1}} is not contains symbol.": "{{param1}} is not contains symbol.",
+	"{{param1}} is not contains uppercase.": "{{param1}} is not contains uppercase.",
+	"{{param1}} is not contains numric.": "{{param1}} is not contains numric.",
+	"{{param1}} is not same with {{param2}}.": "{{param1}} is not same with {{param2}}."
 }

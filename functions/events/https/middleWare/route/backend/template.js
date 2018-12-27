@@ -23,11 +23,14 @@ const filterDody = util.filterDody
  * template index (templates)
  */
 module.exports.index = (req, res, next) => {
-    return admin.firestore().collection('templates').orderBy('order', "asc").get()
+    return admin.firestore().collection('templates')
+        .orderBy('order', 'asc')
+        .get()
         .then(docs => {
             const targets = {}
             docs.forEach(doc => {
-                targets[doc.id] = doc.data()
+                let data = doc.data()
+                targets[doc.id] = data
             })
             req.vessel.thing.targets = targets
             next()
@@ -98,30 +101,32 @@ module.exports.create = (req, res, next) => {
     const unique = body.unique ? body.unique : ''
 
     // get unique from store
-    admin.firestore().collection('templates').where('unique', '==', unique).limit(1).get()
+    admin.firestore().collection('templates')
+        .where('unique', '==', unique)
+        .limit(1)
+        .get()
         .then(docs => {
+
+            // check unique is unique
             const uniqueFlag = docs.size === 0 ? true : false
 
-            const validationResult = validationBody(body, uniqueFlag)
+            // get validation result
+            const validationResult = validationCreate(body, uniqueFlag)
 
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
                 invalidMessageJson(res, validationResult)
             } else {
-                const params = {}
-                const allowaKeys = ['name', 'unique', 'order', 'type', 'content']
+                const allowaKeys = [
+                    'name',
+                    'unique',
+                    'order',
+                    'type',
+                    'content'
+                ]
                 const intKeys = ['order']
-
-                Object.keys(body).forEach(key => {
-                    if (allowaKeys.includes(key)) {
-                        let value = body[key]
-                        if (intKeys.includes(key)) {
-                            value = Number(value)
-                        }
-                        params[key] = value
-                    }
-                })
+                const params = filterDody(body, allowaKeys, intKeys)
 
                 // add id
                 const templateDoc = admin.firestore().collection('templates').doc()
@@ -130,17 +135,8 @@ module.exports.create = (req, res, next) => {
 
                 templateDoc.set(params)
                     .then(_ => {
-                        res.json({
-                            code: 'success',
-                            mode: 'create',
-                            messages: [{
-                                key: null,
-                                content: req.__(`Successfully created new template.`),
-                            }],
-                            values: {
-                                unique: params.unique
-                            },
-                        })
+                        // send success messages json
+                        successMessageJson(res, 'Successfully created new thing.', 'create', {}, params.unique)
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
@@ -148,30 +144,22 @@ module.exports.create = (req, res, next) => {
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
-/* validation template */
-const validationBody = (body, uniqueFlag) => {
+/* validation create template */
+function validationCreate(body, uniqueFlag) {
 
     /* set orderbalidation */
     const validate = validation.list(body)
-
-    if (body.name != null) {
-        validate.valid('name', 'isRequired')
-    }
-
-    if (body.unique != null) {
-        validate.valid('unique', 'isRequired')
-        validate.valid('unique', 'isAlnumunder')
-        validate.valid('unique', 'isUnique', uniqueFlag)
-    }
-
-    if (body.order != null) {
-        validate.valid('order', 'isRequired')
-        validate.valid('order', 'isNumeric')
-    }
-
-    if (body.type != null) {
-        validate.valid('type', 'isRequired')
-    }
+        // name
+        .valid('name', 'isRequired')
+        // unique
+        .valid('unique', 'isRequired')
+        .valid('unique', 'isAlnumunder')
+        .valid('unique', 'isUnique', uniqueFlag)
+        // order
+        .valid('order', 'isRequired')
+        .valid('order', 'isNumeric')
+        // type
+        .valid('type', 'isRequired')
 
     return validate.get()
 }
@@ -189,69 +177,81 @@ module.exports.update = (req, res, next) => {
 
     // if id undefined return err
     if (!id) {
-        errorMessageJson(res, null, req.__('id is undefined!'))
+        errorMessageJson(res, null, 'id is undefined!')
     }
 
     // get unique from body
     const unique = body.unique ? body.unique : ''
 
     // get unique from store
-    admin.firestore().collection('templates').where('unique', '==', unique).limit(1).get()
+    admin.firestore().collection('templates')
+        .where('unique', '==', unique)
+        .limit(1)
+        .get()
         .then(docs => {
+
+            // check unique is unique
             const uniqueFlag = docs.size === 0 ? true : false
 
-            const validationResult = validationBody(body, uniqueFlag)
+            // get validation result
+            const validationResult = validationUpdate(body, uniqueFlag)
 
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
                 invalidMessageJson(res, validationResult)
             } else {
-                const params = {}
-                const allowaKeys = ['name', 'unique', 'order', 'type', 'content']
+                const allowaKeys = [
+                    'name',
+                    'unique',
+                    'order',
+                    'type',
+                    'content'
+                ]
                 const intKeys = ['order']
+                const params = filterDody(body, allowaKeys, intKeys)
 
-                Object.keys(body).forEach(key => {
-                    if (allowaKeys.includes(key)) {
-                        let value = body[key]
-                        if (intKeys.includes(key)) {
-                            value = Number(value)
-                        }
-                        params[key] = value
-                    }
-                })
-
-                admin.firestore().collection('templates').doc(id)
+                admin.firestore().collection('templates')
+                    .doc(id)
                     .update(params)
                     .then(_ => {
-                        let messages = []
-                        let values = {}
-
-                        Object.keys(body).forEach(key => {
-                            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
-                            // change to 
-                            // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-                            if (key !== 'id') {
-                                messages.push({
-                                    key,
-                                    content: req.__(`{{key}} is updated.`, {
-                                        key
-                                    })
-                                })
-                                values[key] = body[key]
-                            }
-                        })
-                        res.json({
-                            code: 'success',
-                            mode: 'update',
-                            messages,
-                            values,
-                        })
+                        // send seccess message
+                        successMessageJson(res, '{{key}} is updated.', 'update', body)
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
+}
+
+/* validation update thing */
+function validationUpdate(body, uniqueFlag) {
+
+    /* set orderbalidation */
+    const validate = validation.list(body)
+    // name
+    if (body.hasOwnProperty('name')) {
+        validate.valid('name', 'isRequired')
+    }
+    // unique
+    if (body.hasOwnProperty('unique')) {
+        validate
+            .valid('unique', 'isRequired')
+            .valid('unique', 'isAlnumunder')
+            .valid('unique', 'isUnique', uniqueFlag)
+    }
+    // order
+    if (body.hasOwnProperty('order')) {
+        validate
+            .valid('order', 'isRequired')
+            .valid('order', 'isNumeric')
+    }
+    // type
+    if (body.hasOwnProperty('type')) {
+        validate.valid('type', 'isRequired')
+    }
+
+    return validate.get()
 }
 
 /**
@@ -263,33 +263,20 @@ module.exports.delete = (req, res, next) => {
 
     if (!id) {
         // if id undefined return err
-        res.json({
-            code: 'error',
-            messages: [{
-                key: null,
-                content: req.__('id is undefined!'),
-            }],
-        })
+        errorMessageJson(res, null, 'id is undefined!')
     } else {
         // get template by id
-        admin.firestore().collection('templates').doc(id).get()
+        admin.firestore().collection('templates')
+            .doc(id)
+            .get()
             .then(doc => {
                 // check template exist
                 if (doc.exists) {
                     // delete template
                     doc.ref.delete()
                         .then(_ => {
-                            res.json({
-                                code: 'success',
-                                mode: 'delete',
-                                messages: [{
-                                    key: null,
-                                    content: req.__(`Successfully deleted template.`),
-                                }],
-                                values: {
-                                    unique: id
-                                }
-                            })
+                            // send success message
+                            successMessageJson(res, 'Successfully deleted thing.', 'delete', {}, id)
                         })
                         .catch(err => errorMessageJson(res, err, null, __filename, __line))
                 } else {

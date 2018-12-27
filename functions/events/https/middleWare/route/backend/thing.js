@@ -24,7 +24,7 @@ const filterDody = util.filterDody
  */
 module.exports.index = (req, res, next) => {
     return admin.firestore().collection('things')
-        .orderBy('order', "asc")
+        .orderBy('order', 'asc')
         .get()
         .then(docs => {
             const targets = {}
@@ -131,7 +131,10 @@ module.exports.create = (req, res, next) => {
     const unique = body.unique ? body.unique : ''
 
     // get unique from store
-    admin.firestore().collection('things').where('unique', '==', unique).limit(1).get()
+    admin.firestore().collection('things')
+        .where('unique', '==', unique)
+        .limit(1)
+        .get()
         .then(docs => {
 
             // check unique is unique
@@ -269,7 +272,8 @@ module.exports.update = (req, res, next) => {
                 const intKeys = ['order']
                 const params = filterDody(body, allowaKeys, intKeys)
 
-                admin.firestore().collection('things').doc(id)
+                admin.firestore().collection('things')
+                    .doc(id)
                     .update(params)
                     .then(_ => {
                         // send seccess message

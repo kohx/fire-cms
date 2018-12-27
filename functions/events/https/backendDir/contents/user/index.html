@@ -9,15 +9,15 @@
 
     <ul class="list col0 grid3 gap2">
         {|* targets: target |}
-        <li id="id_{| target.uid |}" class="list-item col0 grid2 gap1 pad1">
+        <li id="id_{| target.id |}" class="list-item col0 grid2 gap1 pad1">
             <h2 class="col2">{| target.name |}</h2>
             <div class="col2 grid3 gap1"><span class="col1">order <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.order |}</span></div>
-            <div class="col2 grid3 gap1"><span class="col1">uid <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.uid |}</span></div>
+            <div class="col2 grid3 gap1"><span class="col1">id <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.id |}</span></div>
             <div class="col2 grid3 gap1"><span class="col1">email <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.email |}</span></div>
             <div class="col2 grid3 gap1"><span class="col1">role <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.role |}</span></div>
             <div class="col2 grid3 gap1"><span class="col1">description <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.description |}</span></div>
-            <a class="col1 button" href="/{| backendFirstPath |}/user/{| target.uid |}">edit</a>
-            <button class="col1 delete_button" type="button" class="delete_button" data-request_url="{| backendFirstPath |}/user-delete" data-uid="{| target.uid |}">delete</button>
+            <a class="col1 button" href="/{| backendFirstPath |}/user/{| target.id |}">edit</a>
+            <button class="col1 delete_button" type="button" class="delete_button" data-request_url="{| backendFirstPath |}/user-delete" data-id="{| target.id |}">delete</button>
         </li>
         {|/*|}
     </ul>
@@ -44,11 +44,11 @@
             // get button
             const button = event.currentTarget
 
-            // add uid fore delete
-            const uid = button.dataset.uid != null ? button.dataset.uid : null
+            // add id fore delete
+            const id = button.dataset.id != null ? button.dataset.id : null
             
             // not change then show warnning
-            base.requestServer(button, true, { uid })
+            base.requestServer(button, true, { id })
         })
     });
 
