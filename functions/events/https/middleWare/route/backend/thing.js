@@ -34,7 +34,6 @@ module.exports.index = (req, res, next) => {
                 data.issue = data.issue.toDate().toISOString()
                 targets[doc.id] = data
             })
-            debug(targets, __filename, __line)
             req.vessel.thing.targets = targets
             next()
         })
@@ -146,7 +145,6 @@ module.exports.create = (req, res, next) => {
                 // send invalid messages json
                 invalidMessageJson(res, validationResult)
             } else {
-
                 const allowaKeys = [
                     'name',
                     'unique',
@@ -232,14 +230,17 @@ module.exports.update = (req, res, next) => {
 
     // if id undefined return err
     if (!id) {
-        errorMessageJson(res, null, req.__('id is undefined!'))
+        errorMessageJson(res, null, 'id is undefined!')
     }
 
     // get unique from body
     const unique = body.unique ? body.unique : ''
 
     // get unique from store
-    admin.firestore().collection('things').where('unique', '==', unique).limit(1).get()
+    admin.firestore().collection('things')
+        .where('unique', '==', unique)
+        .limit(1)
+        .get()
         .then(docs => {
 
             // check unique is unique
@@ -280,7 +281,7 @@ module.exports.update = (req, res, next) => {
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
-/* validation create thing */
+/* validation update thing */
 function validationUpdate(body, uniqueFlag) {
 
     /* set orderbalidation */
@@ -293,7 +294,7 @@ function validationUpdate(body, uniqueFlag) {
     if (body.hasOwnProperty('unique')) {
         validate
             .valid('unique', 'isRequired')
-            .valid('unique', 'isAlnumunder')
+            .valid('unique', 'isUrlcharacter')
             .valid('unique', 'isUnique', uniqueFlag)
     }
     // order
@@ -339,16 +340,12 @@ module.exports.delete = (req, res, next) => {
 
     if (!id) {
         // if id undefined return err
-        res.json({
-            code: 'error',
-            messages: [{
-                key: null,
-                content: req.__('id is undefined!'),
-            }],
-        })
+        errorMessageJson(res, null, 'id is undefined!')
     } else {
         // get thing by id
-        admin.firestore().collection('things').doc(id).get()
+        admin.firestore().collection('things')
+            .doc(id)
+            .get()
             .then(doc => {
                 // check thing exist
                 if (doc.exists) {
@@ -361,7 +358,7 @@ module.exports.delete = (req, res, next) => {
                         .catch(err => errorMessageJson(res, err, null, __filename, __line))
                 } else {
                     // not exist thing
-                    errorMessageJson(res, null, req.__('id is undefined!'))
+                    errorMessageJson(res, null, 'id is undefined!')
                 }
             })
             .catch(err => errorMessageJson(res, err, null, __filename, __line))

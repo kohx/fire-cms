@@ -7,9 +7,9 @@ const system = parent.system
 const debug = require('../../modules/debug').debug
 
 exports.usersOnDelete = functions.firestore
-    .document('users/{uid}')
+    .document('users/{id}')
     .onDelete((doc, context) => {
 
         const data = doc.data()
-        return admin.auth().deleteUser(data.uid)
+        return admin.auth().deleteUser(data.id)
     })

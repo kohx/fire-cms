@@ -7,10 +7,10 @@ const system = parent.system
 const debug = require('../../modules/debug').debug
 
 exports.usersOnUpdate = functions.firestore
-    .document('users/{uid}')
+    .document('users/{id}')
     .onUpdate((change, context) => {
 
-        const uid = change.after.id
+        const id = change.after.id
         const beforeData = change.before.data()
         const afterData = change.after.data()
 
@@ -26,7 +26,7 @@ exports.usersOnUpdate = functions.firestore
         }
 
         if(Object.keys(params) !== 0) {
-            return admin.auth().updateUser(uid, params)
+            return admin.auth().updateUser(id, params)
         }
 
         return true

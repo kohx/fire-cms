@@ -13,33 +13,11 @@ const errorMessageJson = util.errorMessageJson
 /* build json messages from validation invalid messages */
 const invalidMessageJson = util.invalidMessageJson
 
-/* validation template */
-const validationBody = (body, uniqueFlag) => {
+/* build success json messages */
+const successMessageJson = util.successMessageJson
 
-    /* set orderbalidation */
-    const validate = validation.list(body)
-
-    if (body.name != null) {
-        validate.valid('name', 'isRequired')
-    }
-
-    if (body.unique != null) {
-        validate.valid('unique', 'isRequired')
-        validate.valid('unique', 'isAlnumunder')
-        validate.valid('unique', 'isUnique', uniqueFlag)
-    }
-
-    if (body.order != null) {
-        validate.valid('order', 'isRequired')
-        validate.valid('order', 'isNumeric')
-    }
-
-    if (body.type != null) {
-        validate.valid('type', 'isRequired')
-    }
-
-    return validate.get()
-}
+/* filter body */
+const filterDody = util.filterDody
 
 /**
  * template index (templates)
@@ -168,6 +146,34 @@ module.exports.create = (req, res, next) => {
             }
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
+}
+
+/* validation template */
+const validationBody = (body, uniqueFlag) => {
+
+    /* set orderbalidation */
+    const validate = validation.list(body)
+
+    if (body.name != null) {
+        validate.valid('name', 'isRequired')
+    }
+
+    if (body.unique != null) {
+        validate.valid('unique', 'isRequired')
+        validate.valid('unique', 'isAlnumunder')
+        validate.valid('unique', 'isUnique', uniqueFlag)
+    }
+
+    if (body.order != null) {
+        validate.valid('order', 'isRequired')
+        validate.valid('order', 'isNumeric')
+    }
+
+    if (body.type != null) {
+        validate.valid('type', 'isRequired')
+    }
+
+    return validate.get()
 }
 
 /**

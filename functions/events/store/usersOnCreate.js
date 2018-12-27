@@ -7,7 +7,7 @@ const system = parent.system
 const debug = require('../../modules/debug').debug
 
 exports.usersOnCreate = functions.firestore
-    .document('users/{uid}')
+    .document('users/{id}')
     .onCreate((doc, context) => {
 
         debug(doc, __filename, __line)

@@ -4,24 +4,24 @@ const debug = require('../../../../modules/debug').debug
  * Error Message Json
  * 
  * @param {Object} res 
- * @param {Object} err 
- * @param {Object} content 
- * @param {String} filename __filename
- * @param {String} line __line
+ * @param {Object} [err = null] 
+ * @param {String} [message = null] 
+ * @param {String} [filename = null] 
+ * @param {String} [line = null] 
  */
-function errorMessageJson(res, err = null, content = null, filename = null, line = null) {
+function errorMessageJson(res, err = null, message = null, filename = null, line = null) {
     if (err) {
-        content = err.message
+        message = err.message
         debug(err.message, filename, line)
     }
 
-    content = content != null ? content : 'error !'
+    message = message != null ? message : 'error !'
 
     res.json({
         code: 'error',
         messages: [{
             key: null,
-            content,
+            content: res.__(message),
         }]
     })
 }
