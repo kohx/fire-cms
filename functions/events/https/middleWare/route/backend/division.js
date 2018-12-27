@@ -118,7 +118,7 @@ module.exports.create = (req, res, next) => {
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, req, validationResult)
+                invalidMessageJson(res, validationResult)
             } else {
                 const params = {}
                 const allowaKeys = ['name', 'unique', 'order', 'description']
@@ -188,7 +188,7 @@ module.exports.update = (req, res, next) => {
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, req, validationResult)
+                invalidMessageJson(res, validationResult)
             } else {
                 const params = {}
                 const allowaKeys = ['name', 'unique', 'order', 'description']

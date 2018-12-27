@@ -46,5 +46,8 @@
 	"chack this!": "chack this!",
 	"ok!": "ok!",
 	"{{docKey}} {{valueKey}} is updated.": "{{docKey}} {{valueKey}} is updated.",
-	"{{param1}} is blank.": "{{param1}} is blank."
+	"{{param1}} is blank.": "{{param1}} is blank.",
+	"{{key}} {{key}} is updated.": "{{key}} {{key}} is updated.",
+	"{{param1}} is not map.": "{{param1}} is not map.",
+	"{{param1}} array elements are not boolean.": "{{param1}} array elements are not boolean."
 }

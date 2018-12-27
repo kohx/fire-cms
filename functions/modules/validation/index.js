@@ -55,6 +55,7 @@ module.exports = class validation {
             isAlnumunspace: `{{param1}} is not alphanumeric and space.`,
             isNumunder: `{{param1}} is not numeric and underscore.`,
             isBase64: `{{param1}} is not base64 encoded.`,
+            isMap: `{{param1}} is not map.`,
             isArray: `{{param1}} is not array.`,
             isNotBlankObject: `{{param1}} is blank.`,
             containsSymbol: `{{param1}} is not contains symbol.`,
@@ -65,6 +66,7 @@ module.exports = class validation {
             isUnique: `{{param1}} is already used.`,
             isDate: `{{param1}} is not date.`,
             isAllString: `{{param1}} array elements are not string.`,
+            isAllBool: `{{param1}} array elements are not boolean.`,
         }
     }
 
@@ -138,6 +140,10 @@ module.exports = class validation {
                             flag = validator.isBase64(body)
                             break
 
+                        case 'isMap':
+                            flag = typeof value === 'object' && !Array.isArray(value)
+                            break
+
                         case 'isArray':
                             flag = typeof value === 'object' && Array.isArray(value)
                             break
@@ -185,6 +191,12 @@ module.exports = class validation {
                         case 'isAllString':
                             Object.keys(value).forEach(index => {
                                 flag = typeof value[index] === 'string'
+                            })
+                            break
+
+                        case 'isAllBool':
+                            Object.keys(value).forEach(index => {
+                                flag = typeof value[index] === 'boolean'
                             })
                             break
 
@@ -287,7 +299,7 @@ module.exports = class validation {
 
         for (let index in paths) {
             const path = paths[index]
-            value = value[path]
+            value = value[path] != null ? value[path] : null
         }
         return value
     }

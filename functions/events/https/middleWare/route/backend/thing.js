@@ -13,41 +13,11 @@ const errorMessageJson = util.errorMessageJson
 /* build json messages from validation invalid messages */
 const invalidMessageJson = util.invalidMessageJson
 
-/* validation thing */
-const validationBody = (body, uniqueFlag) => {
+/* build success json messages */
+const successMessageJson = util.successMessageJson
 
-    debug(body, __filename, __line)
-
-    /* set orderbalidation */
-    const validate = validation.list(body)
-
-    validate.valid('name', 'isRequired')
-
-    validate.valid('unique', 'isRequired')
-    validate.valid('unique', 'isAlnumunder')
-    validate.valid('unique', 'isUnique', uniqueFlag)
-
-    validate.valid('order', 'isRequired')
-    validate.valid('order', 'isNumeric')
-
-    validate.valid('parents', 'isArray')
-    validate.valid('parents', 'isAllString')
-
-    validate.valid('issue', 'isDate')
-
-    // description
-    // summary
-    // keywords
-
-    validate.valid('keywords', 'isArray')
-    validate.valid('keywords', 'isAllString')
-
-    // if (body.role != null) {
-    //     validate.valid('role', 'isRequired')
-    // }
-
-    return validate.get()
-}
+/* filter body */
+const filterDody = util.filterDody
 
 /**
  * thing index (things)
@@ -164,16 +134,19 @@ module.exports.create = (req, res, next) => {
     // get unique from store
     admin.firestore().collection('things').where('unique', '==', unique).limit(1).get()
         .then(docs => {
+
+            // check unique is unique
             const uniqueFlag = docs.size === 0 ? true : false
 
-            const validationResult = validationBody(body, uniqueFlag)
+            // get validation result
+            const validationResult = validationCreate(body, uniqueFlag)
 
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, req, validationResult)
+                invalidMessageJson(res, validationResult)
             } else {
-                const params = {}
+
                 const allowaKeys = [
                     'name',
                     'unique',
@@ -187,16 +160,7 @@ module.exports.create = (req, res, next) => {
                     'content',
                 ]
                 const intKeys = ['order']
-
-                Object.keys(body).forEach(key => {
-                    if (allowaKeys.includes(key)) {
-                        let value = body[key]
-                        if (intKeys.includes(key)) {
-                            value = Number(value)
-                        }
-                        params[key] = value
-                    }
-                })
+                const params = filterDody(body, allowaKeys, intKeys)
 
                 // add id
                 const thingDoc = admin.firestore().collection('things').doc()
@@ -205,22 +169,44 @@ module.exports.create = (req, res, next) => {
 
                 thingDoc.set(params)
                     .then(_ => {
-                        res.json({
-                            code: 'success',
-                            mode: 'create',
-                            messages: [{
-                                key: null,
-                                content: req.__(`Successfully created new thing.`),
-                            }],
-                            values: {
-                                unique: params.unique
-                            },
-                        })
+                        // send success messages json
+                        successMessageJson(res, 'Successfully created new thing.', 'create', {}, params.unique)
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
+}
+
+/* validation create thing */
+function validationCreate(body, uniqueFlag) {
+
+    /* set orderbalidation */
+    const validate = validation.list(body)
+        // name
+        .valid('name', 'isRequired')
+        // unique
+        .valid('unique', 'isRequired')
+        .valid('unique', 'isAlnumunder')
+        .valid('unique', 'isUnique', uniqueFlag)
+        // order
+        .valid('order', 'isRequired')
+        .valid('order', 'isNumeric')
+        // parents
+        .valid('parents', 'isArray')
+        .valid('parents', 'isAllString')
+        // issue
+        .valid('issue', 'isDate')
+        // description
+        // summary
+        // keywords
+        .valid('keywords', 'isArray')
+        .valid('keywords', 'isAllString')
+        // roles 
+        .valid('roles', 'isMap')
+        .valid('roles', 'isAllBool')
+
+    return validate.get()
 }
 
 /**
@@ -230,6 +216,14 @@ module.exports.update = (req, res, next) => {
 
     // body
     const body = req.body
+
+    // to full rolles
+    const roles = req.vessel.get('settings.general.roles')
+    const fullRoles = {}
+    roles.forEach(role => {
+        fullRoles[role] = body.roles.includes(role)
+    })
+    body.roles = fullRoles
 
     // then update id is requred
     const id = body.id != null ? body.id : null
@@ -247,56 +241,85 @@ module.exports.update = (req, res, next) => {
         .then(docs => {
             const uniqueFlag = docs.size === 0 ? true : false
 
-            const validationResult = validationBody(body, uniqueFlag)
+            const validationResult = validationUpdate(body, uniqueFlag)
 
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, req, validationResult)
+                invalidMessageJson(res, validationResult)
             } else {
-                const params = {}
-                const allowaKeys = ['name', 'unique', 'order', 'type', 'content']
+                const allowaKeys = [
+                    'name',
+                    'unique',
+                    'order',
+                    'parents',
+                    'roles',
+                    'issue',
+                    'description',
+                    'summary',
+                    'keywords',
+                    'content',
+                ]
                 const intKeys = ['order']
-
-                Object.keys(body).forEach(key => {
-                    if (allowaKeys.includes(key)) {
-                        let value = body[key]
-                        if (intKeys.includes(key)) {
-                            value = Number(value)
-                        }
-                        params[key] = value
-                    }
-                })
+                const params = filterDody(body, allowaKeys, intKeys)
 
                 admin.firestore().collection('things').doc(id)
                     .update(params)
                     .then(_ => {
-                        let messages = []
-                        let values = {}
-
-                        Object.keys(body).forEach(key => {
-                            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
-                            // change to 
-                            // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-                            if (key !== 'id') {
-                                messages.push({
-                                    key,
-                                    content: req.__(`{{key}} is updated.`, {
-                                        key
-                                    })
-                                })
-                                values[key] = body[key]
-                            }
-                        })
-                        res.json({
-                            code: 'success',
-                            mode: 'update',
-                            messages,
-                            values,
-                        })
+                        successMessageJson(res, '{{key}} is updated.', 'update', body)
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
+}
+
+/* validation create thing */
+function validationUpdate(body, uniqueFlag) {
+
+    /* set orderbalidation */
+    const validate = validation.list(body)
+    // name
+    if (body.hasOwnProperty('name')) {
+        validate.valid('name', 'isRequired')
+    }
+    // unique
+    if (body.hasOwnProperty('unique')) {
+        validate
+            .valid('unique', 'isRequired')
+            .valid('unique', 'isAlnumunder')
+            .valid('unique', 'isUnique', uniqueFlag)
+    }
+    // order
+    if (body.hasOwnProperty('order')) {
+        validate
+            .valid('order', 'isRequired')
+            .valid('order', 'isNumeric')
+    }
+    // parents
+    if (body.hasOwnProperty('parents')) {
+        validate
+            .valid('parents', 'isArray')
+            .valid('parents', 'isAllString')
+    }
+    // issue
+    if (body.hasOwnProperty('issue')) {
+        validate.valid('issue', 'isDate')
+    }
+    // description
+    // summary
+    // keywords
+    if (body.hasOwnProperty('keywords')) {
+        validate
+            .valid('keywords', 'isArray')
+            .valid('keywords', 'isAllString')
+    }
+    // roles 
+    if (body.hasOwnProperty('roles')) {
+        validate
+            .valid('roles', 'isMap')
+            .valid('roles', 'isAllBool')
+    }
+
+    return validate.get()
 }

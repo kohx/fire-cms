@@ -38,7 +38,31 @@ export class Base {
         }
 
         /* add events */
-        this.addEvents()
+        this.addTargetEvents()
+
+        /* add plus minus ibent */
+        const minusElements = document.querySelectorAll('.minus')
+        minusElements.forEach(minusElement => {
+            minusElement.addEventListener('click', minusEvent => {
+                minusEvent.currentTarget.parentElement.remove()
+            })
+        })
+
+        const plusElements = document.querySelectorAll('.plus')
+        plusElements.forEach(plusElement => {
+            plusElement.addEventListener('click', event => {
+                const element = event.currentTarget.nextElementSibling
+                const copy = element.cloneNode(true)
+                const minusElement = document.createElement('i')
+                minusElement.classList.add('fas', 'fa-minus-circle')
+                minusElement.addEventListener('click', minusEvent => {
+                    minusEvent.currentTarget.parentElement.remove()
+                })
+                copy.querySelector('input').value = ''
+                copy.insertAdjacentElement('afterbegin', minusElement)
+                element.parentElement.insertAdjacentElement('beforeend', copy)
+            })
+        })
 
         /* notice */
         this.notice = document.querySelector('.notice')
@@ -67,28 +91,37 @@ export class Base {
      * @returns {*}
      */
     getFormObject(key = null) {
+        // get elements
         const elements = document.querySelectorAll('input, select, textarea')
 
         let formObjects = {}
         elements.forEach(element => {
+            // key is element name
             let key = element.name
             const type = element.type
             let value = ''
+
+            // if radio or chackbox then get checked
             if (['radio', 'checkbox'].includes(type)) {
                 if (element.checked) {
                     value = element.value
                 }
-            } else if (type === 'select-multiple') {
+            }
+            // if select-multiple then get option selected
+            else if (type === 'select-multiple') {
                 value = []
                 element.querySelectorAll('option').forEach(option => {
                     if (option.selected) {
                         value.push(option.value)
                     }
                 })
-            } else {
+            }
+            // othe then value
+            else {
                 value = element.value
             }
 
+            // if 
             if (formObjects.hasOwnProperty(key)) {
                 if (Array.isArray(formObjects[key])) {
                     formObjects[key].push(value)
@@ -120,8 +153,8 @@ export class Base {
     /**
      * check value one is equal value two
      * 
-     * @param {*} one 
-     * @param {*} two 
+     * @param {mix} one 
+     * @param {mix} two 
      * @returns {boolean}
      */
     equalValue(one, two) {
@@ -137,6 +170,7 @@ export class Base {
 
     /**
      * add class _modified to element
+     * 
      * @param {object} event 
      */
     modifyValue(event) {
@@ -190,7 +224,7 @@ export class Base {
      * 
      * @param {string|null} selector 
      */
-    addEvents() {
+    addTargetEvents() {
         Object.keys(this.targets).forEach(key => {
             const element = this.targets[key]
 
@@ -231,7 +265,14 @@ export class Base {
         }
     }
 
-    /* notice */
+    /**
+     * notice
+     * 
+     * @param {String} code 
+     * @param {String} messages 
+     * @param {String} title 
+     * @param {Number} timeout 
+     */
     setNotice(code, messages, title = null, timeout = this.showTime) {
         this.clearNotice()
 
@@ -271,9 +312,9 @@ export class Base {
     /**
      * fetche
      * 
-     * @param {string} url 
-     * @param {object} body 
-     * @param {object} addHeader 
+     * @param {String} url 
+     * @param {Object} body 
+     * @param {Object} addHeader 
      */
     fetchServer(url, body = {}, addHeader = {}) {
 
@@ -315,8 +356,9 @@ export class Base {
     /**
      * request server
      * 
-     * @param {element} buttonElement 
-     * @param {object} addObjectg 
+     * @param {Object} buttonElement 
+     * @param {Boolean} [sendAll = true] 
+     * @param {Object} [addObjectg = {}] 
      */
     requestServer(buttonElement, sendAll = true, addObjectg = {}) {
 
@@ -338,6 +380,8 @@ export class Base {
 
         // get present value form data
         const presents = this.getFormObject()
+
+        console.log(presents)
 
         // modified value
         let modifiedValues = {}
@@ -369,36 +413,33 @@ export class Base {
         // additional data merge
         modifiedValues = Object.assign(modifiedValues, addObjectg)
 
-        console.log(modifiedValues)
-
         // request to server
         this.fetchServer(requestUrl, modifiedValues)
             .then(result => {
 
+                console.log(result)
+
                 // get code
                 const code = result.code
-
                 // get mode
                 const mode = result.mode
-
                 // get values
                 const values = result.values
+                // get effected
+                const effected = result.effected
 
                 // then there is redirect url
-                if (code === 'success' && redirectUrl) {
-
-                    // get path
-                    if (values.unique != null) {
-                        redirectUrl = `${redirectUrl}/${values.unique}`
-                    }
+                if (code === 'success' && redirectUrl && effected != null) {
 
                     // redirect to
-                    window.location.assign(redirectUrl)
+                    window.location.assign(`${redirectUrl}/${effected}`)
                     return
                 }
-                if(code === 'success' && mode === 'delete'){
-                    const target = document.querySelector(`#id_${result.values.unique}`)
-                    if(target){
+
+                // then success delete
+                if (code === 'success' && mode === 'delete') {
+                    const target = document.querySelector(`#id_${effected}`)
+                    if (target) {
                         target.classList.add('__success');
                         setTimeout(() => {
                             target.remove()

@@ -35,8 +35,8 @@
     <div class="col1">
         <span>roles</span>
         <div>
-            {| * target.roles : key : role |}<input {|# role |} checked{|/#|} id="{| key |}" type="checkbox" name="{| key |}"
-                value="{| role |}"><label for="{| key |}">{| key |}</label>{| /* |}
+            {| * target.roles : key : role |}<input {|# role |} checked{|/#|} id="{| key |}" type="checkbox" name="roles"
+                value="{| key |}"><label for="{| key |}">{| key |}</label>{| /* |}
         </div>
     </div>
     <div class="col1">
@@ -70,29 +70,6 @@
 
     import { Base } from '/{| backendFirstPath |}/base.js';
     var base = Base.init()
-
-    const minusElements = document.querySelectorAll('.minus')
-    minusElements.forEach(minusElement => {
-        minusElement.addEventListener('click', minusEvent => {
-            minusEvent.currentTarget.parentElement.remove()
-        })
-    })
-
-    const plusElements = document.querySelectorAll('.plus')
-    plusElements.forEach(plusElement => {
-        plusElement.addEventListener('click', event => {
-            const element = event.currentTarget.nextElementSibling
-            const copy = element.cloneNode(true)
-            const minusElement = document.createElement('i')
-            minusElement.classList.add('fas', 'fa-minus-circle')
-            minusElement.addEventListener('click', minusEvent => {
-                minusEvent.currentTarget.parentElement.remove()
-            })
-            copy.querySelector('input').value = ''
-            copy.insertAdjacentElement('afterbegin', minusElement)
-            element.parentElement.insertAdjacentElement('beforeend', copy)
-        })
-    })
 
     // codemirror
     const contentElement = document.querySelector('#content')

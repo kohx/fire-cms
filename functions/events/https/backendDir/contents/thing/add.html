@@ -15,8 +15,11 @@
         <input id="name" name="name" class="target_item" type="text">
     </div>
     <div class="col1">
-        <span for="parents">parents</span>
-        <input id="parents" name="parents" class="target_item" type="text">
+        <span>parents</span>
+        <i class="fas fa-plus-circle plus"></i>
+        <div>
+            <input class="parents" name="parents" class="target_item" type="text">
+        </div>
     </div>
     <div class="col1">
         <span>roles</span>
@@ -37,17 +40,18 @@
         <textarea id="summary" name="summary" class="target_item"></textarea>
     </div>
     <div class="col1">
-        <label for="summary">keywords</label>
+        <span>keywords</span>
         <i class="fas fa-plus-circle plus"></i>
         <div>
-            <input id="keywords" name="keywords" class="target_item" type="text">
+            <input class="keywords" name="keywords" class="target_item" type="text">
         </div>
     </div>
     <div class="col1">
         <label for="content">content</label>
         <textarea id="content" name="content" class="target_item"></textarea>
     </div>
-    <button class="col1 target_item" type="button" id="create_button" data-request_url="{| backendFirstPath |}/thing-create" data-redirect_url="{| backendFirstPath |}/thing">create</button>
+    <button class="col1 target_item" type="button" id="create_button" data-request_url="{| backendFirstPath |}/thing-create"
+        data-redirect_url="{| backendFirstPath |}/thing">create</button>
 </div>
 
 {|> footer |}
@@ -55,22 +59,6 @@
 
     import { Base } from '/{| backendFirstPath |}/base.js';
     var base = Base.init()
-
-    const plusElements = document.querySelectorAll('.plus')
-    plusElements.forEach(plusElement => {
-        plusElement.addEventListener('click', event => {
-            const element = event.currentTarget.nextElementSibling
-            const copy = element.cloneNode(true)
-            const minusElement = document.createElement('i')
-            minusElement.classList.add('fas', 'fa-minus-circle')
-            minusElement.addEventListener('click', minusEvent => {
-                minusEvent.currentTarget.parentElement.remove()
-            })
-            copy.querySelector('input').value = ''
-            copy.insertAdjacentElement('afterbegin', minusElement)
-            element.parentElement.insertAdjacentElement('beforeend', copy)
-        })
-    })
 
     // codemirror
     const contentElement = document.querySelector('#content')
