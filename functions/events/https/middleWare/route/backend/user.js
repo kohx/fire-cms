@@ -202,6 +202,8 @@ function validationCreate(body, nameUniqueFlag, emailUniqueFlag) {
  */
 module.exports.update = (req, res, next) => {
 
+    // TODO:: 自分自身は変更できなくする、またはサインアウトする
+
     // body
     const body = req.body
 
@@ -245,6 +247,7 @@ module.exports.update = (req, res, next) => {
                 admin.firestore().collection('users').doc(id)
                     .update(params)
                     .then(_ => {
+                        signout(req, res)
                         // send seccess message
                         successMessageJson(res, '{{key}} is updated.', 'update', body)
                     })
@@ -256,8 +259,6 @@ module.exports.update = (req, res, next) => {
 
 /* validation update user */
 function validationUpdate(body, nameUniqueFlag, emailUniqueFlag) {
-
-    // TODO:: 自分自身は変更できなくする、またはサインアウトする
 
     /* set orderbalidation */
     const validate = validation.list(body)
@@ -311,6 +312,52 @@ function validationUpdate(body, nameUniqueFlag, emailUniqueFlag) {
     }
 
     return validate.get()
+}
+
+function signout(req, res) {
+    // セッション Cookie を取得
+    const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
+    debug(session, __filename, __line)
+    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
+    debug(sessionCookie, __filename, __line)
+
+    if (!sessionCookie) {
+        res.json({
+            code: 'error',
+            message: `there is not sessionCookie.`
+        })
+        return
+    }
+
+    // セッションをクリア
+    res.clearCookie('__session')
+
+    return admin.auth().verifySessionCookie(sessionCookie)
+        .then(decodedClaims => {
+            debug(decodedClaims, __filename, __line)
+            return admin.auth().revokeRefreshTokens(decodedClaims.sub)
+                .then(_ => {
+                    debug('in success', __filename, __line)
+                    res.json({
+                        code: 'success',
+                        message: `sign out.`
+                    })
+                })
+                .catch(err => {
+                    debug(err, __filename, __line)
+                    res.json({
+                        code: 'error',
+                        message: `sign out failed.`
+                    })
+                })
+        })
+        .catch(err => {
+            debug(err, __filename, __line)
+            res.json({
+                code: 'error',
+                message: `there is not claims.`
+            })
+        })
 }
 
 /**

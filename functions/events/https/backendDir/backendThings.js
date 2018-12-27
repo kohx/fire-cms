@@ -37,13 +37,6 @@ module.exports.get = (unique) => {
             roles: {},
             contentType: 'json',
         },
-        'signin.js': {
-            unique: 'signin.js',
-            name: 'signin.js',
-            roles: {},
-            contentType: 'js',
-            contentFile: 'sign/in.js'
-        },
         /* settings */
         'settings': {
             unique: 'settings',
