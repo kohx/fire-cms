@@ -187,7 +187,7 @@ function validationCreate(body, uniqueFlag) {
         .valid('name', 'isRequired')
         // unique
         .valid('unique', 'isRequired')
-        .valid('unique', 'isAlnumunder')
+        .valid('unique', 'isUrlcharacter')
         .valid('unique', 'isUnique', uniqueFlag)
         // order
         .valid('order', 'isRequired')
@@ -218,12 +218,14 @@ module.exports.update = (req, res, next) => {
     const body = req.body
 
     // to full rolles
-    const roles = req.vessel.get('settings.general.roles')
-    const fullRoles = {}
-    roles.forEach(role => {
-        fullRoles[role] = body.roles.includes(role)
-    })
-    body.roles = fullRoles
+    if (body.hasOwnProperty('roles')) {
+        const roles = req.vessel.get('settings.general.roles')
+        const fullRoles = {}
+        roles.forEach(role => {
+            fullRoles[role] = body.roles.includes(role)
+        })
+        body.roles = fullRoles
+    }
 
     // then update id is requred
     const id = body.id != null ? body.id : null
@@ -239,8 +241,11 @@ module.exports.update = (req, res, next) => {
     // get unique from store
     admin.firestore().collection('things').where('unique', '==', unique).limit(1).get()
         .then(docs => {
+
+            // check unique is unique
             const uniqueFlag = docs.size === 0 ? true : false
 
+            // get validation result
             const validationResult = validationUpdate(body, uniqueFlag)
 
             // validation invalid
@@ -266,6 +271,7 @@ module.exports.update = (req, res, next) => {
                 admin.firestore().collection('things').doc(id)
                     .update(params)
                     .then(_ => {
+                        // send seccess message
                         successMessageJson(res, '{{key}} is updated.', 'update', body)
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
@@ -322,4 +328,42 @@ function validationUpdate(body, uniqueFlag) {
     }
 
     return validate.get()
+}
+
+/**
+ * thing delete (post)
+ */
+module.exports.delete = (req, res, next) => {
+
+    const id = req.body.id != null ? req.body.id : null
+
+    if (!id) {
+        // if id undefined return err
+        res.json({
+            code: 'error',
+            messages: [{
+                key: null,
+                content: req.__('id is undefined!'),
+            }],
+        })
+    } else {
+        // get thing by id
+        admin.firestore().collection('things').doc(id).get()
+            .then(doc => {
+                // check thing exist
+                if (doc.exists) {
+                    // delete thing
+                    doc.ref.delete()
+                        .then(_ => {
+                            // send success message
+                            successMessageJson(res, 'Successfully deleted thing.', 'delete', {}, id)
+                        })
+                        .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                } else {
+                    // not exist thing
+                    errorMessageJson(res, null, req.__('id is undefined!'))
+                }
+            })
+            .catch(err => errorMessageJson(res, err, null, __filename, __line))
+    }
 }

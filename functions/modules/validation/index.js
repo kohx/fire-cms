@@ -43,6 +43,10 @@ module.exports = class validation {
             isAlpha: `{{param1}} is not alpha.`,
             isNumeric: `{{param1}} is not numric.`,
             isAlphanumeric: `{{param1}} is not alphanumeric.`,
+            isAlnumunder: `{{param1}} is not alphanumeric and underscore.`,
+            isAlnumunspace: `{{param1}} is not alphanumeric and space.`,
+            isUrlcharacter: `{{param1}} is not alphanumeric and dot, dash, underscore`,
+            isNumunder: `{{param1}} is not numeric and underscore.`,
             isEmail: `{{param1}} is not email.`,
             contains: `{{param1}} is not contains {{param2}}.`,
             equals: `{{param1}} is not equals {{param2}}.`,
@@ -51,9 +55,6 @@ module.exports = class validation {
             isIn: `{{param1}} must be included in {{param2}}`,
             isLength: `{{param1}} length is min {{param2}}, max {{param3}}.`,
             isByteLength: `{{param1}} byte is min {{param2}}, max {{param3}}.`,
-            isAlnumunder: `{{param1}} is not alphanumeric and underscore.`,
-            isAlnumunspace: `{{param1}} is not alphanumeric and space.`,
-            isNumunder: `{{param1}} is not numeric and underscore.`,
             isBase64: `{{param1}} is not base64 encoded.`,
             isMap: `{{param1}} is not map.`,
             isArray: `{{param1}} is not array.`,
@@ -133,6 +134,10 @@ module.exports = class validation {
 
                         case 'isNumunder':
                             flag = validator.matches(value, /^[0-9_]+$/)
+                            break
+
+                        case 'isUrlcharacter':
+                            flag = validator.matches(value, /^[a-zA-Z0-9_\.\-]+$/)
                             break
 
                         case 'isBase64':
