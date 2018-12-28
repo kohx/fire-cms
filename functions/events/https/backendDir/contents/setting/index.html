@@ -181,21 +181,17 @@
     // get element
     const updateBtnElement = document.querySelector('#update_button')
 
-    updateBtnElements.forEach(updateBtnElement => {
+    updateBtnElement.addEventListener('click', event => {
 
-        // click event
-        updateBtnElement.addEventListener('click', event => {
+        // get button
+        const button = event.currentTarget
 
-            // get button
-            const button = event.currentTarget
+        // add id fore delete
+        const id = button.dataset.id != null ? button.dataset.id : null
 
-            // add id fore delete
-            const id = button.dataset.id != null ? button.dataset.id : null
-
-            // not change then show warnning
-            base.requestServer(button, true, { id })
-        })
-    });
+        // not change then show warnning
+        base.requestServer(button, false)
+    })
 
     // let processing = false
     // updateBtnElement.addEventListener('click', event => {
