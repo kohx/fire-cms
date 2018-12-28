@@ -244,12 +244,19 @@ module.exports.update = (req, res, next) => {
                 const intKeys = ['order']
                 const params = filterDody(body, allowaKeys, intKeys)
 
-                admin.firestore().collection('users').doc(id)
+                admin.firestore().collection('users')
+                    .doc(id)
                     .update(params)
                     .then(_ => {
-                        signout(req, res)
-                        // send seccess message
-                        successMessageJson(res, '{{key}} is updated.', 'update', body)
+
+                        debug(Object.keys(body).includes('email', 'password'), __filename, __line)
+                        if (Object.keys(body).includes('email', 'password')) {
+                            debug(body, __filename, __line)
+                            signout(req, res)
+                        } else {
+                            // send seccess message
+                            successMessageJson(res, '{{key}} is updated.', 'update', body)
+                        }
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
@@ -317,9 +324,7 @@ function validationUpdate(body, nameUniqueFlag, emailUniqueFlag) {
 function signout(req, res) {
     // セッション Cookie を取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
-    debug(session, __filename, __line)
     const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
-    debug(sessionCookie, __filename, __line)
 
     if (!sessionCookie) {
         res.json({

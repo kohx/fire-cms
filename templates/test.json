@@ -1,42 +1,39 @@
 {
-    "unique": "thing",
-    "name": "thing",
-    "parents": [
-        "things"
-    ],
-    "roles": {
-        "owner": true,
-        "direct": true,
-        "admin": true,
-        "editor": true,
-        "writer": true,
-        "user": true
-    },
-    "contentType": "html",
-    "contentFile": "thing/edit.html",
-    "content": "",
-    "summary": "home summary",
-    "unique": "home",
-    "description": "home description",
-    "roles": {
-        "owner": true,
-        "admin": true,
-        "user": true,
-        "writer": true,
-        "direct": true,
-        "editor": true
-    },
-    "keywords": [
-        " aaa",
-        "bbb"
-    ],
-    "name": "ホーム",
-    "parents": [
-        "aaa",
-        "bbb"
-    ],
-    "id": "Q6bPvQM67MRrIbCH3HnG",
-    "dateOfIssue": "2018-12-24 00:00:00",
-    "order": 1
-}
+    "host": "us-central1-fire-cms-86681.cloudfunctions.net",
+    "user-agent": "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3653.0 Safari/537.36",
+    "accept": "*/*",
+    "accept-encoding": "gzip",
+    "accept-language": "ja,en-US;q=0.9,en;q=0.8,cs;q=0.7,hr;q=0.6,id;q=0.5,ms;q=0.4,zh-CN;q=0.3,zh;q=0.2,la;q=0.1",
+    "cache-control": "no-cache, no-store",
+    "cdn-loop": "Fastly, Fastly",
+    "cookie": "__session=%7B%22csrfToken%22%3A%22j5q4zpvi%22%7D",
+    "fastly-client": "1",
+    "fastly-client-ip": "111.108.30.208",
+    "fastly-ff": "s48hDkrIORDrAz3sjuyh5gIWcInqIjSROZ47KAY+w/I=!NRT!cache-nrt6138-NRT, s48hDkrIORDrAz3sjuyh5gIWcInqIjSROZ47KAY+w/I=!NRT!cache-nrt6131-NRT",
+    "fastly-orig-accept-encoding": "gzip, deflate, br",
+    "fastly-ssl": "1",
+    "fastly-temp-xff": "111.108.30.208, 111.108.30.208",
+    "function-execution-id": "z3n7zghanulg",
+    "origin": "https://fire-cms.com",
+    "pragma": "no-cache",
+    "referer": "https://fire-cms.com/backend/signin",
+    "x-appengine-api-ticket": "cde1ccde69b12b4b",
+    "x-appengine-city": "?",
+    "x-appengine-citylatlong": "0.000000,0.000000",
+    "x-appengine-country": "US",
+    "x-appengine-default-version-hostname": "y0db963585cbf9243-tp.appspot.com",
+    "x-appengine-https": "on",
+    "x-appengine-region": "?",
+    "x-appengine-request-log-id": "5c25761a00ff069a431ebe3ac60001737e79306462393633353835636266393234332d7470000139653163313635303762396437373565646431613761626161616562323639363a3133303800010103",
+    "x-appengine-user-ip": "104.198.56.253",
+    "x-cloud-trace-context": "5f97dc601a6ae52aad3386c5a8ca699e/5558029695276873628",
+    "x-forwarded-for": "104.198.56.253, 104.198.56.253",
+    "x-forwarded-host": "fire-cms.com",
+    "x-forwarded-proto": "https",
+    "x-forwarded-server": "cache-nrt6138-NRT",
+    "x-forwarded-url": "/backend/base.js",
+    "x-nginx-proxy": "true",
+    "x-real-ip": "43.249.72.31",
+    "x-timer": "S1545958938.271135,VS0",
+    "x-varnish": "3229792820, 3866977295"
 }

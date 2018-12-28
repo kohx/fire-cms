@@ -121,8 +121,7 @@ module.exports.user = (req, res, next) => {
     let isSigned = req.vessel.get('sign.status')
 
     // ローカルデバグ用
-    if (system.debugSinin) {
-
+    if(req.vessel.get('baseUrl') === 'http://localhost:5000') {
         debug(`DEBAG SIGNIN`, __filename, __line)
         isSigned = true
         req.vessel.sign.status = true
@@ -131,7 +130,6 @@ module.exports.user = (req, res, next) => {
         req.vessel.user.email = `kohei0728@gmail.com`
         req.vessel.user.name = `kohei`
         req.vessel.user.role = `admin`
-        // req.vessel.user.role = `editor`
         next()
     } else {
 

@@ -82,9 +82,10 @@ module.exports.getInfo = (req, res, next) => {
                 // キャッシュに入れる 
                 jsonCache.set('settings', settings)
                 // set value
-                req.vessel.baseUrl = `${req.protocol}://${req.headers['x-forwarded-host']}` || null
-                req.vessel.frontendBase = `${req.protocol}://${req.headers['x-forwarded-host']}` || null
-                req.vessel.backendBase = `${req.protocol}://${req.headers['x-forwarded-host']}/${settings.backend.firstPath}` || null
+                const protocol = req.headers['x-forwarded-proto'] != null ? req.headers['x-forwarded-proto'] : req.protocol
+                req.vessel.baseUrl = `${protocol}://${req.headers['x-forwarded-host']}` || null
+                req.vessel.frontendBase = `${protocol}://${req.headers['x-forwarded-host']}` || null
+                req.vessel.backendBase = `${protocol}://${req.headers['x-forwarded-host']}/${settings.backend.firstPath}` || null
                 req.vessel.settings = settings
 
                 next()
@@ -219,13 +220,19 @@ module.exports.getThing = (req, res, next) => {
         unique = paths.number !== '' ? `${unique}/${number}` : unique
 
         return new Promise((resolve, reject) => {
-            admin.firestore().collection('things').doc(unique)
+            admin.firestore().collection('things')
+                .where('unique', '==', unique)
+                .limit(1)
                 .get()
-                .then(snap => {
-                    if (snap.exists) {
-                        resolve(snap.data())
+                .then(docs => {
+                    if (docs.size === 0) {
+                        resolve(null)
                     } else {
-                        resolve({})
+                        let docData = null
+                        docs.forEach(doc => {
+                            docData = doc.data()
+                        })
+                        resolve(docData)
                     }
                 })
                 .catch(err => reject(err))
