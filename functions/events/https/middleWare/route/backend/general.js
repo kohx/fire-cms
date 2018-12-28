@@ -6,6 +6,10 @@ const system = parent.system
 const url = require('url')
 
 const debug = require('../../../../../modules/debug').debug
+const util = require('../util')
+
+/* promise catch error message json */
+const errorMessageJson = util.errorMessageJson
 
 module.exports.checkPath = (req, res, next) => {
 
@@ -120,9 +124,16 @@ module.exports.checkSingIn = (req, res, next) => {
         // サインインしていない場合
         else {
 
-            const redirectPath = `${backendBase}/${backend.signinUnique}`
-            debug(`@ [ ${thing.uniqueng} ] not sigin in. redirect to ${redirectPath}`, __filename, __line)
-            res.redirect(`${redirectPath}`)
+            // then post
+            if(req.method === 'POST') {
+                errorMessageJson(res, null, 'not sigin in. sign in again.')
+            }
+            // redirect to signin
+            else {
+                const redirectPath = `${backendBase}/${backend.signinUnique}`
+                debug(`@ [ ${thing.uniqueng} ] not sigin in. redirect to ${redirectPath}`, __filename, __line)
+                res.redirect(`${redirectPath}`)
+            }
         }
     }
 }

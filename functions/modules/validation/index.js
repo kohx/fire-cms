@@ -19,7 +19,7 @@ module.exports = class validation {
         this.list = list
         this.values = Object.assign({}, list)
 
-        this.validity = true
+        this.passed = true
         this.errors = {}
 
         this.sanitaizeTypes = [
@@ -225,8 +225,8 @@ module.exports = class validation {
         }
 
         if (!flag) {
-            // change validity
-            this.validity = false
+            // change passed
+            this.passed = false
 
             // there is not path then add path
             if (!this.errors[path]) {
@@ -275,9 +275,16 @@ module.exports = class validation {
     }
 
     get() {
+
+        // if(this.passed){
+        //     Object.keys(this.list).forEach(key => {
+                
+        //     })
+        // }
+
         return {
-            check: this.validity,
-            status: this.validity ? 'success' : 'warning',
+            check: this.passed,
+            status: this.passed ? 'success' : 'warning',
             errors: this.errors,
             values: this.values,
         }

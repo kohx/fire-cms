@@ -1,39 +1,111 @@
 {
-    "host": "us-central1-fire-cms-86681.cloudfunctions.net",
-    "user-agent": "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3653.0 Safari/537.36",
-    "accept": "*/*",
-    "accept-encoding": "gzip",
-    "accept-language": "ja,en-US;q=0.9,en;q=0.8,cs;q=0.7,hr;q=0.6,id;q=0.5,ms;q=0.4,zh-CN;q=0.3,zh;q=0.2,la;q=0.1",
-    "cache-control": "no-cache, no-store",
-    "cdn-loop": "Fastly, Fastly",
-    "cookie": "__session=%7B%22csrfToken%22%3A%22j5q4zpvi%22%7D",
-    "fastly-client": "1",
-    "fastly-client-ip": "111.108.30.208",
-    "fastly-ff": "s48hDkrIORDrAz3sjuyh5gIWcInqIjSROZ47KAY+w/I=!NRT!cache-nrt6138-NRT, s48hDkrIORDrAz3sjuyh5gIWcInqIjSROZ47KAY+w/I=!NRT!cache-nrt6131-NRT",
-    "fastly-orig-accept-encoding": "gzip, deflate, br",
-    "fastly-ssl": "1",
-    "fastly-temp-xff": "111.108.30.208, 111.108.30.208",
-    "function-execution-id": "z3n7zghanulg",
-    "origin": "https://fire-cms.com",
-    "pragma": "no-cache",
-    "referer": "https://fire-cms.com/backend/signin",
-    "x-appengine-api-ticket": "cde1ccde69b12b4b",
-    "x-appengine-city": "?",
-    "x-appengine-citylatlong": "0.000000,0.000000",
-    "x-appengine-country": "US",
-    "x-appengine-default-version-hostname": "y0db963585cbf9243-tp.appspot.com",
-    "x-appengine-https": "on",
-    "x-appengine-region": "?",
-    "x-appengine-request-log-id": "5c25761a00ff069a431ebe3ac60001737e79306462393633353835636266393234332d7470000139653163313635303762396437373565646431613761626161616562323639363a3133303800010103",
-    "x-appengine-user-ip": "104.198.56.253",
-    "x-cloud-trace-context": "5f97dc601a6ae52aad3386c5a8ca699e/5558029695276873628",
-    "x-forwarded-for": "104.198.56.253, 104.198.56.253",
-    "x-forwarded-host": "fire-cms.com",
-    "x-forwarded-proto": "https",
-    "x-forwarded-server": "cache-nrt6138-NRT",
-    "x-forwarded-url": "/backend/base.js",
-    "x-nginx-proxy": "true",
-    "x-real-ip": "43.249.72.31",
-    "x-timer": "S1545958938.271135,VS0",
-    "x-varnish": "3229792820, 3866977295"
+    "_ref": {
+        "_firestore": {
+            "_clientPool": {
+                "concurrentOperationLimit": 100,
+                "activeClients": {}
+            },
+            "_settingsFrozen": true,
+            "_initializationSettings": {
+                "projectId": "fire-cms-86681",
+                "libName": "gccl",
+                "libVersion": "0.18.0",
+                "timestampsInSnapshots": true
+            },
+            "_clientInitialized": {},
+            "_serializer": {
+                "timestampsInSnapshotsEnabled": true
+            },
+            "_timestampsInSnapshotsEnabled": true,
+            "_referencePath": {
+                "segments": [],
+                "projectId": "fire-cms-86681",
+                "databaseId": "(default)"
+            },
+            "_lastSuccessfulRequest": 1545975278539,
+            "_validator": {},
+            "_preferTransactions": false
+        },
+        "_path": {
+            "segments": [
+                "settings",
+                "general"
+            ],
+            "projectId": "fire-cms-86681",
+            "databaseId": "(default)"
+        },
+        "_validator": {}
+    },
+    "_fieldsProto": {
+        "order": {
+            "integerValue": "7",
+            "valueType": "integerValue"
+        },
+        "template_types": {
+            "arrayValue": {
+                "values": [
+                    {
+                        "stringValue": "wrap",
+                        "valueType": "stringValue"
+                    },
+                    {
+                        "stringValue": "part",
+                        "valueType": "stringValue"
+                    }
+                ]
+            },
+            "valueType": "arrayValue"
+        },
+        "baseUrl": {
+            "stringValue": "",
+            "valueType": "stringValue"
+        },
+        "roles": {
+            "arrayValue": {
+                "values": [
+                    {
+                        "stringValue": "owner",
+                        "valueType": "stringValue"
+                    },
+                    {
+                        "stringValue": "direct",
+                        "valueType": "stringValue"
+                    },
+                    {
+                        "stringValue": "admin",
+                        "valueType": "stringValue"
+                    },
+                    {
+                        "stringValue": "editor",
+                        "valueType": "stringValue"
+                    },
+                    {
+                        "stringValue": "writer",
+                        "valueType": "stringValue"
+                    },
+                    {
+                        "stringValue": "user",
+                        "valueType": "stringValue"
+                    }
+                ]
+            },
+            "valueType": "arrayValue"
+        }
+    },
+    "_serializer": {
+        "timestampsInSnapshotsEnabled": true
+    },
+    "_validator": {},
+    "_readTime": {
+        "_seconds": 1545975277,
+        "_nanoseconds": 533029000
+    },
+    "_createTime": {
+        "_seconds": 1543367905,
+        "_nanoseconds": 182202000
+    },
+    "_updateTime": {
+        "_seconds": 1545973862,
+        "_nanoseconds": 352409000
+    }
 }

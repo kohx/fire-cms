@@ -249,13 +249,11 @@ module.exports.update = (req, res, next) => {
                     .update(params)
                     .then(_ => {
 
-                        debug(Object.keys(body).includes('email', 'password'), __filename, __line)
                         if (Object.keys(body).includes('email', 'password')) {
-                            debug(body, __filename, __line)
                             signout(req, res)
                         } else {
                             // send seccess message
-                            successMessageJson(res, '{{key}} is updated.', 'update', body)
+                            successMessageJson(res, '{{key}} is updated.', body)
                         }
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
@@ -327,42 +325,21 @@ function signout(req, res) {
     const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
 
     if (!sessionCookie) {
-        res.json({
-            code: 'error',
-            message: `there is not sessionCookie.`
-        })
-        return
+        errorMessageJson(res, null, 'there is not sessionCookie.')
     }
 
     // セッションをクリア
     res.clearCookie('__session')
 
-    return admin.auth().verifySessionCookie(sessionCookie)
+    admin.auth().verifySessionCookie(sessionCookie)
         .then(decodedClaims => {
-            debug(decodedClaims, __filename, __line)
-            return admin.auth().revokeRefreshTokens(decodedClaims.sub)
+            admin.auth().revokeRefreshTokens(decodedClaims.sub)
                 .then(_ => {
-                    debug('in success', __filename, __line)
-                    res.json({
-                        code: 'success',
-                        message: `sign out.`
-                    })
+                    successMessageJson(res, 'sign out.', 'signout', {}, {})
                 })
-                .catch(err => {
-                    debug(err, __filename, __line)
-                    res.json({
-                        code: 'error',
-                        message: `sign out failed.`
-                    })
-                })
+                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
-        .catch(err => {
-            debug(err, __filename, __line)
-            res.json({
-                code: 'error',
-                message: `there is not claims.`
-            })
-        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
 /**

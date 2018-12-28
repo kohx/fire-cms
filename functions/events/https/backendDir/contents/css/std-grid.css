@@ -78,10 +78,10 @@ http://opensource.org/licenses/mit-license.php
 .pad3 {padding: calc(var(--grid-gap)* 3);}
 
 /* posision */
-/* .lef, .cen, .rig,
+.lef, .cen, .rig,
 .top, .mid, .bot {
   display: flex;
-} */
+}
 
 .lef {
   justify-content: start;

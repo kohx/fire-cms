@@ -10,24 +10,32 @@ const debug = require('../../../../../modules/debug').debug
 
 module.exports.index = (req, res, next) => {
 
-    admin.firestore().collection('settings').get()
+    admin.firestore().collection('settings')
+        .orderBy('order', 'asc').get()
         .then(docs => {
             const targets = {}
             docs.forEach(doc => {
-
+                targets[doc.id] = {}
+                docData = doc.data()
+                Object.keys(docData).sort().forEach(key => {
+                    targets[doc.id][key] = docData[key]
+                })
                 //seconds of UTC time since Unix epoch
-                // console.log(doc.createTime.seconds);
+                // debug(doc.createTime.seconds, __filename, __line)
+                // debug(doc.updateTime.seconds, __filename, __line)
 
                 //fractions of a second at nanosecond resolution, 0 to 999,999,999
-                // console.logdoc(doc.createTime.nanoseconds);
+                // debug(doc.createTime.nanoseconds, __filename, __line)
+                // debug(doc.updateTime.nanoseconds, __filename, __line)
 
-                targets[doc.id] = doc.data()
+                // targets[doc.id] = doc.data()
             })
 
             // array to string
-            targets.lang.locales = targets.lang.locales.join(', ')
-            targets.general.roles = targets.general.roles.join(', ')
+            // targets.lang.locales = targets.lang.locales.join(', ')
+            // targets.general.roles = targets.general.roles.join(', ')
 
+            
             req.vessel.thing.targets = targets
             next()
         })

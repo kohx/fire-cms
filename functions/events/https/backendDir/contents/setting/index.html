@@ -1,27 +1,175 @@
 {|@ wrapper |}
 {|> header |}
-
-<div class="col0 grid1 gap1">
-    <ul>
-        {|* targets: targetName: targetValue |}
-        {|# targetValue |}
-        <li>
-            <h2>{| targetName |}</h2>
-            <ul class="grid1 gap1 pad1 {| targetName |}">
-                {|* targetValue: itemName: itemValue |}
-                <li class="grid3 gap1">
-                    <label class="col1 cen mid">{| itemName |}</label>
-                    <input class="target_item col2 {| itemName |}" type="text" data-default="{| itemValue |}"
-                        data-target="{| targetName |}" data-item="{| itemName |}" value="{| itemValue |}">
-                </li>
-                {|/*|}
-            </ul>
+<div class="col0 grid1">
+    <h2 class="col2 pad1">asset</h2>
+    <ul class="grid1 gap2">
+        <li class="grid3 gap1">
+            <label class="col1 cen">landscapePrefix</label>
+            <input class="col2" type="text" name="asset.landscapePrefix" value="{| targets.asset.landscapePrefix |}">
         </li>
-        {|/#|}
-        {|/*|}
+        <li class="grid3 gap1">
+            <label class="col1 cen">landscapeSize</label>
+            <input class="col2" type="text" name="asset.landscapeSize" value="{| targets.asset.landscapeSize |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">portraitPrefix</label>
+            <input class="col2" type="text" name="asset.portraitPrefix" value="{| targets.asset.portraitPrefix |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">portraitSize</label>
+            <input class="col2" type="text" name="asset.portraitSize" value="{| targets.asset.portraitSize |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">squarePrefix</label>
+            <input class="col2" type="text" name="asset.squarePrefix" value="{| targets.asset.squarePrefix |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">squareSize</label>
+            <input class="col2" type="text" name="asset.squareSize" value="{| targets.asset.squareSize |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">thumbPrefix</label>
+            <input class="col2" type="text" name="asset.thumbPrefix" value="{| targets.asset.thumbPrefix |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">thumbSize</label>
+            <input class="col2" type="text" name="asset.thumbSize" value="{| targets.asset.thumbSize |}">
+        </li>
     </ul>
-
-    <button class="target_item col1" type="button" id="update_button" data-request_url="{| backendFirstPath |}/setting-update">update</button>
+</div>
+<div class="col0 grid1 gap1">
+    <h2>backend</h2>
+    <ul class="grid1 gap1 pad1">
+        <li class="grid3 gap1">
+            <label class="col1 cen">expiresIn</label>
+            <input class="col2" type="text" name="backend.expiresIn" value="{| targets.backend.expiresIn |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">firstPath</label>
+            <input class="col2" type="text" name="backend.firstPath" value="{| targets.backend.firstPath |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">lang</label>
+            <input class="col2" type="text" name="backend.lang" value="{| targets.backend.lang |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">signinLImit</label>
+            <input class="col2" type="text" name="backend.signinLImit" value="{| targets.backend.signinLImit |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">signinUnique</label>
+            <input class="col2" type="text" name="backend.signinUnique" value="{| targets.backend.signinUnique |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">topUnique</label>
+            <input class="col2" type="text" name="backend.topUnique" value="{| targets.backend.topUnique |}">
+        </li>
+    </ul>
+</div>
+<div class="col0 grid1 gap1">
+    <h2>cart</h2>
+    <ul class="grid1 gap1 pad1">
+        <li class="grid3 gap1">
+            <label class="col1 cen">order</label>
+            <input class="col2" type="text" name="cart.order" value="{| targets.cart.order |}">
+        </li>
+    </ul>
+</div>
+<div class="col0 grid1 gap1">
+    <h2>chat</h2>
+    <ul class="grid1 gap1 pad1">
+        <li class="grid3 gap1">
+            <label class="col1 cen">order</label>
+            <input class="col2" type="text" name="chat.order" value="{| targets.chat.order |}">
+        </li>
+    </ul>
+</div>
+<div class="col0 grid1 gap1">
+    <h2>comment</h2>
+    <ul class="grid1 gap1 pad1">
+        <li class="grid3 gap1">
+            <label class="col1 cen">order</label>
+            <input class="col2" type="text" name="comment.order" value="{| targets.comment.order |}">
+        </li>
+    </ul>
+</div>
+<div class="col0 grid1 gap1">
+    <h2>frontend</h2>
+    <ul class="grid1 gap1 pad1">
+        <li class="grid3 gap1">
+            <label class="col1 cen">lang</label>
+            <input class="col2" type="text" name="frontend.lang" value="{| targets.frontend.lang |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">signinUnique</label>
+            <input class="col2" type="text" name="frontend.signinUnique" value="{| targets.frontend.signinUnique |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">topUnique</label>
+            <input class="col2" type="text" name="frontend.topUnique" value="{| targets.frontend.topUnique |}">
+        </li>
+    </ul>
+</div>
+<div class="col0 grid1 gap1">
+    <h2>general</h2>
+    <ul class="grid1 gap1 pad1">
+        <li class="grid3 gap1">
+            <label class="col1 cen">baseUrl</label>
+            <input class="col2" type="text" name="general.baseUrl" value="{| targets.general.baseUrl |}">
+        </li>
+        <li class="grid3 gap1">
+            <div class="col1 cen">roles</div>
+            <div class="col2">
+                <i class="fas fa-plus-circle plus"></i>
+                {| * targets.general.roles : key : role |}
+                <div>
+                    {| ^ equal(0, key) |}<i class="fas fa-minus-circle minus"></i>{| /^ |}
+                    <input id="parents" name="general.roles" type="text" value="{| role |}">
+                </div>
+                {| /* |}
+            </div>
+        </li>
+        <li class="grid3 gap1">
+            <div class="col1 cen">template_types</div>
+            <div class="col2">
+                <i class="fas fa-plus-circle plus"></i>
+                {| * targets.general.template_types : key : template_type |}
+                <div>
+                    {| ^ equal(0, key) |}<i class="fas fa-minus-circle minus"></i>{| /^ |}
+                    <input id="parents" name="general.template_types" type="text" value="{| template_type |}">
+                </div>
+                {| /* |}
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="col0 grid1 gap1">
+    <h2>lang</h2>
+    <ul class="grid1 gap1 pad1">
+        <li class="grid3 gap1">
+            <label class="col1 cen">default</label>
+            <input class="col2" type="text" name="lang.default" value="{| targets.lang.default |}">
+        </li>
+        <li class="grid3 gap1">
+            <label class="col1 cen">dirname</label>
+            <input class="col2" type="text" name="lang.dirname" value="{| targets.lang.dirname |}">
+        </li>
+        <li class="grid3 gap1">
+            <div class="col1 cen">locales</div>
+            <div class="col2">
+                <i class="fas fa-plus-circle plus"></i>
+                {| * targets.lang.locales : key : locale |}
+                <div>
+                    {| ^ equal(0, key) |}<i class="fas fa-minus-circle minus"></i>{| /^ |}
+                    <input id="locales" name="general.locales" type="text" value="{| locale |}">
+                </div>
+                {| /* |}
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="col0 grid1 gap2">
+    <button class="col0" type="button" id="update_button" data-request_url="{| backendFirstPath |}/setting-update">update</button>
 </div>
 {|> footer |}
 
@@ -30,112 +178,129 @@
     import { Base } from '/{| backendFirstPath |}/base.js';
     var base = Base.init()
 
+    // get element
     const updateBtnElement = document.querySelector('#update_button')
 
-    let processing = false
-    updateBtnElement.addEventListener('click', event => {
+    updateBtnElements.forEach(updateBtnElement => {
 
-        // get target
-        const target = event.currentTarget
+        // click event
+        updateBtnElement.addEventListener('click', event => {
 
-        // processing then can't send request
-        if (processing) {
-            return
-        }
+            // get button
+            const button = event.currentTarget
 
-        // start processing
-        processing = true
-        target.disabled = true;
+            // add id fore delete
+            const id = button.dataset.id != null ? button.dataset.id : null
 
-        const requestUrl = `${window.location.origin}/${target.dataset.request_url}`
-        const unique = target.dataset.unique
-        const modifiedItems = document.querySelectorAll('._modified')
-
-        // not change then show warnning
-        if (modifiedItems.length === 0) {
-            base.setNotice('warning', ['Nothing has changed.'])
-            processing = false
-            event.target.disabled = false;
-            return
-        }
-
-        // get body from modified items
-        const body = {}
-        Object.keys(modifiedItems).forEach(key => {
-            // element
-            const element = modifiedItems[key]
-
-            // if not has object property then add property
-            if (!body.hasOwnProperty(element.dataset.target)) {
-                body[element.dataset.target] = {}
-            }
-            body[element.dataset.target][element.dataset.item] = element.value
+            // not change then show warnning
+            base.requestServer(button, true, { id })
         })
+    });
 
-        // request to server
-        base.fetchServer(requestUrl, body)
-            .then(result => {
+    // let processing = false
+    // updateBtnElement.addEventListener('click', event => {
 
-                // get code
-                const code = result.code
+    //     // get target
+    //     const target = event.currentTarget
 
-                let messages = []
-                result.messages.forEach(message => {
+    //     // processing then can't send request
+    //     if (processing) {
+    //         return
+    //     }
 
-                    // rebuild message
-                    messages.push(message.content)
+        // // start processing
+        // processing = true
+        // target.disabled = true;
 
-                    // get selector from key
-                    let key = message.key
-                    const selector = key =! null ? `.${key.replace('.', ' .')}` : false
+        // const requestUrl = `${window.location.origin}/${target.dataset.request_url}`
+        // const unique = target.dataset.unique
+        // const modifiedItems = document.querySelectorAll('._modified')
 
-                    // has selector
-                    if (selector) {
-                        const element = document.querySelector(selector)
+        // // not change then show warnning
+        // if (modifiedItems.length === 0) {
+        //     base.setNotice('warning', ['Nothing has changed.'])
+        //     processing = false
+        //     event.target.disabled = false;
+        //     return
+        // }
 
-                        // code is success
-                        if (code === 'success') {
-                            // then remove _modified class
-                            element.classList.remove('_modified')
+        // // get body from modified items
+        // const body = {}
+        // Object.keys(modifiedItems).forEach(key => {
+        //     // element
+        //     const element = modifiedItems[key]
 
-                            // get new value from result balues
-                            let value = Object.assign({}, result.values)
-                            message.key.split('.').forEach(path => {
-                                value = value[path.trim()]
-                            })
+        //     // if not has object property then add property
+        //     if (!body.hasOwnProperty(element.dataset.target)) {
+        //         body[element.dataset.target] = {}
+        //     }
+        //     body[element.dataset.target][element.dataset.item] = element.value
+        // })
 
-                            // value is array then change to string
-                            value = Array.isArray(value) ? value.join(', ') : value
+        // // request to server
+        // base.fetchServer(requestUrl, body)
+        //     .then(result => {
 
-                            // set new value
-                            element.value = value
+        //         // get code
+        //         const code = result.code
 
-                            // set new value to data dafault
-                            element.dataset.default = value
+        //         let messages = []
+        //         result.messages.forEach(message => {
 
-                            // set modifier class success whith clear time
-                            base.setModifierClass(element, code, 4000)
-                        } else {
-                            // set modifier class error or warning
-                            base.setModifierClass(element, code)
-                        }
-                    }
-                })
+        //             // rebuild message
+        //             messages.push(message.content)
 
-                // set notice
-                base.setNotice(result.code, messages)
+        //             // get selector from key
+        //             let key = message.key
+        //             const selector = key =! null ? `.${key.replace('.', ' .')}` : false
 
-                // end process
-                processing = false
-                event.target.disabled = false;
-            })
-            .catch(err => {
-                base.setNotice('error', [err.message])
-                console.log(err)
+        //             // has selector
+        //             if (selector) {
+        //                 const element = document.querySelector(selector)
 
-                // end process
-                processing = false
-                event.target.disabled = false;
-            })
-    })
+        //                 // code is success
+        //                 if (code === 'success') {
+        //                     // then remove _modified class
+        //                     element.classList.remove('_modified')
+
+        //                     // get new value from result balues
+        //                     let value = Object.assign({}, result.values)
+        //                     message.key.split('.').forEach(path => {
+        //                         value = value[path.trim()]
+        //                     })
+
+        //                     // value is array then change to string
+        //                     value = Array.isArray(value) ? value.join(', ') : value
+
+        //                     // set new value
+        //                     element.value = value
+
+        //                     // set new value to data dafault
+        //                     element.dataset.default = value
+
+        //                     // set modifier class success whith clear time
+        //                     base.setModifierClass(element, code, 4000)
+        //                 } else {
+        //                     // set modifier class error or warning
+        //                     base.setModifierClass(element, code)
+        //                 }
+        //             }
+        //         })
+
+        //         // set notice
+        //         base.setNotice(result.code, messages)
+
+        //         // end process
+        //         processing = false
+        //         event.target.disabled = false;
+        //     })
+        //     .catch(err => {
+        //         base.setNotice('error', [err.message])
+        //         console.log(err)
+
+        //         // end process
+        //         processing = false
+        //         event.target.disabled = false;
+        //     })
+    // })
 </script>

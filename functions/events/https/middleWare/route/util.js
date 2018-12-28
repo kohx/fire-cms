@@ -63,11 +63,9 @@ function invalidMessageJson(res, validationResult) {
  * 
  * @param {Object} res 
  * @param {String} message 
- * @param {String} mode 
- * @param {Object} [body = {}]
- * @param {String} [effected = null]
+ * @param {String} [effect = null]
  */
-function successMessageJson(res, message, mode, body = {}, effected = null) {
+function successMessageJson(res, message, effect = null) {
 
     let messages = []
     let values = {}
@@ -96,10 +94,9 @@ function successMessageJson(res, message, mode, body = {}, effected = null) {
 
     res.json({
         code: 'success',
-        mode: mode,
         messages,
         values,
-        effected,
+        effect,
     })
 }
 
