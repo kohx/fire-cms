@@ -1,111 +1,18 @@
 {
-    "_ref": {
-        "_firestore": {
-            "_clientPool": {
-                "concurrentOperationLimit": 100,
-                "activeClients": {}
-            },
-            "_settingsFrozen": true,
-            "_initializationSettings": {
-                "projectId": "fire-cms-86681",
-                "libName": "gccl",
-                "libVersion": "0.18.0",
-                "timestampsInSnapshots": true
-            },
-            "_clientInitialized": {},
-            "_serializer": {
-                "timestampsInSnapshotsEnabled": true
-            },
-            "_timestampsInSnapshotsEnabled": true,
-            "_referencePath": {
-                "segments": [],
-                "projectId": "fire-cms-86681",
-                "databaseId": "(default)"
-            },
-            "_lastSuccessfulRequest": 1545975278539,
-            "_validator": {},
-            "_preferTransactions": false
+    "frontend.lang": [{
+        "key": "frontend.lang",
+        "type": "isRequired",
+        "params": {
+            "param1": "frontend.lang"
         },
-        "_path": {
-            "segments": [
-                "settings",
-                "general"
-            ],
-            "projectId": "fire-cms-86681",
-            "databaseId": "(default)"
+        "message": "{{param1}} is required."
+    }],
+    "lang.default": [{
+        "key": "lang.default",
+        "type": "isRequired",
+        "params": {
+            "param1": "lang.default"
         },
-        "_validator": {}
-    },
-    "_fieldsProto": {
-        "order": {
-            "integerValue": "7",
-            "valueType": "integerValue"
-        },
-        "template_types": {
-            "arrayValue": {
-                "values": [
-                    {
-                        "stringValue": "wrap",
-                        "valueType": "stringValue"
-                    },
-                    {
-                        "stringValue": "part",
-                        "valueType": "stringValue"
-                    }
-                ]
-            },
-            "valueType": "arrayValue"
-        },
-        "baseUrl": {
-            "stringValue": "",
-            "valueType": "stringValue"
-        },
-        "roles": {
-            "arrayValue": {
-                "values": [
-                    {
-                        "stringValue": "owner",
-                        "valueType": "stringValue"
-                    },
-                    {
-                        "stringValue": "direct",
-                        "valueType": "stringValue"
-                    },
-                    {
-                        "stringValue": "admin",
-                        "valueType": "stringValue"
-                    },
-                    {
-                        "stringValue": "editor",
-                        "valueType": "stringValue"
-                    },
-                    {
-                        "stringValue": "writer",
-                        "valueType": "stringValue"
-                    },
-                    {
-                        "stringValue": "user",
-                        "valueType": "stringValue"
-                    }
-                ]
-            },
-            "valueType": "arrayValue"
-        }
-    },
-    "_serializer": {
-        "timestampsInSnapshotsEnabled": true
-    },
-    "_validator": {},
-    "_readTime": {
-        "_seconds": 1545975277,
-        "_nanoseconds": 533029000
-    },
-    "_createTime": {
-        "_seconds": 1543367905,
-        "_nanoseconds": 182202000
-    },
-    "_updateTime": {
-        "_seconds": 1545973862,
-        "_nanoseconds": 352409000
-    }
+        "message": "{{param1}} is required."
+    }]
 }

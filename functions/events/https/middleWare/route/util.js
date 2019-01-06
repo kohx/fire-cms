@@ -58,7 +58,7 @@ function invalidMessageJson(res, validationResult) {
  * Success Message Json
  * 
  * @example
- *  successMessageJson(res, 'Successfully created new thing.', 'create', {}, { id })
+ *  successMessageJson(res, 'Successfully created new thing.', {mode: 'create', id: id})
  *  successMessageJson(res, '{{key}} is updated.', 'update', body)
  * 
  * @param {Object} res 

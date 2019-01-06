@@ -76,11 +76,11 @@ module.exports = class validation {
         return instance
     }
 
-    valid(key, type, ...args) {
+    valid(path, type, ...args) {
 
         // there is not value at list
-        if (!this.list.hasOwnProperty(key)) {
-            throw new Error(`error at validation module: list has not key ${key}.`)
+        if (!this.existValue(path)) {
+            throw new Error(`error at validation module: list has not key ${path}.`)
         }
 
         // there is not type
@@ -89,7 +89,7 @@ module.exports = class validation {
         }
 
         // get value
-        const value = this.list[key]
+        const value = this.getValue(path)
 
         // check flag
         let flag = true
@@ -205,7 +205,7 @@ module.exports = class validation {
                             })
                             break
 
-                        case 'isDate':
+                        case 'isDate':                        
                             const iosO8601 = new RegExp(/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/)
                             flag = iosO8601.test(value.toISOString())
                             // flag = validator.isISO8601(value.toISOString())
@@ -228,24 +228,22 @@ module.exports = class validation {
             // change passed
             this.passed = false
 
-            // there is not key then add key
-            if (!this.errors[key]) {
-                this.errors[key] = []
+            // there is not path then add path
+            if (!this.errors[path]) {
+                this.errors[path] = []
             }
 
             // build params
-            const params = {
-                param1: key
-            }
+            const params = { param1: path }
             let num = 2
-            args.forEach((arg, key) => {
+            args.forEach((arg, path) => {
                 params[`param${num}`] = arg
                 num++
             })
 
             // add error
-            this.errors[key].push({
-                key: key,
+            this.errors[path].push({
+                path: path,
                 type: type,
                 params: params,
                 message: this.validationTypes[type],
@@ -254,13 +252,10 @@ module.exports = class validation {
         return this
     }
 
-    sanitize(key, type, ...args) {
+    sanitize(path, type, ...args) {
 
-        // get value
-        const value = this.list[key]
-
-        if (!this.list.hasOwnProperty(key)) {
-            throw new Error(`error at validation module: list has not key ${key}.`)
+        if (!this.existValue(path)) {
+            throw new Error(`error at validation module: list has not key ${path}.`)
         }
 
         if (!this.sanitaizeTypes.includes(type)) {
@@ -268,8 +263,9 @@ module.exports = class validation {
         }
 
         try {
+            const value = this.getValue(path)
             const snitized = validator[type](value, ...args)
-            this.list[key] = snitized
+            this.setValue(this.values, path, snitized)
         } catch (err) {
 
             throw new Error(`error at validation module: ${err.message}`)
@@ -279,6 +275,13 @@ module.exports = class validation {
     }
 
     get() {
+
+        // if(this.passed){
+        //     Object.keys(this.list).forEach(key => {
+                
+        //     })
+        // }
+
         return {
             check: this.passed,
             status: this.passed ? 'success' : 'warning',
@@ -286,6 +289,76 @@ module.exports = class validation {
             values: this.values,
         }
     }
+
+    existValue(str) {
+        let exist = this.list
+        const paths = str.split('.')
+
+        for (let index in paths) {
+            const path = paths[index]
+            if (exist.hasOwnProperty(path)) {
+                exist = exist[path]
+            } else {
+                return false
+            }
+        }
+        return true
+    }
+
+    getValue(str) {
+        let value = this.list
+        const paths = str.split('.')
+
+        for (let index in paths) {
+            const path = paths[index]
+            value = value[path] != null ? value[path] : null
+        }
+        return value
+    }
+
+    setValue(obj, str, value) {
+
+        if (typeof str == 'string') {
+            return this.setValue(obj, str.split('.'), value)
+        } else if (str.length == 1 && value !== undefined) {
+            return obj[str[0]] = value
+        } else if (str.length == 0) {
+            return obj
+        } else {
+            return this.setValue(obj[str[0]], str.slice(1), value)
+        }
+    }
+
+    setValue2(obj, path, value) {
+        // protect against being something unexpected
+        obj = typeof obj === 'object' ? obj : {}
+        // split the path into and array if its not one already
+        var keys = Array.isArray(path) ? path : path.split('.')
+        // keep up with our current place in the object
+        // starting at the root object and drilling down
+        var curStep = obj
+        // loop over the path parts one at a time
+        // but, dont iterate the last part,
+        for (var i = 0; i < keys.length - 1; i++) {
+            // get the current path part
+            var key = keys[i]
+
+            // if nothing exists for this key, make it an empty object or array
+            if (!curStep[key] && !Object.prototype.hasOwnProperty.call(curStep, key)) {
+                // get the next key in the path, if its numeric, make this property an empty array
+                // otherwise, make it an empty object
+                var nextKey = keys[i + 1];
+                var useArray = /^\+?(0|[1-9]\d*)$/.test(nextKey)
+                curStep[key] = useArray ? [] : {}
+            }
+            // update curStep to point to the new level
+            curStep = curStep[key];
+        }
+        // set the final key to our value
+        var finalStep = keys[keys.length - 1]
+        curStep[finalStep] = value;
+    };
+
 }
 
 // console.log(validator.isEmpty(''))

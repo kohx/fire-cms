@@ -3,10 +3,21 @@ const functions = parent.functions
 const admin = parent.admin
 const system = parent.system
 
-const url = require('url')
-
-const validation = require('../../../../../modules/validation')
 const debug = require('../../../../../modules/debug').debug
+const validation = require('../../../../../modules/validation')
+const util = require('../util')
+
+/* promise catch error message json */
+const errorMessageJson = util.errorMessageJson
+
+/* build json messages from validation invalid messages */
+const invalidMessageJson = util.invalidMessageJson
+
+/* build success json messages */
+const successMessageJson = util.successMessageJson
+
+/* filter body */
+const filterDody = util.filterDody
 
 module.exports.index = (req, res, next) => {
 
@@ -35,7 +46,7 @@ module.exports.index = (req, res, next) => {
             // targets.lang.locales = targets.lang.locales.join(', ')
             // targets.general.roles = targets.general.roles.join(', ')
 
-            
+
             req.vessel.thing.targets = targets
             next()
         })
@@ -51,223 +62,145 @@ module.exports.index = (req, res, next) => {
  */
 module.exports.update = (req, res, next) => {
 
-    // get post from req body
-    const settings = req.body
+    // body
+    const body = req.body
 
-    // setting.lang.locales
-    let locales = req.vessel.get('settings.lang.locales')
+    // set orderbalidation
+    const validate = validation.list(body)
 
-    /* modify settings */
-    // if there is lang.locales then change array from string
-    if (settings.lang != null && settings.lang.locales != null) {
-        const newLocals = []
-        settings.lang.locales.split(',').forEach(locale => {
-            locale = locale.trim()
-            if (locale.length > 0) {
-                newLocals.push(locale)
-            }
-        })
+    // get set locales
+    const locales = req.vessel.get('settings.lang.locales', [])
 
-        // override becose reference new locales
-        settings.lang.locales = newLocals
-        locales = newLocals
+    // assets
+    if (body.hasOwnProperty('asset.landscapePrefix')) {
+        validate
+            .valid('asset.landscapePrefix', 'isRequired')
+            .valid('asset.landscapePrefix', 'isAlnumunder')
+    }
+    if (body.hasOwnProperty('asset.landscapeSize')) {
+        validate
+            .valid('asset.landscapeSize', 'isRequired')
+            .valid('asset.landscapeSize', 'isAlnumunder')
+            .sanitize('asset.landscapeSize', 'trim')
+    }
+    if (body.hasOwnProperty('asset.portraitPrefix')) {
+        validate.valid('asset.portraitPrefix', 'isRequired')
+        validate.valid('asset.portraitPrefix', 'isAlnumunder')
+        validate.sanitize('asset.portraitPrefix', 'trim')
+    }
+    if (body.hasOwnProperty('asset.portraitSize')) {
+        validate
+            .valid('asset.portraitSize', 'isRequired')
+            .valid('asset.portraitSize', 'isAlphanumeric')
+            .sanitize('asset.portraitSize', 'trim')
+    }
+    if (body.hasOwnProperty('asset.squarePrefix')) {
+        validate.valid('asset.squarePrefix', 'isRequired')
+        validate.valid('asset.squarePrefix', 'isAlnumunder')
+        validate.sanitize('asset.squarePrefix', 'trim')
+    }
+    if (body.hasOwnProperty('asset.squareSize')) {
+        validate.valid('asset.squareSize', 'isRequired')
+        validate.valid('asset.squareSize', 'isAlphanumeric')
+        validate.sanitize('asset.squareSize', 'trim')
+    }
+    if (body.hasOwnProperty('asset.thumbPrefix')) {
+        validate
+            .valid('asset.thumbPrefix', 'isRequired')
+            .valid('asset.thumbPrefix', 'isAlnumunder')
+    }
+    if (body.hasOwnProperty('asset.thumbSize')) {
+        validate
+            .valid('asset.thumbSize', 'isRequired')
+            .valid('asset.thumbSize', 'isAlphanumeric')
     }
 
-    if (settings.general != null && settings.general.roles != null) {
-        const newRoles = []
-        settings.general.roles.split(',').forEach(role => {
-            role = role.trim()
-            if (role.length > 0) {
-                newRoles.push(locale)
-            }
-        })
-
-        settings.general.roles = newRoles
-    }
-
-    /* set validation */
-    const validate = validation.list(req.body)
-
-    /* assets */
-    if (settings.asset != null) {
-        const asset = settings.asset
-
-        if (asset.landscapePrefix != null) {
-            validate.test('asset.landscapePrefix', 'isRequired')
-            validate.test('asset.landscapePrefix', 'isAlnumunder')
-            validate.sanitize('asset.landscapePrefix', 'trim')
-        }
-        if (asset.landscapeSize != null) {
-            validate.test('asset.landscapeSize', 'isRequired')
-            validate.test('asset.landscapeSize', 'isAlphanumeric')
-            validate.sanitize('asset.landscapeSize', 'trim')
-        }
-        if (asset.portraitPrefix != null) {
-            validate.test('asset.portraitPrefix', 'isRequired')
-            validate.test('asset.portraitPrefix', 'isAlnumunder')
-            validate.sanitize('asset.portraitPrefix', 'trim')
-        }
-        if (asset.portraitSize != null) {
-            validate.test('asset.portraitSize', 'isRequired')
-            validate.test('asset.portraitSize', 'isAlphanumeric')
-            validate.sanitize('asset.portraitSize', 'trim')
-        }
-        if (asset.squarePrefix != null) {
-            validate.test('asset.squarePrefix', 'isRequired')
-            validate.test('asset.squarePrefix', 'isAlnumunder')
-            validate.sanitize('asset.squarePrefix', 'trim')
-        }
-        if (asset.squareSize != null) {
-            validate.test('asset.squareSize', 'isRequired')
-            validate.test('asset.squareSize', 'isAlphanumeric')
-            validate.sanitize('asset.squareSize', 'trim')
-        }
-        if (asset.thumbPrefix != null) {
-            validate.test('asset.thumbPrefix', 'isRequired')
-            validate.test('asset.thumbPrefix', 'isAlnumunder')
-            validate.sanitize('asset.thumbPrefix', 'trim')
-        }
-        if (asset.thumbSize != null) {
-            validate.test('asset.thumbSize', 'isRequired')
-            validate.test('asset.thumbSize', 'isAlphanumeric')
-            validate.sanitize('asset.thumbSize', 'trim')
-        }
-    }
     /* frontend */
-    if (settings.frontend != null) {
-        const frontend = settings.frontend
-
-        if (frontend.lang != null) {
-            validate.test('frontend.lang', 'isRequired')
-            validate.test('frontend.lang', 'isIn', locales)
-            validate.sanitize('frontend.lang', 'trim')
-        }
-        if (frontend.signinUnique != null) {
-            validate.test('frontend.signinUnique', 'isRequired')
-            validate.sanitize('frontend.signinUnique', 'trim')
-        }
-        if (frontend.topUnique != null) {
-            validate.test('frontend.topUnique', 'isRequired')
-            validate.sanitize('frontend.topUnique', 'trim')
-        }
+    if (body.hasOwnProperty('frontend.lang')) {
+        validate
+            .valid('frontend.lang', 'isRequired')
+            .valid('frontend.lang', 'isIn', locales)
     }
+    if (body.hasOwnProperty('frontend.signinUnique')) {
+        validate.valid('frontend.signinUnique', 'isRequired')
+    }
+    if (body.hasOwnProperty('frontend.topUnique')) {
+        validate.valid('frontend.topUnique', 'isRequired')
+    }
+
     /* backend */
-    if (settings.backend != null) {
-        const backend = settings.backend
-
-        if (backend.lang != null) {
-            validate.test('backend.lang', 'isRequired')
-            validate.test('backend.lang', 'isIn', locales)
-            validate.sanitize('backend.lang', 'trim')
-        }
-        if (backend.signinUnique != null) {
-            validate.test('backend.signinUnique', 'isRequired')
-            validate.sanitize('backend.signinUnique', 'trim')
-        }
-        if (backend.topUnique != null) {
-            validate.test('backend.topUnique', 'isRequired')
-            validate.sanitize('backend.topUnique', 'trim')
-        }
-        if (backend.firstPath != null) {
-            validate.test('backend.firstPath', 'isRequired')
-            validate.sanitize('backend.firstPath', 'trim')
-        }
-        if (backend.expiresIn != null) {
-            validate.test('backend.expiresIn', 'isRequired')
-            validate.sanitize('backend.expiresIn', 'trim')
-        }
-        if (backend.signinLImit != null) {
-            validate.test('backend.signinLImit', 'isRequired')
-            validate.sanitize('backend.signinLImit', 'trim')
-        }
+    if (body.hasOwnProperty('backend.lang')) {
+        validate
+            .valid('backend.lang', 'isRequired')
+            .valid('backend.lang', 'isIn', locales)
     }
+    if (body.hasOwnProperty('backend.signinUnique')) {
+        validate.valid('backend.signinUnique', 'isRequired')
+    }
+    if (body.hasOwnProperty('backend.topUnique')) {
+        validate.valid('backend.topUnique', 'isRequired')
+    }
+    if (body.hasOwnProperty('backend.firstPath')) {
+        validate.valid('backend.firstPath', 'isRequired')
+    }
+    if (body.hasOwnProperty('backend.expiresIn')) {
+        validate.valid('backend.expiresIn', 'isRequired')
+    }
+    if (body.hasOwnProperty('backend.signinLImit')) {
+        validate.valid('backend.signinLImit', 'isRequired')
+    }
+
     /* lang */
-    if (settings.lang != null) {
-        const lang = settings.lang
-
-        if (lang.default != null) {
-            validate.test('lang.default', 'isRequired')
-            validate.test('lang.default', 'isIn', locales)
-            validate.sanitize('lang.default', 'trim')
-        }
-        if (lang.dirname != null) {
-            validate.test('lang.dirname', 'isRequired')
-            validate.sanitize('lang.dirname', 'trim')
-        }
-        if (lang.locales != null) {
-            validate.test('lang.locales', 'isNotBlankObject')
-            validate.test('lang.locales', 'isArray')
-        }
+    if (body.hasOwnProperty('lang.default')) {
+        validate
+            .valid('lang.default', 'isRequired')
+            .valid('lang.default', 'isIn', locales)
+    }
+    if (body.hasOwnProperty('lang.dirname')) {
+        validate.valid('lang.dirname', 'isRequired')
+    }
+    if (body.hasOwnProperty('lang.locales')) {
+        validate
+            .valid('lang.locales', 'isNotBlankObject')
+            .valid('lang.locales', 'isArray')
     }
 
-    valid = validate.check()
+    valid = validate.get()
     let messages = []
 
-    /* validation not passed */
-    if (!valid.status) {
-
-        // translate validation message and rebuild messages
-        Object.keys(valid.errors).forEach(key => {
-            valid.errors[key].forEach(error => {
-                // {path: xxx.xxx, message: 'asdf asdf asdf.'}
-                // change to 
-                // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-                messages.push({
-                    key: error.path,
-                    content: req.__(error.message, error.params)
-                })
-            })
-        })
-        res.json({
-            code: valid.status ? 'success' : 'warning',
-            messages: messages,
-            values: valid.values
-        })
+    // validation invalid
+    if (!valid.check) {
+        // send invalid messages json
+        invalidMessageJson(res, valid)
     } else {
-
         const settingsRef = admin.firestore().collection('settings')
-        const values = valid.values
+
+        // ここでオブジェクトをまとめる！
 
         let updates = []
-        Object.keys(values).forEach(docKey => {
-            docValues = values[docKey]
-
-            const updateDoc = settingsRef.doc(docKey).update(docValues)
-            updates.push(updateDoc)
-
-            // create success message
-            Object.keys(docValues).forEach(valueKey => {
-                // {key: xxx.xxx, content: 'asdf asdf asdf.'}
-                messages.push({
-                    key: `${docKey}.${valueKey}`,
-                    content: req.__('{{docKey}} {{valueKey}} is updated.', {
-                        docKey,
-                        valueKey
-                    })
-                })
+        Object.keys(body).forEach(key => {
+            const value = body[key]
+            const [doc, field] = key.split('.')
+            const updateDoc = settingsRef.doc(doc).update({
+                field: value
             })
+            updates.push(updateDoc)
         })
 
         Promise.all(updates)
             .then(results => {
                 debug(results, __filename, __line)
-                res.json({
-                    code: 'success',
-                    messages: messages,
-                    values: valid.values
-                })
+
+                const effect = {
+                    moded: 'update',
+                    values
+                }
+
+                // ここもまとめて返す
+                // send seccess message
+                successMessageJson(res, '{{key}} is updated.', 'update', body, effect)
             })
-            .catch(err => {
-                debug(err, __filename, __line)
-                res.json({
-                    code: 'error',
-                    messages: [{
-                        key: 'error',
-                        content: err.message
-                    }],
-                    values: valid.values
-                })
-            })
+            .catch(err => errorMessageJson(res, err, null, __filename, __line))
     }
 
 }
