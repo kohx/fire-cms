@@ -68,6 +68,7 @@ module.exports = class validation {
             isDate: `{{param1}} is not date.`,
             isAllString: `{{param1}} array elements are not string.`,
             isAllBool: `{{param1}} array elements are not boolean.`,
+            isAllInUse: `{{param2}} is in use {{param3}}.`,
         }
     }
 
@@ -202,6 +203,16 @@ module.exports = class validation {
                         case 'isAllBool':
                             Object.keys(value).forEach(index => {
                                 flag = typeof value[index] === 'boolean'
+                            })
+                            break
+
+                        case 'isAllInUse':
+                            flag = false
+                            const usedLnag = args[0]
+                            Object.keys(value).forEach(index => {
+                                if(value[index] === usedLnag){
+                                    flag = true
+                                }
                             })
                             break
 

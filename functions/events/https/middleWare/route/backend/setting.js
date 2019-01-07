@@ -69,7 +69,10 @@ module.exports.update = (req, res, next) => {
     const validate = validation.list(body)
 
     // get set locales
-    const locales = req.vessel.get('settings.lang.locales', [])
+    const locales = body['lang.locales'] != null ? body['lang.locales'] : req.vessel.get('settings.lang.locales', [])
+    const frontendLnag = body['frontend.lang'] != null ? body['frontend.lang'] : req.vessel.get('settings.frontend.lang', [])
+    const backendLnag = body['backend.lang'] != null ? body['backend.lang'] : req.vessel.get('settings.backend.lang', [])
+    const defaultLnag = body['lang.default'] != null ? body['lang.default'] : req.vessel.get('settings.lang.default', [])
 
     // assets
     if (body.hasOwnProperty('asset.landscapePrefix')) {
@@ -81,28 +84,26 @@ module.exports.update = (req, res, next) => {
         validate
             .valid('asset.landscapeSize', 'isRequired')
             .valid('asset.landscapeSize', 'isAlnumunder')
-            .sanitize('asset.landscapeSize', 'trim')
     }
     if (body.hasOwnProperty('asset.portraitPrefix')) {
-        validate.valid('asset.portraitPrefix', 'isRequired')
-        validate.valid('asset.portraitPrefix', 'isAlnumunder')
-        validate.sanitize('asset.portraitPrefix', 'trim')
+        validate
+            .valid('asset.portraitPrefix', 'isRequired')
+            .valid('asset.portraitPrefix', 'isAlnumunder')
     }
     if (body.hasOwnProperty('asset.portraitSize')) {
         validate
             .valid('asset.portraitSize', 'isRequired')
             .valid('asset.portraitSize', 'isAlphanumeric')
-            .sanitize('asset.portraitSize', 'trim')
     }
     if (body.hasOwnProperty('asset.squarePrefix')) {
-        validate.valid('asset.squarePrefix', 'isRequired')
-        validate.valid('asset.squarePrefix', 'isAlnumunder')
-        validate.sanitize('asset.squarePrefix', 'trim')
+        validate
+            .valid('asset.squarePrefix', 'isRequired')
+            .valid('asset.squarePrefix', 'isAlnumunder')
     }
     if (body.hasOwnProperty('asset.squareSize')) {
-        validate.valid('asset.squareSize', 'isRequired')
-        validate.valid('asset.squareSize', 'isAlphanumeric')
-        validate.sanitize('asset.squareSize', 'trim')
+        validate
+            .valid('asset.squareSize', 'isRequired')
+            .valid('asset.squareSize', 'isAlphanumeric')
     }
     if (body.hasOwnProperty('asset.thumbPrefix')) {
         validate
@@ -163,6 +164,9 @@ module.exports.update = (req, res, next) => {
         validate
             .valid('lang.locales', 'isNotBlankObject')
             .valid('lang.locales', 'isArray')
+            .valid('lang.locales', 'isAllInUse', backendLnag, req.__('backend lang'))
+            .valid('lang.locales', 'isAllInUse', frontendLnag, req.__('frontend lang'))
+            .valid('lang.locales', 'isAllInUse', defaultLnag, req.__('default lang'))
     }
 
     valid = validate.get()
@@ -175,30 +179,28 @@ module.exports.update = (req, res, next) => {
     } else {
         const settingsRef = admin.firestore().collection('settings')
 
-        // ここでオブジェクトをまとめる！
-
-        let updates = []
+        // build settings from body
+        let settings = {}
         Object.keys(body).forEach(key => {
             const value = body[key]
             const [doc, field] = key.split('.')
-            const updateDoc = settingsRef.doc(doc).update({
-                field: value
-            })
+            if (!settings.hasOwnProperty(doc)) {
+                settings[doc] = {}
+            }
+            settings[doc][field] = value
+        })
+
+        // set promise to updates
+        let updates = []
+        Object.keys(settings).forEach(key => {
+            const updateDoc = settingsRef.doc(key).update(settings[key])
             updates.push(updateDoc)
         })
 
         Promise.all(updates)
-            .then(results => {
-                debug(results, __filename, __line)
-
-                const effect = {
-                    moded: 'update',
-                    values
-                }
-
-                // ここもまとめて返す
+            .then(_ => {
                 // send seccess message
-                successMessageJson(res, '{{key}} is updated.', 'update', body, effect)
+                successMessageJson(res, 'is updated.', body)
             })
             .catch(err => errorMessageJson(res, err, null, __filename, __line))
     }

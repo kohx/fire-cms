@@ -53,5 +53,14 @@
 	"{{param1}} is not contains symbol.": "{{param1}} is not contains symbol.",
 	"{{param1}} is not contains uppercase.": "{{param1}} is not contains uppercase.",
 	"{{param1}} is not contains numric.": "{{param1}} is not contains numric.",
-	"{{param1}} is not same with {{param2}}.": "{{param1}} is not same with {{param2}}."
+	"{{param1}} is not same with {{param2}}.": "{{param1}} is not same with {{param2}}.",
+	"values is not defined": "values is not defined",
+	"body is not defined": "body is not defined",
+	"{{key}} is updated.": "{{key}} is updated.",
+	"{{param1}} Used at {{param2}}.": "{{param1}} Used at {{param2}}.",
+	"{{param2}} is in use.": "{{param2}} is in use.",
+	"backend lang": "backend lang",
+	"frontend lang": "frontend lang",
+	"default lang": "default lang",
+	"{{param2}} is in use {{param3}}.": "{{param2}} is in use {{param3}}."
 }

@@ -161,7 +161,7 @@
                 {| * targets.lang.locales : key : locale |}
                 <div>
                     {| ^ equal(0, key) |}<i class="fas fa-minus-circle minus"></i>{| /^ |}
-                    <input id="locales" name="general.locales" type="text" value="{| locale |}">
+                    <input id="locales" name="lang.locales" type="text" value="{| locale |}">
                 </div>
                 {| /* |}
             </div>
@@ -186,117 +186,7 @@
         // get button
         const button = event.currentTarget
 
-        // add id fore delete
-        const id = button.dataset.id != null ? button.dataset.id : null
-
         // not change then show warnning
         base.requestServer(button, false)
     })
-
-    // let processing = false
-    // updateBtnElement.addEventListener('click', event => {
-
-    //     // get target
-    //     const target = event.currentTarget
-
-    //     // processing then can't send request
-    //     if (processing) {
-    //         return
-    //     }
-
-        // // start processing
-        // processing = true
-        // target.disabled = true;
-
-        // const requestUrl = `${window.location.origin}/${target.dataset.request_url}`
-        // const unique = target.dataset.unique
-        // const modifiedItems = document.querySelectorAll('._modified')
-
-        // // not change then show warnning
-        // if (modifiedItems.length === 0) {
-        //     base.setNotice('warning', ['Nothing has changed.'])
-        //     processing = false
-        //     event.target.disabled = false;
-        //     return
-        // }
-
-        // // get body from modified items
-        // const body = {}
-        // Object.keys(modifiedItems).forEach(key => {
-        //     // element
-        //     const element = modifiedItems[key]
-
-        //     // if not has object property then add property
-        //     if (!body.hasOwnProperty(element.dataset.target)) {
-        //         body[element.dataset.target] = {}
-        //     }
-        //     body[element.dataset.target][element.dataset.item] = element.value
-        // })
-
-        // // request to server
-        // base.fetchServer(requestUrl, body)
-        //     .then(result => {
-
-        //         // get code
-        //         const code = result.code
-
-        //         let messages = []
-        //         result.messages.forEach(message => {
-
-        //             // rebuild message
-        //             messages.push(message.content)
-
-        //             // get selector from key
-        //             let key = message.key
-        //             const selector = key =! null ? `.${key.replace('.', ' .')}` : false
-
-        //             // has selector
-        //             if (selector) {
-        //                 const element = document.querySelector(selector)
-
-        //                 // code is success
-        //                 if (code === 'success') {
-        //                     // then remove _modified class
-        //                     element.classList.remove('_modified')
-
-        //                     // get new value from result balues
-        //                     let value = Object.assign({}, result.values)
-        //                     message.key.split('.').forEach(path => {
-        //                         value = value[path.trim()]
-        //                     })
-
-        //                     // value is array then change to string
-        //                     value = Array.isArray(value) ? value.join(', ') : value
-
-        //                     // set new value
-        //                     element.value = value
-
-        //                     // set new value to data dafault
-        //                     element.dataset.default = value
-
-        //                     // set modifier class success whith clear time
-        //                     base.setModifierClass(element, code, 4000)
-        //                 } else {
-        //                     // set modifier class error or warning
-        //                     base.setModifierClass(element, code)
-        //                 }
-        //             }
-        //         })
-
-        //         // set notice
-        //         base.setNotice(result.code, messages)
-
-        //         // end process
-        //         processing = false
-        //         event.target.disabled = false;
-        //     })
-        //     .catch(err => {
-        //         base.setNotice('error', [err.message])
-        //         console.log(err)
-
-        //         // end process
-        //         processing = false
-        //         event.target.disabled = false;
-        //     })
-    // })
 </script>
