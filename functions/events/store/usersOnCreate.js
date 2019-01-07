@@ -10,7 +10,6 @@ exports.usersOnCreate = functions.firestore
     .document('users/{id}')
     .onCreate((doc, context) => {
 
-        debug(doc, __filename, __line)
         const id = doc.id
         const data = doc.data()
 

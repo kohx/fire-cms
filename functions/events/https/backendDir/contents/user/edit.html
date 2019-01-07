@@ -23,7 +23,7 @@
     </div>
     <div class="col1">
         <div>description</div>
-        <textarea rows="5" name="textarea" id="description">{| target.description |}</textarea>
+        <textarea rows="5" name="description" id="description">{| target.description |}</textarea>
     </div>
     <div class="col1">
         <div>role</div>
@@ -75,7 +75,7 @@
         <div>textarea</div>
         <textarea rows="5" name="textarea" id="textarea">asdf</textarea>
     </div>
-    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/user-update">update</button>
+    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/user-update" data-id="{| target.id |}">update</button>
 </div>
 
 {|> footer |}
@@ -84,10 +84,6 @@
 
     import { Base } from '/{| backendFirstPath |}/base.js';
     var base = Base.init()
-
-    // user createも合わせる
-    // settingsも合わせる
-    // TODO:: validation statusもストリングに変更する？
 
     // get element
     const updateBtnElement = document.querySelector('#update_button')
@@ -98,11 +94,8 @@
         // get button
         const button = event.currentTarget
 
-        // add id because id is not modified
-        const id = base.defaults.id
-
         // not change then show warnning
-        base.requestServer(button, false, { id })
+        base.requestServer(button, false)
     })
 
 </script>

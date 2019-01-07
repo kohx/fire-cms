@@ -15,7 +15,7 @@
                 <h2 class="col2">{| target.name |}</h2>
                 <div class="col2 grid3 gap1"><span class="col1">order <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.order |}</span></div>
                 <div class="col2 grid3 gap1"><span class="col1">unique <i class="fas fa-caret-right"></i> </span><span class="col2">{| target.unique |}</span></div>
-                <a class="col1 button" href="/{| backendFirstPath |}/division/{| target.unique |}">edit</a>
+                <a class="col1 button" href="/{| backendFirstPath |}/division/{| target.id |}">edit</a>
                 <button class="col1 delete_button" type="button" class="delete_button" data-request_url="{| backendFirstPath |}/division-delete"  data-id="{| target.id |}">delete</button>
             </li>
             {|/*|}
@@ -42,11 +42,8 @@
             // get button
             const button = event.currentTarget
 
-            // add id fore delete
-            const id = button.dataset.id != null ? button.dataset.id : null
-            
             // not change then show warnning
-            base.requestServer(button, true, { id })
+            base.requestServer(button, true)
         })
     });
 

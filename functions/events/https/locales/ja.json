@@ -62,5 +62,24 @@
 	"backend lang": "backend lang",
 	"frontend lang": "frontend lang",
 	"default lang": "default lang",
-	"{{param2}} is in use {{param3}}.": "{{param2}} is in use {{param3}}."
+	"{{param2}} is in use {{param3}}.": "{{param2}} is in use {{param3}}.",
+	"{{key}} Successfully created new thing.": "{{key}} Successfully created new thing.",
+	"Cannot convert undefined or null to object": "Cannot convert undefined or null to object",
+	"Successfully created new thing.": "Successfully created new thing.",
+	"messages": {
+		"pash is not a function": "messages.pash is not a function"
+	},
+	"{{key}} Successfully deleted thing.": "{{key}} Successfully deleted thing.",
+	"Cannot read property 'split' of undefined": "Cannot read property 'split' of undefined",
+	"Successfully created new division.": "Successfully created new division.",
+	"Successfully deleted division.": "Successfully deleted division.",
+	"error at validation module": " this.getValue is not a function",
+	"Successfully deleted user.": "Successfully deleted user.",
+	"Successfully created new user.": "Successfully created new user.",
+	"Update() requires either a single JavaScript object or an alternating list of field/value pairs that can be followed by an optional precondition. Argument \"dataOrField\" is not a valid Document. At least one field must be updated.": "Update() requires either a single JavaScript object or an alternating list of field/value pairs that can be followed by an optional precondition. Argument \"dataOrField\" is not a valid Document. At least one field must be updated.",
+	"There are no items that can be updated.": "There are no items that can be updated.",
+	"there is not sessionCookie.": "there is not sessionCookie.",
+	"Can't set headers after they are sent.": "Can't set headers after they are sent.",
+	"id is undefined!": "id is undefined!",
+	"Argument \"documentPath\" is not a valid ResourcePath. Path must be a non-empty string.": "Argument \"documentPath\" is not a valid ResourcePath. Path must be a non-empty string."
 }

@@ -63,15 +63,15 @@ function invalidMessageJson(res, validationResult) {
  * 
  * @param {Object} res 
  * @param {String} message 
- * @param {Object} body 
- * @param {Object} [effect = null]
+ * @param {Object|null} [body = null] 
+ * @param {Object|null} [effect = null]
  */
-function successMessageJson(res, message, body, effect = null) {
+function successMessageJson(res, message, body = null, effect = null) {
 
     let messages = []
     let values = {}
 
-    if (Object.keys(body) !== 0) {
+    if (body != null) {
         Object.keys(body).forEach(key => {
             // {path: xxx.xxx, message: 'asdf asdf asdf.'}
             // change to 
@@ -87,9 +87,9 @@ function successMessageJson(res, message, body, effect = null) {
             }
         })
     } else {
-        messages.pash({
+        messages.push({
             key: null,
-            content: res.__(`Successfully created new thing.`),
+            content: res.__(message),
         })
     }
 

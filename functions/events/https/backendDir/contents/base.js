@@ -358,9 +358,8 @@ export class Base {
      * 
      * @param {Object} buttonElement 
      * @param {Boolean} [sendAll = true] 
-     * @param {Object} [addObjectg = {}] 
      */
-    requestServer(buttonElement, sendAll = true, addObjectg = {}) {
+    requestServer(buttonElement, sendAll = true) {
 
         // processing then can't send request
         if (this.processing) {
@@ -370,7 +369,8 @@ export class Base {
         // get button data
         const data = buttonElement.dataset
         const requestUrl = data.request_url != null ? `${window.location.origin}/${data.request_url}` : null
-        let redirectUrl = data.redirect_url != null ? `${window.location.origin}/${data.redirect_url}` : null
+        const redirectUrl = data.redirect_url != null ? `${window.location.origin}/${data.redirect_url}` : null
+        const id = data.id != null ? data.id : null
 
         // prosess start
         this.processing = true
@@ -410,8 +410,10 @@ export class Base {
             }
         }
 
-        // additional data merge
-        modifiedValues = Object.assign(modifiedValues, addObjectg)
+        // add id
+        if(id){
+            modifiedValues.id = id
+        }
 
         // request to server
         this.fetchServer(requestUrl, modifiedValues)
@@ -421,29 +423,26 @@ export class Base {
 
                 // get code
                 const code = result.code
-                // get mode
-                const mode = result.mode
                 // get values
                 const values = result.values
-                // get effected
-                const effected = result.effected
+                // get effect
+                const effect = result.effect
 
-                // then there is redirect url
-                if (code === 'success' && redirectUrl && effected != null) {
-
-                    // redirect to
-                    window.location.assign(`${redirectUrl}/${effected}`)
-                    return
-                }
-
-                // then success delete
-                if (code === 'success' && mode === 'delete') {
-                    const target = document.querySelector(`#id_${effected}`)
-                    if (target) {
-                        target.classList.add('__success');
-                        setTimeout(() => {
-                            target.remove()
-                        }, 1000);
+                if (code === 'success' && effect != null) {
+                    if (effect.mode === 'create' && effect.id != null && redirectUrl) {
+                        // redirect to
+                        window.location.assign(`${redirectUrl}/${effect.id}`)
+                        return
+                    }
+                     
+                    if (effect.mode === 'delete' && effect.id != null) {
+                        const target = document.querySelector(`#id_${effect.id}`)
+                        if (target) {
+                            target.classList.add('__success');
+                            setTimeout(() => {
+                                target.remove()
+                            }, 1000);
+                        }
                     }
                 }
 

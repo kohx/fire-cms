@@ -150,7 +150,7 @@ module.exports.create = (req, res, next) => {
                 userDoc.set(params)
                     .then(_ => {
                         // send success messages json
-                        successMessageJson(res, 'Successfully created new thing.', 'create', {}, id)
+                        successMessageJson(res, 'Successfully created new user.', null, { mode: 'create', id: id })
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
@@ -244,11 +244,17 @@ module.exports.update = (req, res, next) => {
                 const intKeys = ['order']
                 const params = filterDody(body, allowaKeys, intKeys)
 
+                if (Object.keys(params).length === 0) {
+                    errorMessageJson(res, null, 'There are no items that can be updated.')
+                }
+
                 admin.firestore().collection('users')
                     .doc(id)
                     .update(params)
                     .then(_ => {
 
+                        debug(Object.keys(body).includes('email', 'password'), __filename, __line)
+                        // if self user and change password or email then signout
                         if (Object.keys(body).includes('email', 'password')) {
                             signout(req, res)
                         } else {
@@ -366,7 +372,7 @@ module.exports.delete = (req, res, next) => {
                     doc.ref.delete()
                         .then(_ => {
                             // send success message
-                            successMessageJson(res, 'Successfully deleted thing.', 'delete', {}, id)
+                            successMessageJson(res, 'Successfully deleted user.', null, { mode: 'delete', id: id })
                         })
                         .catch(err => errorMessageJson(res, err, null, __filename, __line))
                 } else {

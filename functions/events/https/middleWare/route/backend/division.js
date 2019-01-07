@@ -56,29 +56,25 @@ module.exports.edit = (req, res, next) => {
     const target = segments.shift()
 
     return admin.firestore().collection('divisions')
-        .where('unique', '==', target)
-        .limit(1)
-        .get()
-        .then(docs => {
-            // division is not found
-            if (docs.size === 0) {
-                let err = new Error('division unique Not Found!')
-                err.status = 404
-                next(err)
-                return
-            } else {
-                let docData = null
-                docs.forEach(doc => {
-                    docData = doc.data()
-                })
-                req.vessel.thing.target = docData
-                next()
-            }
-        })
-        .catch(err => {
-            debug(err, __filename, __line)
+    .doc(target)
+    .get()
+    .then(doc => {
+        // user is not found
+        if (!doc.exists) {
+            let err = new Error('division Not Found!')
+            err.status = 404
             next(err)
-        })
+            return
+        } else {
+            let data = doc.data()
+            req.vessel.thing.target = data
+            next()
+        }
+    })
+    .catch(err => {
+        debug(err, __filename, __line)
+        next(err)
+    })
 }
 
 /**
@@ -128,7 +124,7 @@ module.exports.create = (req, res, next) => {
                 divisionDoc.set(params)
                     .then(_ => {
                         // send success messages json
-                        successMessageJson(res, 'Successfully created new thing.', 'create', {}, params.unique)
+                        successMessageJson(res, 'Successfully created new division.', null, {mode: 'create', id: id})
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
@@ -200,12 +196,16 @@ module.exports.update = (req, res, next) => {
                 const intKeys = ['order']
                 const params = filterDody(body, allowaKeys, intKeys)
 
+                if(Object.keys(params).length === 0) {
+                    errorMessageJson(res, null, 'There are no items that can be updated.')
+                }
+
                 admin.firestore().collection('divisions')
                     .doc(id)
                     .update(params)
                     .then(_ => {
                         // send seccess message
-                        successMessageJson(res, '{{key}} is updated.', 'update', body)
+                        successMessageJson(res, '{{key}} is updated.', body)
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
@@ -260,7 +260,7 @@ module.exports.delete = (req, res, next) => {
                     doc.ref.delete()
                         .then(_ => {
                             // send success message
-                            successMessageJson(res, 'Successfully deleted thing.', 'delete', {}, id)
+                            successMessageJson(res, 'Successfully deleted division.', null, {mode: 'delete', id: id})
                         })
                         .catch(err => errorMessageJson(res, err, null, __filename, __line))
                 } else {

@@ -185,7 +185,7 @@ module.exports = class validation {
 
                         case 'isConfirm':
                             const targetKey = args[0]
-                            const targetValue = this.getValue(targetKey)
+                            const targetValue = this.list[targetKey]
                             flag = value === targetValue
                             break
 

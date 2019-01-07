@@ -44,11 +44,8 @@
             // get button
             const button = event.currentTarget
 
-            // add id fore delete
-            const id = button.dataset.id != null ? button.dataset.id : null
-            
             // not change then show warnning
-            base.requestServer(button, true, { id })
+            base.requestServer(button, true)
         })
     });
 
