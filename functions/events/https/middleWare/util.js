@@ -61,16 +61,16 @@ function invalidMessageJson(res, validationResult) {
  *  successMessageJson(res, 'Successfully created new thing.', body, {mode: 'create', id: id})
  *  successMessageJson(res, '{{key}} is updated.', body)
  * 
- * @param {Object} res 
- * @param {String} message 
- * @param {Object|null} [body = null] 
- * @param {Object|null} [effect = null]
+ * @param {object} res 
+ * @param {string} message 
+ * @param {object|null} [body = null] 
+ * @param {object|null} [effect = null]
  */
 function successMessageJson(res, message, body = null, effect = null) {
 
     let messages = []
     let values = {}
-
+debug(body, __filename, __line)
     if (body != null) {
         Object.keys(body).forEach(key => {
             // {path: xxx.xxx, message: 'asdf asdf asdf.'}

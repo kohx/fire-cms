@@ -150,7 +150,10 @@ module.exports.create = (req, res, next) => {
                 userDoc.set(params)
                     .then(_ => {
                         // send success messages json
-                        successMessageJson(res, 'Successfully created new user.', null, { mode: 'create', id: id })
+                        successMessageJson(res, 'Successfully created new user.', null, {
+                            mode: 'create',
+                            id: id
+                        })
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
@@ -334,8 +337,8 @@ function validationUpdate(body, nameUniqueFlag, emailUniqueFlag) {
  */
 module.exports.delete = (req, res, next) => {
 
-    // TODO:: 自分自身は削除できなくする、またはサインアウトする
-
+    debug(req, __filename, __line)
+    
     const id = req.body.id != null ? req.body.id : null
 
     if (!id) {
@@ -356,10 +359,14 @@ module.exports.delete = (req, res, next) => {
                             // if self user and change password or email then signout
                             if (req.vessel.get('user.id') === id && Object.keys(body).includes('email', 'password')) {
                                 // signout
+                                debug('to signout', __filename, __line)
                                 signout(req, res, 'Successfully deleted user.')
                             } else {
                                 // send seccess message
-                                successMessageJson(res, 'Successfully deleted user.', null, { mode: 'delete', id: id })
+                                successMessageJson(res, 'Successfully deleted user.', null, {
+                                    mode: 'delete',
+                                    id: id
+                                })
                             }
                         })
                         .catch(err => errorMessageJson(res, err, null, __filename, __line))
@@ -372,7 +379,14 @@ module.exports.delete = (req, res, next) => {
     }
 }
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} message 
+ */
 function signout(req, res, message) {
+    debug('in signout', __filename, __line)
 
     // セッション Cookie を取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
@@ -390,8 +404,11 @@ function signout(req, res, message) {
         .then(decodedClaims => {
             admin.auth().revokeRefreshTokens(decodedClaims.sub)
                 .then(_ => {
+                    debug('in', __filename, __line)
                     // send seccess message
-                    successMessageJson(res, message, null, { mode: 'signout'})
+                    successMessageJson(res, message, null, {
+                        mode: 'signout'
+                    })
                 })
                 .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })

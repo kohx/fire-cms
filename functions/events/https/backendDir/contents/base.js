@@ -407,6 +407,10 @@ export class Base {
 
                 if (code === 'success' && effect != null) {
                     if (effect.mode === 'create' && effect.id != null && redirectUrl) {
+
+                        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        this.setNotice('success', 'created.')
+
                         // redirect to
                         window.location.assign(`${redirectUrl}/${effect.id}`)
                         return

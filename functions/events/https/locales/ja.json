@@ -81,5 +81,6 @@
 	"there is not sessionCookie.": "there is not sessionCookie.",
 	"Can't set headers after they are sent.": "Can't set headers after they are sent.",
 	"id is undefined!": "id is undefined!",
-	"Argument \"documentPath\" is not a valid ResourcePath. Path must be a non-empty string.": "Argument \"documentPath\" is not a valid ResourcePath. Path must be a non-empty string."
+	"Argument \"documentPath\" is not a valid ResourcePath. Path must be a non-empty string.": "Argument \"documentPath\" is not a valid ResourcePath. Path must be a non-empty string.",
+	"{{param1}} is not alphanumeric and space.": "{{param1}} is not alphanumeric and space."
 }
