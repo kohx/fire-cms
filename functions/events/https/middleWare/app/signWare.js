@@ -5,6 +5,13 @@ const admin = parent.admin
 const system = parent.system
 
 const debug = require('../../../../modules/debug').debug
+const util = require('../util')
+
+/* promise catch error message json */
+const errorMessageJson = util.errorMessageJson
+
+/* build success json messages */
+const successMessageJson = util.successMessageJson
 
 /**
  * csrf function
@@ -50,18 +57,13 @@ module.exports.check = (req, res, next) => {
 
     // sign object
     req.vessel.sign = {
-        // signin: false,
-        // status: null,
         status: false,
-        message: ``,
     }
 
     // user object
     req.vessel.user = {
-        uid: null,
-        name: null,
+        id: null,
         email: null,
-        role: null,
     }
 
     // get from settings
@@ -75,10 +77,7 @@ module.exports.check = (req, res, next) => {
     // sessionCookieがない場合
     if (!sessionCookie) {
 
-        // req.vessel.sign.signin = false
-        // req.vessel.sign.status = 'error'
         req.vessel.sign.status = false
-        req.vessel.sign.message = `sign in failed. there is not sessionCookie.`
         next()
     } else {
 
@@ -91,23 +90,18 @@ module.exports.check = (req, res, next) => {
                 const now = new Date().getTime() / 1000 - decodedClaims.auth_time
                 if (now >= signinLImit) {
 
-                    // req.vessel.sign.signin = false
-                    // req.vessel.sign.status = 'error'
                     req.vessel.sign.status = false
-                    req.vessel.sign.message = `sign in failed. recent sign in required. limit: ${signinLImit}`
                     next()
                 } else {
 
                     req.vessel.sign.status = true
-                    req.vessel.sign.message = `sign in success.`
-                    req.vessel.user.uid = decodedClaims.uid
+                    req.vessel.user.id = decodedClaims.uid
                     req.vessel.user.email = decodedClaims.email
                     next()
                 }
             })
             .catch(err => {
                 req.vessel.sign.status = false
-                req.vessel.sign.message = `sign in failed. ${err.message}`
                 next()
             })
     }
@@ -121,59 +115,48 @@ module.exports.user = (req, res, next) => {
     let isSigned = req.vessel.get('sign.status')
 
     // ローカルデバグ用
-    if(req.vessel.get('baseUrl') === 'http://localhost:5000') {
+    if (req.vessel.get('baseUrl') === 'http://localhost:5000') {
         debug(`DEBAG SIGNIN`, __filename, __line)
         isSigned = true
         req.vessel.sign.status = true
-        req.vessel.sign.message = `sign in success.`
-        req.vessel.user.uid = `TFHZ4VowjVbtcxPnrvNzM1LtlNv1`
-        req.vessel.user.email = `kohei0728@gmail.com`
-        req.vessel.user.name = `kohei`
-        req.vessel.user.role = `admin`
-        next()
-    } else {
+        req.vessel.user.id = `aWSzf8nrLYOr1pVuWYl3`
+        req.vessel.user.email = `kohei.0728@gmail.com`
+    }
 
-        // ユーザの詳細を追加
-        if (isSigned) {
-            const uid = req.vessel.get('user.uid')
-            admin.firestore().collection('users').doc(uid).get()
-                .then(res => {
-                    const data = res.data()
-                    if (data.name != null) {
-                        req.vessel.user.name = data.name
+    // ユーザの詳細を追加
+    if (isSigned) {
+        const id = req.vessel.get('user.id')
+        admin.firestore().collection('users').doc(id).get()
+            .then(res => {
+                const data = res.data()
+                Object.keys(data).forEach(key => {
+                    if(req.vessel.user[key] == null){
+                        req.vessel.user[key] = data[key]
                     }
-                    if (data.role != null) {
-                        req.vessel.user.role = data.role
-                    }
-                    next()
                 })
-        } else {
-            next()
-        }
+                next()
+            })
+            .catch(err => console.log(err))
+    } else {
+        next()
     }
 }
 
 /**
- * sign in
+ * sign in (post)
  */
 module.exports.in = (req, res, next) => {
 
     // postされたIDトークンとCSRFトークンを取得
     const idToken = (req.body.idToken != null) ? req.body.idToken : false
     if (!idToken) {
-        res.json({
-            code: 'error',
-            message: `there is not idToken in post data.`
-        })
+        errorMessageJson(res, null, 'there is not idToken in post data.')
         return
     }
 
     const bodyCsrfToken = (req.body.csrfToken != null) ? req.body.csrfToken : false
     if (!bodyCsrfToken) {
-        res.json({
-            code: 'error',
-            message: `there is not csrfToken in post data.`
-        })
+        errorMessageJson(res, null, 'there is not csrfToken in post data.')
         return
     }
 
@@ -181,20 +164,13 @@ module.exports.in = (req, res, next) => {
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
     const cookieCsrfToken = (session['csrfToken'] != null) ? session['csrfToken'] : false
     if (!cookieCsrfToken) {
-        res.json({
-            code: 'error',
-            message: `there is not cookieCsrfToken.`
-        })
+        errorMessageJson(res, null, 'there is not cookieCsrfToken.')
         return
     }
 
     // Guard against CSRF attacks
     if (bodyCsrfToken !== cookieCsrfToken) {
-
-        res.json({
-            code: 'error',
-            message: `csrfToken is not match.`
-        })
+        errorMessageJson(res, null, 'csrfToken is not match.')
         return
     }
 
@@ -203,10 +179,7 @@ module.exports.in = (req, res, next) => {
 
     // bearerのチェック
     if (!bearer || !idToken || bearer !== idToken) {
-        res.json({
-            code: 'error',
-            message: `bearer is not true.`
-        })
+        errorMessageJson(res, null, 'bearer is not true.')
         return
     }
 
@@ -219,8 +192,8 @@ module.exports.in = (req, res, next) => {
     // セッションCookieを作成、これにより、プロセス内のIDトークンも検証
     // セッションクッキーは、IDトークンと同じ要求を持つ
     admin.auth().createSessionCookie(idToken, {
-            expiresIn
-        })
+        expiresIn
+    })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {
@@ -233,34 +206,22 @@ module.exports.in = (req, res, next) => {
             // サインイン成功
             session.sessionCookie = sessionCookie
             res.cookie('__session', JSON.stringify(session), options);
-            res.json({
-                code: 'success',
-                message: `sign in success.`
-            })
+            successMessageJson(res, 'sign in success.', null, { mode: 'signin'})
         })
-        .catch(err => {
-            debug(err, __filename, __line)
-            res.json({
-                code: 'error',
-                message: err.message
-            })
-        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
-/* out function */
+/**
+ *  out function (post)
+ */
 module.exports.out = (req, res, next) => {
 
     // セッション Cookie を取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
-    debug(session, __filename, __line)
     const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
-    debug(sessionCookie, __filename, __line)
 
     if (!sessionCookie) {
-        res.json({
-            code: 'error',
-            message: `there is not sessionCookie.`
-        })
+        errorMessageJson(res, null, 'there is not sessionCookie.')
         return
     }
 
@@ -269,25 +230,11 @@ module.exports.out = (req, res, next) => {
 
     admin.auth().verifySessionCookie(sessionCookie)
         .then(decodedClaims => {
-
             return admin.auth().revokeRefreshTokens(decodedClaims.sub)
                 .then(() => {
-                    res.json({
-                        code: 'success',
-                        message: `sign out.`
-                    })
+                    successMessageJson(res, 'sign out.', null, { mode: 'signout'})
                 })
-                .catch(err => {
-                    res.json({
-                        code: 'error',
-                        message: `sign out failed.`
-                    })
-                })
+                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
-        .catch(err => {
-            res.json({
-                code: 'error',
-                message: `there is not claims.`
-            })
-        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

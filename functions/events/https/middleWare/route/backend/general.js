@@ -6,7 +6,7 @@ const system = parent.system
 const url = require('url')
 
 const debug = require('../../../../../modules/debug').debug
-const util = require('../util')
+const util = require('../../util')
 
 /* promise catch error message json */
 const errorMessageJson = util.errorMessageJson

@@ -240,7 +240,7 @@ module.exports = class validation {
             this.passed = false
 
             // there is not key then add key
-            if (!this.errors[key]) {
+            if (!this.errors.hasOwnProperty(key)) {
                 this.errors[key] = []
             }
 

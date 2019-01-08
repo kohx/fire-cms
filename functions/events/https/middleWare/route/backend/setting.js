@@ -5,7 +5,7 @@ const system = parent.system
 
 const debug = require('../../../../../modules/debug').debug
 const validation = require('../../../../../modules/validation')
-const util = require('../util')
+const util = require('../../util')
 
 /* promise catch error message json */
 const errorMessageJson = util.errorMessageJson

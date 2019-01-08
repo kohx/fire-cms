@@ -5,7 +5,7 @@ const system = parent.system
 
 const debug = require('../../../../../modules/debug').debug
 const validation = require('../../../../../modules/validation')
-const util = require('../util')
+const util = require('../../util')
 
 // TODO:: アプリから関数を呼び出す
 // https://firebase.google.com/docs/functions/callable?hl=ja

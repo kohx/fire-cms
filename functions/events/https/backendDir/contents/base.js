@@ -269,7 +269,7 @@ export class Base {
      * notice
      * 
      * @param {String} code 
-     * @param {String} messages 
+     * @param {String|Array} messages 
      * @param {String} title 
      * @param {Number} timeout 
      */
@@ -281,9 +281,14 @@ export class Base {
         title = title != null ? title : code.toUpperCase()
         this.noticeTitle.textContent = title
 
+        if(typeof messages === 'string') {
+            messages = [messages]
+        }
+
         messages.forEach(message => {
-            const list = document.createElement('li');
-            list.textContent = message
+            const list = document.createElement('li')
+            console.log(message)
+            list.textContent = message.content
             this.noticeMessages.insertAdjacentElement('beforeend', list)
         });
 
@@ -403,7 +408,7 @@ export class Base {
 
             // if all value not modify then show notice and reset button 
             if (Object.keys(modifiedValues).length === 0) {
-                this.setNotice('warning', ['Nothing has changed.'])
+                this.setNotice('warning', 'Nothing has changed.')
                 this.processing = false
                 buttonElement.disabled = false
                 return
@@ -444,15 +449,18 @@ export class Base {
                             }, 1000);
                         }
                     }
+                    
+                    if (effect.mode === 'signout') {
+                        window.location.reload()
+                    }
                 }
 
+                // set notice
+                this.setNotice(result.code, result.messages)
+
                 // get message
-                let messages = []
                 result.messages.forEach(message => {
-
-                    // rebuild message
-                    messages.push(message.content)
-
+                    
                     // get message key
                     let key = message.key
 
@@ -487,16 +495,13 @@ export class Base {
                     }
                 })
 
-                // set notice
-                this.setNotice(result.code, messages)
-
                 // end process
                 this.processing = false
                 buttonElement.disabled = false;
             })
             .catch(err => {
 
-                this.setNotice('error', [err.message])
+                this.setNotice('error', err.message)
                 console.log(err)
 
                 // end process
@@ -531,18 +536,24 @@ export class Base {
 
         this.signInFunction(email, passwoard, csrfToken, requestUrl)
             .then(result => {
+
+                console.log(result)
+
+
                 if (result.code === 'success') {
                     // result status is true then send to backend top index
                     window.location.assign(backendUrl)
                 } else {
                     // show
-                    this.setNotice('error', [result.message], 'Signin failed')
+                    this.setNotice(result.code, result.messages, 'Signout failed')
                     this.processing = false
                     target.disabled = false
                 }
             })
             .catch(err => {
-                this.setNotice('error', [err.message], 'Signin error')
+                console.log('in error !')
+
+                this.setNotice('error', err.message, 'Signin error')
                 this.processing = false
                 target.disabled = false
             })
@@ -588,10 +599,9 @@ export class Base {
                 return result
             })
             .catch(err => {
-                return ({
-                    code: 'error',
-                    message: err.message
-                })
+                console.log('ininin')
+                this.setNotice('error', err.message, 'Signin error')
+                return
             })
     }
 
@@ -623,25 +633,27 @@ export class Base {
                 // サーバに問い合わせ
                 // server sign out
                 this.fetchServer(requestUrl)
-                    .then(result => {
+                .then(result => {
                         // result from signWare.out
                         // success signout then reload
                         if (result.code === 'success') {
                             window.location.reload()
                         } else {
-                            this.setNotice(result.code, [result.message], 'Signout failed')
+                            console.log(result)
+                            this.setNotice(result.code, result.messages, 'Signout failed')
                             this.processing = false
                             target.disabled = false
                         }
+
                     })
                     .catch(err => {
-                        this.setNotice('error', [err.message], 'Signout failed')
+                        this.setNotice('error', err.message, 'Signout failed')
                         this.processing = false
                         target.disabled = false
                     })
             })
             .catch(err => {
-                this.setNotice('error', [err.message])
+                this.setNotice('error', err.message, 'Signout failed')
                 this.processing = false
                 target.disabled = false
             })

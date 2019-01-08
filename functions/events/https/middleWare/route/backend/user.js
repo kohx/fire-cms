@@ -5,7 +5,7 @@ const system = parent.system
 
 const debug = require('../../../../../modules/debug').debug
 const validation = require('../../../../../modules/validation')
-const util = require('../util')
+const util = require('../../util')
 
 /* promise catch error message json */
 const errorMessageJson = util.errorMessageJson
@@ -183,9 +183,9 @@ function validationCreate(body, nameUniqueFlag, emailUniqueFlag) {
         .valid('password', 'containsUppercase')
         .valid('password', 'containsNumric')
         .valid('password', 'canNotUsedBlank')
-        // confirm
-        .valid('confirm', 'isRequired')
-        .valid('confirm', 'isConfirm', 'password')
+        // // confirm
+        // .valid('confirm', 'isRequired')
+        // .valid('confirm', 'isConfirm', 'password')
         // description
         .valid('description', 'isLength', 0, 200)
         // role
@@ -201,8 +201,6 @@ function validationCreate(body, nameUniqueFlag, emailUniqueFlag) {
  * user update (post)
  */
 module.exports.update = (req, res, next) => {
-
-    // TODO:: 自分自身は変更できなくする、またはサインアウトする
 
     // body
     const body = req.body
@@ -244,6 +242,7 @@ module.exports.update = (req, res, next) => {
                 const intKeys = ['order']
                 const params = filterDody(body, allowaKeys, intKeys)
 
+                // there is not allow params
                 if (Object.keys(params).length === 0) {
                     errorMessageJson(res, null, 'There are no items that can be updated.')
                 }
@@ -252,11 +251,10 @@ module.exports.update = (req, res, next) => {
                     .doc(id)
                     .update(params)
                     .then(_ => {
-
-                        debug(Object.keys(body).includes('email', 'password'), __filename, __line)
                         // if self user and change password or email then signout
-                        if (Object.keys(body).includes('email', 'password')) {
-                            signout(req, res)
+                        if (req.vessel.get('user.id') === id && Object.keys(body).includes('email', 'password')) {
+                            // signout
+                            signout(req, res, 'Successfully update user.')
                         } else {
                             // send seccess message
                             successMessageJson(res, '{{key}} is updated.', body)
@@ -271,8 +269,14 @@ module.exports.update = (req, res, next) => {
 /* validation update user */
 function validationUpdate(body, nameUniqueFlag, emailUniqueFlag) {
 
+    // // passwordがある場合はconfirmも強制的に送る
+    // if(body.hasOwnProperty('password') && !body.hasOwnProperty('confirm')){
+    //     body.confirm = ''
+    // }
+
     /* set orderbalidation */
     const validate = validation.list(body)
+
     // ユーザー名には、[a-z]、[0-9]、-、_、'、.を使用できます。
     // ユーザー名には、&、=、<、>、+、,を使用できません。
     // また、連続した複数のピリオド（.）を含めることはできません。
@@ -302,12 +306,12 @@ function validationUpdate(body, nameUniqueFlag, emailUniqueFlag) {
             .valid('password', 'containsNumric')
             .valid('password', 'canNotUsedBlank')
     }
-    // confirm
-    if (body.hasOwnProperty('confirm')) {
-        validate
-            .valid('confirm', 'isRequired')
-            .valid('confirm', 'isConfirm', 'password')
-    }
+    // // confirm
+    // if (body.hasOwnProperty('confirm')) {
+    //     validate
+    //         .valid('confirm', 'isRequired')
+    //         .valid('confirm', 'isConfirm', 'password')
+    // }
     // description
     if (body.hasOwnProperty('description')) {
         validate.valid('description', 'isLength', 0, 200)
@@ -323,29 +327,6 @@ function validationUpdate(body, nameUniqueFlag, emailUniqueFlag) {
     }
 
     return validate.get()
-}
-
-function signout(req, res) {
-    // セッション Cookie を取得
-    const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
-    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
-
-    if (!sessionCookie) {
-        errorMessageJson(res, null, 'there is not sessionCookie.')
-    }
-
-    // セッションをクリア
-    res.clearCookie('__session')
-
-    admin.auth().verifySessionCookie(sessionCookie)
-        .then(decodedClaims => {
-            admin.auth().revokeRefreshTokens(decodedClaims.sub)
-                .then(_ => {
-                    successMessageJson(res, 'sign out.', 'signout', {}, {})
-                })
-                .catch(err => errorMessageJson(res, err, null, __filename, __line))
-        })
-        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
 /**
@@ -371,8 +352,15 @@ module.exports.delete = (req, res, next) => {
                     // delete user
                     doc.ref.delete()
                         .then(_ => {
-                            // send success message
-                            successMessageJson(res, 'Successfully deleted user.', null, { mode: 'delete', id: id })
+
+                            // if self user and change password or email then signout
+                            if (req.vessel.get('user.id') === id && Object.keys(body).includes('email', 'password')) {
+                                // signout
+                                signout(req, res, 'Successfully deleted user.')
+                            } else {
+                                // send seccess message
+                                successMessageJson(res, 'Successfully deleted user.', null, { mode: 'delete', id: id })
+                            }
                         })
                         .catch(err => errorMessageJson(res, err, null, __filename, __line))
                 } else {
@@ -382,4 +370,30 @@ module.exports.delete = (req, res, next) => {
             })
             .catch(err => errorMessageJson(res, err, null, __filename, __line))
     }
+}
+
+function signout(req, res, message) {
+
+    // セッション Cookie を取得
+    const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
+    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
+
+    if (!sessionCookie) {
+        errorMessageJson(res, null, 'there is not sessionCookie.')
+        return
+    }
+
+    // セッションをクリア
+    res.clearCookie('__session')
+
+    admin.auth().verifySessionCookie(sessionCookie)
+        .then(decodedClaims => {
+            admin.auth().revokeRefreshTokens(decodedClaims.sub)
+                .then(_ => {
+                    // send seccess message
+                    successMessageJson(res, message, null, { mode: 'signout'})
+                })
+                .catch(err => errorMessageJson(res, err, null, __filename, __line))
+        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

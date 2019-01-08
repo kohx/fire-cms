@@ -1,13 +1,13 @@
-const debug = require('../../../../modules/debug').debug
+const debug = require('../../../modules/debug').debug
 
 /**
  * Error Message Json
  * 
  * @param {Object} res 
  * @param {Object} [err = null] 
- * @param {String} [message = null] 
- * @param {String} [filename = null] 
- * @param {String} [line = null] 
+ * @param {String|null} [message = null] 
+ * @param {String|null} [filename = null] 
+ * @param {String|null} [line = null] 
  */
 function errorMessageJson(res, err = null, message = null, filename = null, line = null) {
     if (err) {
@@ -41,7 +41,7 @@ function invalidMessageJson(res, validationResult) {
             // change to 
             // {key: xxx.xxx, content: 'asdf asdf asdf.'}
             messages.push({
-                key: error.path,
+                key: key,
                 content: res.__(error.message, error.params)
             })
         })

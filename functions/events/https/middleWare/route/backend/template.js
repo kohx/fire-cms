@@ -5,7 +5,7 @@ const system = parent.system
 
 const debug = require('../../../../../modules/debug').debug
 const validation = require('../../../../../modules/validation')
-const util = require('../util')
+const util = require('../../util')
 
 /* promise catch error message json */
 const errorMessageJson = util.errorMessageJson
@@ -60,22 +60,18 @@ module.exports.edit = (req, res, next) => {
     const target = segments.shift()
 
     return admin.firestore().collection('templates')
-        .where('unique', '==', target)
-        .limit(1)
+        .doc(target)
         .get()
-        .then(docs => {
-            // template is not found
-            if (docs.size === 0) {
-                let err = new Error('template unique Not Found!')
+        .then(doc => {
+            // user is not found
+            if (!doc.exists) {
+                let err = new Error('template Not Found!')
                 err.status = 404
                 next(err)
                 return
             } else {
-                let docData = null
-                docs.forEach(doc => {
-                    docData = doc.data()
-                })
-                req.vessel.thing.target = docData
+                let data = doc.data()
+                req.vessel.thing.target = data
                 const templateTypes = req.vessel.get('settings.general.template_types')
                 req.vessel.thing.templateTypes = templateTypes
                 next()
@@ -85,7 +81,6 @@ module.exports.edit = (req, res, next) => {
             debug(err, __filename, __line)
             next(err)
         })
-
 }
 
 /**
@@ -136,7 +131,7 @@ module.exports.create = (req, res, next) => {
                 templateDoc.set(params)
                     .then(_ => {
                         // send success messages json
-                        successMessageJson(res, 'Successfully created new thing.', 'create', {}, params.unique)
+                        successMessageJson(res, 'Successfully created new templates.', null, {mode: 'create', id: id})
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
@@ -211,12 +206,16 @@ module.exports.update = (req, res, next) => {
                 const intKeys = ['order']
                 const params = filterDody(body, allowaKeys, intKeys)
 
+                if(Object.keys(params).length === 0) {
+                    errorMessageJson(res, null, 'There are no items that can be updated.')
+                }
+
                 admin.firestore().collection('templates')
                     .doc(id)
                     .update(params)
                     .then(_ => {
                         // send seccess message
-                        successMessageJson(res, '{{key}} is updated.', 'update', body)
+                        successMessageJson(res, '{{key}} is updated.', body)
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
@@ -276,7 +275,7 @@ module.exports.delete = (req, res, next) => {
                     doc.ref.delete()
                         .then(_ => {
                             // send success message
-                            successMessageJson(res, 'Successfully deleted thing.', 'delete', {}, id)
+                            successMessageJson(res, 'Successfully deleted template.', null, {mode: 'delete', id: id})
                         })
                         .catch(err => errorMessageJson(res, err, null, __filename, __line))
                 } else {
