@@ -25,7 +25,7 @@ module.exports.checkThing = (req, res, next) => {
 
     const thing = req.vessel.get('thing')
 
-    console.log(`\n=============== ${thing.unique} ===============`)
+    // console.log(`\n=============== ${thing.unique} ===============`)
 
     if (thing.unique) {
         next()
@@ -163,6 +163,6 @@ module.exports.renderPage = (req, res, next) => {
     data.params.backendFirstPath = req.vessel.get('settings.backend.firstPath')
     data.params.roles = req.vessel.get('settings.general.roles')
 
-    console.log(`=============== ${thing.unique} ===============\n`)
+    // console.log(`=============== ${thing.unique} ===============\n`)
     res.wbRender(data)
 }

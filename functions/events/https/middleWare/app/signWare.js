@@ -130,7 +130,7 @@ module.exports.user = (req, res, next) => {
             .then(res => {
                 const data = res.data()
                 Object.keys(data).forEach(key => {
-                    if(req.vessel.user[key] == null){
+                    if (req.vessel.user[key] == null) {
                         req.vessel.user[key] = data[key]
                     }
                 })
@@ -192,8 +192,8 @@ module.exports.in = (req, res, next) => {
     // セッションCookieを作成、これにより、プロセス内のIDトークンも検証
     // セッションクッキーは、IDトークンと同じ要求を持つ
     admin.auth().createSessionCookie(idToken, {
-        expiresIn
-    })
+            expiresIn
+        })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {
@@ -205,10 +205,15 @@ module.exports.in = (req, res, next) => {
 
             // サインイン成功
             session.sessionCookie = sessionCookie
-            res.cookie('__session', JSON.stringify(session), options);
-            successMessageJson(res, 'sign in success.', null, { mode: 'signin'})
+            res.cookie('__session', JSON.stringify(session), options)
+            successMessageJson(res, 'sign in success.', null, {
+                mode: 'signin'
+            })
         })
-        .catch(err => errorMessageJson(res, err, null, __filename, __line))
+        .catch(err => {
+            // errorMessageJson(res, err, null, __filename, __line)
+            errorMessageJson(res, null, 'email address or password is wrong.')
+        })
 }
 
 /**
@@ -232,7 +237,9 @@ module.exports.out = (req, res, next) => {
         .then(decodedClaims => {
             return admin.auth().revokeRefreshTokens(decodedClaims.sub)
                 .then(() => {
-                    successMessageJson(res, 'sign out.', null, { mode: 'signout'})
+                    successMessageJson(res, 'sign out.', null, {
+                        mode: 'signout'
+                    })
                 })
                 .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })

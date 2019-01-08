@@ -1,8 +1,7 @@
 export class Base {
 
-    /**
+    /*
      * constructor
-     * 
      */
     constructor() {
         // httpOnly Cookieを使用するため、クライアントの状態を保持しない
@@ -76,19 +75,15 @@ export class Base {
         this.noticeTimer;
     }
 
-    /**
+    /*
      * init
-     * 
      */
     static init() {
         return new Base()
     }
 
-    /**
+    /*
      * get form object
-     * 
-     * @param {string} key 
-     * @returns {*}
      */
     getFormObject(key = null) {
         // get elements
@@ -150,12 +145,8 @@ export class Base {
         return key ? formObjects[key] : formObjects
     }
 
-    /**
+    /*
      * check value one is equal value two
-     * 
-     * @param {mix} one 
-     * @param {mix} two 
-     * @returns {boolean}
      */
     equalValue(one, two) {
         let result = null
@@ -168,10 +159,8 @@ export class Base {
         return result
     }
 
-    /**
+    /*
      * add class _modified to element
-     * 
-     * @param {object} event 
      */
     modifyValue(event) {
         const target = event.currentTarget
@@ -193,11 +182,8 @@ export class Base {
         })
     }
 
-    /**
+    /*
      * to next element
-     * 
-     * @param {object} event 
-     * @param {number} key 
      */
     toNext(event, key) {
         /* if enter key up then next one focused */
@@ -219,10 +205,8 @@ export class Base {
         }
     }
 
-    /**
+    /*
      * add events
-     * 
-     * @param {string|null} selector 
      */
     addTargetEvents() {
         Object.keys(this.targets).forEach(key => {
@@ -241,12 +225,8 @@ export class Base {
         })
     }
 
-    /**
+    /*
      * set modifier class
-     * 
-     * @param {object} element 
-     * @param {string|null} code 
-     * @param {number|null} cleareTime 
      */
     setModifierClass(element, code = null, cleareTime = null) {
 
@@ -265,13 +245,8 @@ export class Base {
         }
     }
 
-    /**
-     * notice
-     * 
-     * @param {String} code 
-     * @param {String|Array} messages 
-     * @param {String} title 
-     * @param {Number} timeout 
+    /*
+     * set notice
      */
     setNotice(code, messages, title = null, timeout = this.showTime) {
         this.clearNotice()
@@ -281,13 +256,14 @@ export class Base {
         title = title != null ? title : code.toUpperCase()
         this.noticeTitle.textContent = title
 
-        if(typeof messages === 'string') {
-            messages = [messages]
+        if (typeof messages === 'string') {
+            messages = [{
+                content: messages
+            }]
         }
 
         messages.forEach(message => {
             const list = document.createElement('li')
-            console.log(message)
             list.textContent = message.content
             this.noticeMessages.insertAdjacentElement('beforeend', list)
         });
@@ -304,6 +280,9 @@ export class Base {
         }, timeout);
     }
 
+    /*
+     * clear notice value
+     */
     clearNotice() {
         this.notice.classList.remove('__info', '__success', '__warning', '__error')
         this.noticeTitle.textContent = null
@@ -314,12 +293,8 @@ export class Base {
         this.notice.classList.remove('_active')
     }
 
-    /**
+    /*
      * fetche
-     * 
-     * @param {String} url 
-     * @param {Object} body 
-     * @param {Object} addHeader 
      */
     fetchServer(url, body = {}, addHeader = {}) {
 
@@ -335,13 +310,13 @@ export class Base {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'post',
-                mode: 'cors',
-                credentials: 'include',
-                cache: 'no-cache',
-                headers: headers,
-                body: JSON.stringify(body)
-            })
+                    method: 'post',
+                    mode: 'cors',
+                    credentials: 'include',
+                    cache: 'no-cache',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                })
                 .then(data => {
                     return data.json()
                 })
@@ -358,11 +333,8 @@ export class Base {
         })
     }
 
-    /**
+    /*
      * request server
-     * 
-     * @param {Object} buttonElement 
-     * @param {Boolean} [sendAll = true] 
      */
     requestServer(buttonElement, sendAll = true) {
 
@@ -416,7 +388,7 @@ export class Base {
         }
 
         // add id
-        if(id){
+        if (id) {
             modifiedValues.id = id
         }
 
@@ -439,7 +411,7 @@ export class Base {
                         window.location.assign(`${redirectUrl}/${effect.id}`)
                         return
                     }
-                     
+
                     if (effect.mode === 'delete' && effect.id != null) {
                         const target = document.querySelector(`#id_${effect.id}`)
                         if (target) {
@@ -449,7 +421,7 @@ export class Base {
                             }, 1000);
                         }
                     }
-                    
+
                     if (effect.mode === 'signout') {
                         window.location.reload()
                     }
@@ -460,7 +432,7 @@ export class Base {
 
                 // get message
                 result.messages.forEach(message => {
-                    
+
                     // get message key
                     let key = message.key
 
@@ -510,11 +482,10 @@ export class Base {
             })
     }
 
-    /**
+    /*
      * sign in
      */
     signIn(event) {
-
         // get target
         const target = event.currentTarget
 
@@ -536,11 +507,8 @@ export class Base {
 
         this.signInFunction(email, passwoard, csrfToken, requestUrl)
             .then(result => {
-
-                console.log(result)
-
-
                 if (result.code === 'success') {
+                    this.setNotice(result.code, result.messages, 'Signin success')
                     // result status is true then send to backend top index
                     window.location.assign(backendUrl)
                 } else {
@@ -551,20 +519,19 @@ export class Base {
                 }
             })
             .catch(err => {
-                console.log('in error !')
-
                 this.setNotice('error', err.message, 'Signin error')
                 this.processing = false
                 target.disabled = false
             })
     }
 
+    /*
+     * client side sign in
+     */
     signInFunction(email, passwoard, csrfToken, requestUrl) {
-
         // auth sign in
         return firebase.auth().signInWithEmailAndPassword(email, passwoard)
             .then(result => {
-
                 // get user from result
                 const user = result.user
 
@@ -585,30 +552,28 @@ export class Base {
                         }
 
                         // サーバに問い合わせ
-                        // server sign in
+                        // return server sign in result
                         return this.fetchServer(requestUrl, body, addHeader)
                     })
             })
             .then(result => {
                 // 永続性がNONEに設定されているため、ページのリダイレクトで十分
                 firebase.auth().signOut()
+                // return server sign in result
                 return result
             })
             .then(result => {
-                // result from signWare.in
+                // return server sign in result
                 return result
             })
             .catch(err => {
-                console.log('ininin')
-                this.setNotice('error', err.message, 'Signin error')
-                return
+                // if client sign in failed then throw error
+                throw new Error('email address or password is wrong.')
             })
     }
 
-    /**
+    /*
      * sign out
-     * 
-     * @param {object} event 
      */
     signOut(event) {
 
@@ -633,13 +598,13 @@ export class Base {
                 // サーバに問い合わせ
                 // server sign out
                 this.fetchServer(requestUrl)
-                .then(result => {
+                    .then(result => {
                         // result from signWare.out
                         // success signout then reload
                         if (result.code === 'success') {
+                            this.setNotice(result.code, result.messages, 'Signout success')
                             window.location.reload()
                         } else {
-                            console.log(result)
                             this.setNotice(result.code, result.messages, 'Signout failed')
                             this.processing = false
                             target.disabled = false
