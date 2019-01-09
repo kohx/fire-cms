@@ -108,16 +108,36 @@ function successMessageJson(res, message, body = null, effect = null) {
     return
 }
 
-function successMessageJsonWithSignout(req, res, message, body = null, effect = null) {
+function successMessageJsonWithSignout(req, res, message, effect = null) {
 
-    res.json({
-        code: 'success',
-        messages,
-        values,
-        effect,
-    })
+    // セッション Cookie を取得
+    const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
+    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
 
-    return
+    if (!sessionCookie) {
+        return errorMessageJson(res, null, 'there is not sessionCookie.')
+    }
+    // セッションをクリア
+    res.clearCookie('__session')
+
+    return admin.auth().verifySessionCookie(sessionCookie)
+        .then(decodedClaims => {
+            admin.auth().revokeRefreshTokens(decodedClaims.sub)
+                .then(_ => {
+
+                    res.json({
+                        code: 'success',
+                        messages: [{
+                            key: null,
+                            content: res.__(message),
+                        }],
+                        values,
+                        effect,
+                    })
+                })
+                .catch(err => errorMessageJson(res, err, null, __filename, __line))
+        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
 /**

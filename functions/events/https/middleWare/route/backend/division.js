@@ -55,16 +55,17 @@ module.exports.edit = (req, res, next) => {
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
 
+    if (!target) {
+        res.notFound('not found!')
+    }
+
     return admin.firestore().collection('divisions')
     .doc(target)
     .get()
     .then(doc => {
         // user is not found
         if (!doc.exists) {
-            let err = new Error('division Not Found!')
-            err.status = 404
-            next(err)
-            return
+            res.notFound('not found!')
         } else {
             let data = doc.data()
             req.vessel.thing.target = data

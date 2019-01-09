@@ -71,6 +71,9 @@ app.use(signWare.csrf)
 /* wavebar */
 app.use(wavebar.init)
 
+/* サブルートで使うnotfound */
+app.use(errWare.setNotFound)
+
 /* route */
 app.use(`/*`, frontendRouter)
 app.use(`/*`, backendRouter)

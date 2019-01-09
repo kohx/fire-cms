@@ -64,6 +64,10 @@ module.exports.edit = (req, res, next) => {
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
 
+    if (!target) {
+        res.notFound('not found!')
+    }
+
     return admin.firestore().collection('things')
         .where('unique', '==', target)
         .limit(1)
@@ -71,10 +75,7 @@ module.exports.edit = (req, res, next) => {
         .then(docs => {
             // thing is not found
             if (docs.size === 0) {
-                let err = new Error('thing unique Not Found!')
-                err.status = 404
-                next(err)
-                return
+                res.notFound('not found!')
             } else {
                 let data = null
                 docs.forEach(doc => {

@@ -593,10 +593,8 @@ export class Base {
 
         // auth sign out
         firebase.auth().signOut()
-            .then(resutl => {
+            .then(_ => {
 
-                console.log(resutl)
-                
                 // サーバに問い合わせ
                 // server sign out
                 this.fetchServer(requestUrl)

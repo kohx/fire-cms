@@ -9,15 +9,14 @@ const util = require('../../util')
 
 /* promise catch error message json */
 const errorMessageJson = util.errorMessageJson
-
 /* build json messages from validation invalid messages */
 const invalidMessageJson = util.invalidMessageJson
-
 /* build success json messages */
 const successMessageJson = util.successMessageJson
-
 /* filter body */
 const filterDody = util.filterDody
+/* filter body */
+const throw404 = util.throw404
 
 // TODO:: カスタムのメール アクション ハンドラの作成
 // https://firebase.google.com/docs/auth/custom-email-handler?hl=ja
@@ -83,16 +82,17 @@ module.exports.edit = (req, res, next) => {
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
 
+    if (!target) {
+        res.notFound('not found!')
+    }
+
     return admin.firestore().collection('users')
         .doc(target)
         .get()
         .then(doc => {
             // user is not found
             if (!doc.exists) {
-                let err = new Error('user Not Found!')
-                err.status = 404
-                next(err)
-                return
+                res.notFound('not found!')
             } else {
                 let data = doc.data()
                 req.vessel.thing.target = data
@@ -210,7 +210,7 @@ module.exports.update = (req, res, next) => {
 
     // update requires id
     const id = body.id != null ? body.id : null
- 
+
     // if id undefined return err
     if (!id) {
         return errorMessageJson(res, null, 'id is undefined!')
