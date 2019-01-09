@@ -208,12 +208,12 @@ module.exports.update = (req, res, next) => {
     // body
     const body = req.body
 
-    // then update id is requred
+    // update requires id
     const id = body.id != null ? body.id : null
-
+ 
     // if id undefined return err
     if (!id) {
-        errorMessageJson(res, null, 'id is undefined!')
+        return errorMessageJson(res, null, 'id is undefined!')
     }
 
     // promise all function 
@@ -232,39 +232,42 @@ module.exports.update = (req, res, next) => {
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, validationResult)
-            } else {
-                const allowaKeys = [
-                    'name',
-                    'email',
-                    'password',
-                    'role',
-                    'order',
-                    'description'
-                ]
-                const intKeys = ['order']
-                const params = filterDody(body, allowaKeys, intKeys)
-
-                // there is not allow params
-                if (Object.keys(params).length === 0) {
-                    errorMessageJson(res, null, 'There are no items that can be updated.')
-                }
-
-                admin.firestore().collection('users')
-                    .doc(id)
-                    .update(params)
-                    .then(_ => {
-                        // if self user and change password or email then signout
-                        if (req.vessel.get('user.id') === id && Object.keys(body).includes('email', 'password')) {
-                            // signout
-                            signout(req, res, 'Successfully update user.')
-                        } else {
-                            // send seccess message
-                            successMessageJson(res, '{{key}} is updated.', body)
-                        }
-                    })
-                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                return invalidMessageJson(res, validationResult)
             }
+
+            const allowaKeys = [
+                'name',
+                'email',
+                'password',
+                'role',
+                'order',
+                'description'
+            ]
+            const intKeys = ['order']
+            const params = filterDody(body, allowaKeys, intKeys)
+
+            // there is not allow params
+            if (Object.keys(params).length === 0) {
+                errorMessageJson(res, null, 'There are no items that can be updated.')
+            }
+
+            admin.firestore().collection('users')
+                .doc(id)
+                .update(params)
+                .then(_ => {
+                    // if self user and change password or email then signout
+                    if (req.vessel.get('user.id') === id && Object.keys(body).includes('email', 'password')) {
+                        // signout
+                        signout(req, res, 'Successfully update user.', {
+                            mode: 'signout',
+                            id: id
+                        })
+                    } else {
+                        // send seccess message
+                        successMessageJson(res, '{{key}} is updated.', body)
+                    }
+                })
+                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
@@ -337,78 +340,79 @@ function validationUpdate(body, nameUniqueFlag, emailUniqueFlag) {
  */
 module.exports.delete = (req, res, next) => {
 
-    debug(req, __filename, __line)
-    
-    const id = req.body.id != null ? req.body.id : null
+    // body
+    const body = req.body
+
+    // delete requires id
+    const id = body.id != null ? body.id : null
 
     if (!id) {
         // if id undefined return err
-        errorMessageJson(res, null, 'id is undefined!')
-    } else {
-        // get user by id
-        admin.firestore().collection('users')
-            .doc(id)
-            .get()
-            .then(doc => {
-                // check user exist
-                if (doc.exists) {
-                    // delete user
-                    doc.ref.delete()
-                        .then(_ => {
-
-                            // if self user and change password or email then signout
-                            if (req.vessel.get('user.id') === id && Object.keys(body).includes('email', 'password')) {
-                                // signout
-                                debug('to signout', __filename, __line)
-                                signout(req, res, 'Successfully deleted user.')
-                            } else {
-                                // send seccess message
-                                successMessageJson(res, 'Successfully deleted user.', null, {
-                                    mode: 'delete',
-                                    id: id
-                                })
-                            }
-                        })
-                        .catch(err => errorMessageJson(res, err, null, __filename, __line))
-                } else {
-                    // not exist user
-                    errorMessageJson(res, null, 'id is undefined!')
-                }
-            })
-            .catch(err => errorMessageJson(res, err, null, __filename, __line))
+        return errorMessageJson(res, null, 'id is undefined!')
     }
+
+    // get user by id
+    admin.firestore().collection('users')
+        .doc(id)
+        .get()
+        .then(doc => {
+            // check user exist
+            if (doc.exists) {
+                // delete user
+                doc.ref.delete()
+                    .then(_ => {
+                        // if self user and change password or email then signout
+                        if (req.vessel.get('user.id') === id) {
+                            // signout
+                            signout(req, res, 'Successfully deleted user.', {
+                                mode: 'signout',
+                                id: id
+                            })
+                        } else {
+                            // send seccess message
+                            successMessageJson(res, 'Successfully deleted user.', body, {
+                                mode: 'delete',
+                                id: id
+                            })
+                        }
+                    })
+                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+            } else {
+                // not exist user
+                errorMessageJson(res, null, 'user is undefined!')
+            }
+        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
 /**
+ * sing out
  * 
- * @param {*} req 
- * @param {*} res 
- * @param {*} message 
+ * @param {object} req
+ * @param {object} res
+ * @param {string} message
  */
-function signout(req, res, message) {
+function signout(req, res, message, effect) {
     debug('in signout', __filename, __line)
+    debug(effect, __filename, __line)
 
     // セッション Cookie を取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
     const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
 
     if (!sessionCookie) {
-        errorMessageJson(res, null, 'there is not sessionCookie.')
-        return
+        return errorMessageJson(res, null, 'there is not sessionCookie.')
     }
-
     // セッションをクリア
     res.clearCookie('__session')
 
-    admin.auth().verifySessionCookie(sessionCookie)
+    return admin.auth().verifySessionCookie(sessionCookie)
         .then(decodedClaims => {
             admin.auth().revokeRefreshTokens(decodedClaims.sub)
                 .then(_ => {
-                    debug('in', __filename, __line)
+
                     // send seccess message
-                    successMessageJson(res, message, null, {
-                        mode: 'signout'
-                    })
+                    successMessageJson(res, message, null, effect)
                 })
                 .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })

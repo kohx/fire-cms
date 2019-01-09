@@ -24,6 +24,8 @@ function errorMessageJson(res, err = null, message = null, filename = null, line
             content: res.__(message),
         }]
     })
+
+    return
 }
 
 /**
@@ -52,6 +54,8 @@ function invalidMessageJson(res, validationResult) {
         code: validationResult.status,
         messages,
     })
+
+    return
 }
 
 /**
@@ -70,7 +74,8 @@ function successMessageJson(res, message, body = null, effect = null) {
 
     let messages = []
     let values = {}
-debug(body, __filename, __line)
+
+    // TODO: effectにいれる？
     if (body != null) {
         Object.keys(body).forEach(key => {
             // {path: xxx.xxx, message: 'asdf asdf asdf.'}
@@ -99,6 +104,20 @@ debug(body, __filename, __line)
         values,
         effect,
     })
+
+    return
+}
+
+function successMessageJsonWithSignout(req, res, message, body = null, effect = null) {
+
+    res.json({
+        code: 'success',
+        messages,
+        values,
+        effect,
+    })
+
+    return
 }
 
 /**

@@ -358,8 +358,6 @@ export class Base {
         // get present value form data
         const presents = this.getFormObject()
 
-        console.log(presents)
-
         // modified value
         let modifiedValues = {}
 
@@ -405,18 +403,22 @@ export class Base {
                 // get effect
                 const effect = result.effect
 
+                // set notice
+                this.setNotice(result.code, result.messages)
+
+                console.log(code)
+                console.log(effect)
+                console.log(code === 'success' && effect != null)
+                
                 if (code === 'success' && effect != null) {
                     if (effect.mode === 'create' && effect.id != null && redirectUrl) {
 
-                        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        this.setNotice('success', 'created.')
-
                         // redirect to
                         window.location.assign(`${redirectUrl}/${effect.id}`)
-                        return
                     }
 
                     if (effect.mode === 'delete' && effect.id != null) {
+
                         const target = document.querySelector(`#id_${effect.id}`)
                         if (target) {
                             target.classList.add('__success');
@@ -426,13 +428,12 @@ export class Base {
                         }
                     }
 
-                    if (effect.mode === 'signout') {
+                    console.log(effect)
+                    if (effect.mode === 'signout' && effect.id != null) {
+                        console.log('signout!')
                         window.location.reload()
                     }
                 }
-
-                // set notice
-                this.setNotice(result.code, result.messages)
 
                 // get message
                 result.messages.forEach(message => {
