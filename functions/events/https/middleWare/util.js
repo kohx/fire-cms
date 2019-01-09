@@ -15,7 +15,7 @@ const debug = require('../../../modules/debug').debug
  * @param {String|null} [line = null] 
  */
 function errorMessageJson(res, err = null, message = null, filename = null, line = null) {
-    
+
     // if has err object
     if (err) {
         // set error message
@@ -72,24 +72,22 @@ function invalidMessageJson(res, validationResult) {
  * Success Message Json
  * 
  * @example
- *  successMessageJson(res, 'Successfully created new thing.', body, {mode: 'create', id: id})
- *  successMessageJson(res, '{{key}} is updated.', body)
+ * successMessageJson(res, 'Successfully created new thing.', 'create', {id: id})
+ * successMessageJson(res, 'Successfully created new thing.', 'update', body)
  * 
  * @param {object} res 
  * @param {string} message 
- * @param {object} [body = null] 
- * @param {object} [effect = null]
+ * @param {string} type
+ * @param {object} data
  */
-function successMessageJson(res, message, body = null, effect = null) {
+function successMessageJson(res, message, type, data) {
 
     let messages = []
     let values = {}
 
     // TODO: effectにいれる？
-    if (body != null) {
-        Object.keys(body).forEach(key => {
-            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
-            // change to 
+    if (type != 'update') {
+        Object.keys(data).forEach(key => {
             // {key: xxx.xxx, content: 'asdf asdf asdf.'}
             if (key !== 'id') {
                 messages.push({
@@ -98,7 +96,7 @@ function successMessageJson(res, message, body = null, effect = null) {
                         key
                     })
                 })
-                values[key] = body[key]
+                values[key] = data[key]
             }
         })
     } else {
@@ -111,8 +109,7 @@ function successMessageJson(res, message, body = null, effect = null) {
     res.json({
         code: 'success',
         messages,
-        values,
-        effect,
+        data,
     })
 
     return
