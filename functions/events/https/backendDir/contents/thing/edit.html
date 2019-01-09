@@ -61,7 +61,7 @@
         <label for="content">content</label>
         <textarea id="content" name="content" class="target_item">{| target.content |}</textarea>
     </div>
-    <button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/thing-update">update</button>
+<button class="col1 target_item" type="button" id="update_button" data-request_url="{| backendFirstPath |}/thing-update" data-id="{| target.id |}">update</button>
 </div>
 
 {|> footer |}
@@ -87,11 +87,8 @@
         // get button
         const button = event.currentTarget
 
-        // add unique because id is not modified
-        const id = base.defaults.id
-
         // not change then show warnning
-        base.requestServer(button, false, { id })
+        base.requestServer(button, false)
     })
 
 </script>

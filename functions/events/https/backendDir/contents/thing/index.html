@@ -53,8 +53,8 @@
                     <label for="content">content</label>
                     <textarea id="content" name="content" class="target_item">{| target.content |}</textarea>
                 </div>
-                <a class="col1 button" href="/{| backendFirstPath |}/thing/{| target.unique |}">edit</a>
-                <button class="col1 delete_button" type="button" class="delete_button" data-request_url="{| backendFirstPath |}/thing-delete" data-id="{| target.id |}">delete</button>
+                <a class="col1 button" href="/{| backendFirstPath |}/thing/{| target.id |}">edit</a>
+<button class="col1 delete_button" type="button" class="delete_button" data-request_url="{| backendFirstPath |}/thing-delete" data-id="{| target.id |}">delete</button>
             </li>
             {|/*|}
         </ul>
@@ -71,18 +71,15 @@
     var base = Base.init()
 
     // get element
-    const updateBtnElements = document.querySelectorAll('.delete_button')
+    const deleteBtnElements = document.querySelectorAll('.delete_button')
 
-    updateBtnElements.forEach(updateBtnElement => {
+    deleteBtnElements.forEach(deleteBtnElement => {
 
         // click event
-        updateBtnElement.addEventListener('click', event => {
+        deleteBtnElement.addEventListener('click', event => {
 
             // get button
             const button = event.currentTarget
-
-            // add id fore delete
-            const id = button.dataset.id != null ? button.dataset.id : null
             
             // not change then show warnning
             base.requestServer(button, true, { id })

@@ -69,20 +69,18 @@ module.exports.edit = (req, res, next) => {
     }
 
     return admin.firestore().collection('things')
-        .where('unique', '==', target)
-        .limit(1)
+        .doc(target)
         .get()
-        .then(docs => {
-            // thing is not found
-            if (docs.size === 0) {
+        .then(doc => {
+            // user is not found
+            if (!doc.exists) {
                 res.notFound('not found!')
             } else {
-                let data = null
-                docs.forEach(doc => {
-                    data = doc.data()
-                })
-                data.issue = data.issue.toDate().toLocaleString()
+                let data = doc.data()
                 req.vessel.thing.target = data
+                data.issue = data.issue.toDate().toLocaleString()
+                const templateTypes = req.vessel.get('settings.general.template_types')
+                req.vessel.thing.templateTypes = templateTypes
                 next()
             }
         })
@@ -150,35 +148,38 @@ module.exports.create = (req, res, next) => {
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, validationResult)
-            } else {
-                const allowaKeys = [
-                    'name',
-                    'unique',
-                    'order',
-                    'parents',
-                    'roles',
-                    'issue',
-                    'description',
-                    'summary',
-                    'keywords',
-                    'content',
-                ]
-                const intKeys = ['order']
-                const params = filterDody(body, allowaKeys, intKeys)
-
-                // add id
-                const thingDoc = admin.firestore().collection('things').doc()
-                id = thingDoc.id
-                params.id = id
-
-                thingDoc.set(params)
-                    .then(_ => {
-                        // send success messages json
-                        successMessageJson(res, 'Successfully created new thing.', 'create', {}, params.unique)
-                    })
-                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                return invalidMessageJson(res, validationResult)
             }
+
+            const allowaKeys = [
+                'name',
+                'unique',
+                'order',
+                'parents',
+                'roles',
+                'issue',
+                'description',
+                'summary',
+                'keywords',
+                'content',
+            ]
+            const intKeys = ['order']
+            const params = filterDody(body, allowaKeys, intKeys)
+
+            // add id
+            const thingDoc = admin.firestore().collection('things').doc()
+            id = thingDoc.id
+            params.id = id
+
+            thingDoc.set(params)
+                .then(_ => {
+                    // send success messages json
+                    successMessageJson(res, 'Successfully created new thing.', null, {
+                        mode: 'create',
+                        id: id
+                    })
+                })
+                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
@@ -276,12 +277,16 @@ module.exports.update = (req, res, next) => {
                 const intKeys = ['order']
                 const params = filterDody(body, allowaKeys, intKeys)
 
+                if (Object.keys(params).length === 0) {
+                    errorMessageJson(res, null, 'There are no items that can be updated.')
+                }
+
                 admin.firestore().collection('things')
                     .doc(id)
                     .update(params)
                     .then(_ => {
                         // send seccess message
-                        successMessageJson(res, '{{key}} is updated.', 'update', body)
+                        successMessageJson(res, '{{key}} is updated.', body)
                     })
                     .catch(err => errorMessageJson(res, err, null, __filename, __line))
             }
@@ -361,7 +366,10 @@ module.exports.delete = (req, res, next) => {
                     doc.ref.delete()
                         .then(_ => {
                             // send success message
-                            successMessageJson(res, 'Successfully deleted thing.', 'delete', {}, id)
+                            successMessageJson(res, 'Successfully deleted template.', null, {
+                                mode: 'delete',
+                                id: id
+                            })
                         })
                         .catch(err => errorMessageJson(res, err, null, __filename, __line))
                 } else {

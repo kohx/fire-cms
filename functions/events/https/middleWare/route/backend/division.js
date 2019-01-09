@@ -60,22 +60,22 @@ module.exports.edit = (req, res, next) => {
     }
 
     return admin.firestore().collection('divisions')
-    .doc(target)
-    .get()
-    .then(doc => {
-        // user is not found
-        if (!doc.exists) {
-            res.notFound('not found!')
-        } else {
-            let data = doc.data()
-            req.vessel.thing.target = data
-            next()
-        }
-    })
-    .catch(err => {
-        debug(err, __filename, __line)
-        next(err)
-    })
+        .doc(target)
+        .get()
+        .then(doc => {
+            // user is not found
+            if (!doc.exists) {
+                res.notFound('not found!')
+            } else {
+                let data = doc.data()
+                req.vessel.thing.target = data
+                next()
+            }
+        })
+        .catch(err => {
+            debug(err, __filename, __line)
+            next(err)
+        })
 }
 
 /**
@@ -106,29 +106,32 @@ module.exports.create = (req, res, next) => {
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, validationResult)
-            } else {
-                const allowaKeys = [
-                    'name',
-                    'unique',
-                    'order',
-                    'description'
-                ]
-                const intKeys = ['order']
-                const params = filterDody(body, allowaKeys, intKeys)
-
-                // add id
-                const divisionDoc = admin.firestore().collection('divisions').doc()
-                id = divisionDoc.id
-                params.id = id
-
-                divisionDoc.set(params)
-                    .then(_ => {
-                        // send success messages json
-                        successMessageJson(res, 'Successfully created new division.', null, {mode: 'create', id: id})
-                    })
-                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                return invalidMessageJson(res, validationResult)
             }
+
+            const allowaKeys = [
+                'name',
+                'unique',
+                'order',
+                'description'
+            ]
+            const intKeys = ['order']
+            const params = filterDody(body, allowaKeys, intKeys)
+
+            // add id
+            const divisionDoc = admin.firestore().collection('divisions').doc()
+            id = divisionDoc.id
+            params.id = id
+
+            divisionDoc.set(params)
+                .then(_ => {
+                    // send success messages json
+                    successMessageJson(res, 'Successfully created new division.', null, {
+                        mode: 'create',
+                        id: id
+                    })
+                })
+                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
@@ -197,7 +200,7 @@ module.exports.update = (req, res, next) => {
                 const intKeys = ['order']
                 const params = filterDody(body, allowaKeys, intKeys)
 
-                if(Object.keys(params).length === 0) {
+                if (Object.keys(params).length === 0) {
                     errorMessageJson(res, null, 'There are no items that can be updated.')
                 }
 
@@ -261,7 +264,10 @@ module.exports.delete = (req, res, next) => {
                     doc.ref.delete()
                         .then(_ => {
                             // send success message
-                            successMessageJson(res, 'Successfully deleted division.', null, {mode: 'delete', id: id})
+                            successMessageJson(res, 'Successfully deleted division.', null, {
+                                mode: 'delete',
+                                id: id
+                            })
                         })
                         .catch(err => errorMessageJson(res, err, null, __filename, __line))
                 } else {

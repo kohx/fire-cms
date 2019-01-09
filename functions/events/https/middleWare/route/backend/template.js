@@ -112,30 +112,33 @@ module.exports.create = (req, res, next) => {
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, validationResult)
-            } else {
-                const allowaKeys = [
-                    'name',
-                    'unique',
-                    'order',
-                    'type',
-                    'content'
-                ]
-                const intKeys = ['order']
-                const params = filterDody(body, allowaKeys, intKeys)
-
-                // add id
-                const templateDoc = admin.firestore().collection('templates').doc()
-                id = templateDoc.id
-                params.id = id
-
-                templateDoc.set(params)
-                    .then(_ => {
-                        // send success messages json
-                        successMessageJson(res, 'Successfully created new templates.', null, {mode: 'create', id: id})
-                    })
-                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                return invalidMessageJson(res, validationResult)
             }
+            
+            const allowaKeys = [
+                'name',
+                'unique',
+                'order',
+                'type',
+                'content'
+            ]
+            const intKeys = ['order']
+            const params = filterDody(body, allowaKeys, intKeys)
+
+            // add id
+            const templateDoc = admin.firestore().collection('templates').doc()
+            id = templateDoc.id
+            params.id = id
+
+            templateDoc.set(params)
+                .then(_ => {
+                    // send success messages json
+                    successMessageJson(res, 'Successfully created new templates.', null, {
+                        mode: 'create',
+                        id: id
+                    })
+                })
+                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
@@ -207,7 +210,7 @@ module.exports.update = (req, res, next) => {
                 const intKeys = ['order']
                 const params = filterDody(body, allowaKeys, intKeys)
 
-                if(Object.keys(params).length === 0) {
+                if (Object.keys(params).length === 0) {
                     errorMessageJson(res, null, 'There are no items that can be updated.')
                 }
 
@@ -276,7 +279,10 @@ module.exports.delete = (req, res, next) => {
                     doc.ref.delete()
                         .then(_ => {
                             // send success message
-                            successMessageJson(res, 'Successfully deleted template.', null, {mode: 'delete', id: id})
+                            successMessageJson(res, 'Successfully deleted template.', null, {
+                                mode: 'delete',
+                                id: id
+                            })
                         })
                         .catch(err => errorMessageJson(res, err, null, __filename, __line))
                 } else {

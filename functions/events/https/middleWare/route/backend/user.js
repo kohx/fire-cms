@@ -127,34 +127,34 @@ module.exports.create = (req, res, next) => {
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, validationResult)
-            } else {
-                const allowaKeys = [
-                    'name',
-                    'email',
-                    'password',
-                    'role',
-                    'order',
-                    'description'
-                ]
-                const intKeys = ['order']
-                const params = filterDody(body, allowaKeys, intKeys)
-
-                // add id
-                const userDoc = admin.firestore().collection('users').doc()
-                id = userDoc.id
-                params.id = id
-
-                userDoc.set(params)
-                    .then(_ => {
-                        // send success messages json
-                        successMessageJson(res, 'Successfully created new user.', null, {
-                            mode: 'create',
-                            id: id
-                        })
-                    })
-                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                return invalidMessageJson(res, validationResult)
             }
+
+            const allowaKeys = [
+                'name',
+                'email',
+                'password',
+                'role',
+                'order',
+                'description'
+            ]
+            const intKeys = ['order']
+            const params = filterDody(body, allowaKeys, intKeys)
+
+            // add id
+            const userDoc = admin.firestore().collection('users').doc()
+            id = userDoc.id
+            params.id = id
+
+            userDoc.set(params)
+                .then(_ => {
+                    // send success messages json
+                    successMessageJson(res, 'Successfully created new user.', null, {
+                        mode: 'create',
+                        id: id
+                    })
+                })
+                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
