@@ -8,18 +8,23 @@ const debug = require('../../../modules/debug').debug
 /**
  * Error Message Json
  * 
- * @param {Object} res 
- * @param {Object} [err = null] 
+ * @param {object} res 
+ * @param {object} [err = null] 
  * @param {String|null} [message = null] 
  * @param {String|null} [filename = null] 
  * @param {String|null} [line = null] 
  */
 function errorMessageJson(res, err = null, message = null, filename = null, line = null) {
+    
+    // if has err object
     if (err) {
+        // set error message
         message = err.message
+        // show debug log
         debug(err.message, filename, line)
     }
 
+    // if there is not message set default message 
     message = message != null ? message : 'error !'
 
     res.json({
@@ -36,8 +41,8 @@ function errorMessageJson(res, err = null, message = null, filename = null, line
 /**
  * Invalid Message Json
  * 
- * @param {Object} res 
- * @param {Object} validationResult 
+ * @param {object} res 
+ * @param {object} validationResult 
  */
 function invalidMessageJson(res, validationResult) {
     // translate validation message and rebuild messages
@@ -72,8 +77,8 @@ function invalidMessageJson(res, validationResult) {
  * 
  * @param {object} res 
  * @param {string} message 
- * @param {object|null} [body = null] 
- * @param {object|null} [effect = null]
+ * @param {any} [body = null] 
+ * @param {any} [effect = null]
  */
 function successMessageJson(res, message, body = null, effect = null) {
 
@@ -113,6 +118,14 @@ function successMessageJson(res, message, body = null, effect = null) {
     return
 }
 
+/**
+ * Signout and Success Message Json
+ * 
+ * @param {object} req 
+ * @param {object} res 
+ * @param {string} message 
+ * @param {object} effect 
+ */
 function signoutMessageJson(req, res, message, effect = null) {
 
     let messages = [{
@@ -150,9 +163,9 @@ function signoutMessageJson(req, res, message, effect = null) {
 /**
  * Filter Dody
  * 
- * @param {Object} body 
- * @param {Array} allowaKeys 
- * @param {Array} [intKeys = []] 
+ * @param {object} body 
+ * @param {array} allowaKeys 
+ * @param {array} [intKeys = []] 
  */
 
 function filterDody(body, allowaKeys, intKeys = []) {
