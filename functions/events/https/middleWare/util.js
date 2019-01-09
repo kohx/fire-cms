@@ -77,8 +77,8 @@ function invalidMessageJson(res, validationResult) {
  * 
  * @param {object} res 
  * @param {string} message 
- * @param {any} [body = null] 
- * @param {any} [effect = null]
+ * @param {object} [body = null] 
+ * @param {object} [effect = null]
  */
 function successMessageJson(res, message, body = null, effect = null) {
 
