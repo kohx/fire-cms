@@ -393,9 +393,6 @@ module.exports.delete = (req, res, next) => {
  * @param {string} message
  */
 function signout(req, res, message, effect) {
-    debug('in signout', __filename, __line)
-    debug(effect, __filename, __line)
-
     // セッション Cookie を取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
     const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false

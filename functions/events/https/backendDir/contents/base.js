@@ -406,10 +406,6 @@ export class Base {
                 // set notice
                 this.setNotice(result.code, result.messages)
 
-                console.log(code)
-                console.log(effect)
-                console.log(code === 'success' && effect != null)
-                
                 if (code === 'success' && effect != null) {
                     if (effect.mode === 'create' && effect.id != null && redirectUrl) {
 
@@ -428,9 +424,7 @@ export class Base {
                         }
                     }
 
-                    console.log(effect)
                     if (effect.mode === 'signout' && effect.id != null) {
-                        console.log('signout!')
                         window.location.reload()
                     }
                 }
@@ -600,6 +594,9 @@ export class Base {
         // auth sign out
         firebase.auth().signOut()
             .then(resutl => {
+
+                console.log(resutl)
+                
                 // サーバに問い合わせ
                 // server sign out
                 this.fetchServer(requestUrl)
@@ -608,13 +605,13 @@ export class Base {
                         // success signout then reload
                         if (result.code === 'success') {
                             this.setNotice(result.code, result.messages, 'Signout success')
-                            window.location.reload()
                         } else {
                             this.setNotice(result.code, result.messages, 'Signout failed')
                             this.processing = false
                             target.disabled = false
                         }
-
+                        // reload
+                        window.location.reload()
                     })
                     .catch(err => {
                         this.setNotice('error', err.message, 'Signout failed')
