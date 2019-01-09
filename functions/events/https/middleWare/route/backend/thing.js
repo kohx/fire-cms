@@ -7,16 +7,9 @@ const debug = require('../../../../../modules/debug').debug
 const validation = require('../../../../../modules/validation')
 const util = require('../../util')
 
-// TODO:: アプリから関数を呼び出す
-// https://firebase.google.com/docs/functions/callable?hl=ja
-
-/* promise catch error message json */
+/* message json */
 const errorMessageJson = util.errorMessageJson
-
-/* build json messages from validation invalid messages */
 const invalidMessageJson = util.invalidMessageJson
-
-/* build success json messages */
 const successMessageJson = util.successMessageJson
 
 /* filter body */

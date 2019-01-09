@@ -7,13 +7,9 @@ const debug = require('../../../../../modules/debug').debug
 const validation = require('../../../../../modules/validation')
 const util = require('../../util')
 
-/* promise catch error message json */
+/* message json */
 const errorMessageJson = util.errorMessageJson
-
-/* build json messages from validation invalid messages */
 const invalidMessageJson = util.invalidMessageJson
-
-/* build success json messages */
 const successMessageJson = util.successMessageJson
 
 /* filter body */
@@ -170,39 +166,37 @@ module.exports.update = (req, res, next) => {
     }
 
     valid = validate.get()
-    let messages = []
 
     // validation invalid
     if (!valid.check) {
         // send invalid messages json
-        invalidMessageJson(res, valid)
-    } else {
-        const settingsRef = admin.firestore().collection('settings')
-
-        // build settings from body
-        let settings = {}
-        Object.keys(body).forEach(key => {
-            const value = body[key]
-            const [doc, field] = key.split('.')
-            if (!settings.hasOwnProperty(doc)) {
-                settings[doc] = {}
-            }
-            settings[doc][field] = value
-        })
-
-        // set promise to updates
-        let updates = []
-        Object.keys(settings).forEach(key => {
-            const updateDoc = settingsRef.doc(key).update(settings[key])
-            updates.push(updateDoc)
-        })
-
-        Promise.all(updates)
-            .then(_ => {
-                // send seccess message
-                successMessageJson(res, 'is updated.', body)
-            })
-            .catch(err => errorMessageJson(res, err, null, __filename, __line))
+        return invalidMessageJson(res, valid)
     }
 
+    const settingsRef = admin.firestore().collection('settings')
+
+    // build settings from body
+    let settings = {}
+    Object.keys(body).forEach(key => {
+        const value = body[key]
+        const [doc, field] = key.split('.')
+        if (!settings.hasOwnProperty(doc)) {
+            settings[doc] = {}
+        }
+        settings[doc][field] = value
+    })
+
+    // set promise to updates
+    let updates = []
+    Object.keys(settings).forEach(key => {
+        const updateDoc = settingsRef.doc(key).update(settings[key])
+        updates.push(updateDoc)
+    })
+
+    Promise.all(updates)
+        .then(_ => {
+            // send seccess message
+            successMessageJson(res, 'is updated.', body)
+        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

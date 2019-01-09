@@ -7,13 +7,9 @@ const debug = require('../../../../../modules/debug').debug
 const validation = require('../../../../../modules/validation')
 const util = require('../../util')
 
-/* promise catch error message json */
+/* message json */
 const errorMessageJson = util.errorMessageJson
-
-/* build json messages from validation invalid messages */
 const invalidMessageJson = util.invalidMessageJson
-
-/* build success json messages */
 const successMessageJson = util.successMessageJson
 
 /* filter body */

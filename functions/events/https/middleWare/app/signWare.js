@@ -7,10 +7,8 @@ const system = parent.system
 const debug = require('../../../../modules/debug').debug
 const util = require('../util')
 
-/* promise catch error message json */
+/* message json */
 const errorMessageJson = util.errorMessageJson
-
-/* build success json messages */
 const successMessageJson = util.successMessageJson
 
 /**
