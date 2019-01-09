@@ -7,16 +7,14 @@ const debug = require('../../../../../modules/debug').debug
 const validation = require('../../../../../modules/validation')
 const util = require('../../util')
 
-/* promise catch error message json */
+/* message json */
 const errorMessageJson = util.errorMessageJson
-/* build json messages from validation invalid messages */
 const invalidMessageJson = util.invalidMessageJson
-/* build success json messages */
 const successMessageJson = util.successMessageJson
+const signoutMessageJson = util.signoutMessageJson
+
 /* filter body */
 const filterDody = util.filterDody
-/* filter body */
-const throw404 = util.throw404
 
 // TODO:: カスタムのメール アクション ハンドラの作成
 // https://firebase.google.com/docs/auth/custom-email-handler?hl=ja
@@ -258,7 +256,7 @@ module.exports.update = (req, res, next) => {
                     // if self user and change password or email then signout
                     if (req.vessel.get('user.id') === id && Object.keys(body).includes('email', 'password')) {
                         // signout
-                        signout(req, res, 'Successfully update user.', {
+                        signoutMessageJson(req, res, 'Successfully update user.', {
                             mode: 'signout',
                             id: id
                         })
@@ -364,7 +362,7 @@ module.exports.delete = (req, res, next) => {
                         // if self user and change password or email then signout
                         if (req.vessel.get('user.id') === id) {
                             // signout
-                            signout(req, res, 'Successfully deleted user.', {
+                            signoutMessageJson(req, res, 'Successfully deleted user.', {
                                 mode: 'signout',
                                 id: id
                             })
@@ -381,37 +379,6 @@ module.exports.delete = (req, res, next) => {
                 // not exist user
                 errorMessageJson(res, null, 'user is undefined!')
             }
-        })
-        .catch(err => errorMessageJson(res, err, null, __filename, __line))
-}
-
-/**
- * sing out
- * 
- * @param {object} req
- * @param {object} res
- * @param {string} message
- */
-function signout(req, res, message, effect) {
-    // セッション Cookie を取得
-    const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
-    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
-
-    if (!sessionCookie) {
-        return errorMessageJson(res, null, 'there is not sessionCookie.')
-    }
-    // セッションをクリア
-    res.clearCookie('__session')
-
-    return admin.auth().verifySessionCookie(sessionCookie)
-        .then(decodedClaims => {
-            admin.auth().revokeRefreshTokens(decodedClaims.sub)
-                .then(_ => {
-
-                    // send seccess message
-                    successMessageJson(res, message, null, effect)
-                })
-                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

@@ -1,3 +1,8 @@
+const parent = require('../../parent')
+const functions = parent.functions
+const admin = parent.admin
+const system = parent.system
+
 const debug = require('../../../modules/debug').debug
 
 /**
@@ -108,7 +113,13 @@ function successMessageJson(res, message, body = null, effect = null) {
     return
 }
 
-function successMessageJsonWithSignout(req, res, message, effect = null) {
+function signoutMessageJson(req, res, message, effect = null) {
+
+    let messages = [{
+        key: null,
+        content: res.__(message),
+    }]
+    let values = {}
 
     // セッション Cookie を取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
@@ -124,13 +135,9 @@ function successMessageJsonWithSignout(req, res, message, effect = null) {
         .then(decodedClaims => {
             admin.auth().revokeRefreshTokens(decodedClaims.sub)
                 .then(_ => {
-
                     res.json({
                         code: 'success',
-                        messages: [{
-                            key: null,
-                            content: res.__(message),
-                        }],
+                        messages,
                         values,
                         effect,
                     })
@@ -167,4 +174,5 @@ function filterDody(body, allowaKeys, intKeys = []) {
 exports.errorMessageJson = errorMessageJson
 exports.invalidMessageJson = invalidMessageJson
 exports.successMessageJson = successMessageJson
+exports.signoutMessageJson = signoutMessageJson
 exports.filterDody = filterDody
