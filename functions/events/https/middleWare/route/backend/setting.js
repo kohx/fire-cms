@@ -12,9 +12,6 @@ const errorMessageJson = util.errorMessageJson
 const invalidMessageJson = util.invalidMessageJson
 const successMessageJson = util.successMessageJson
 
-/* filter body */
-const filterDody = util.filterDody
-
 module.exports.index = (req, res, next) => {
 
     admin.firestore().collection('settings')
@@ -47,7 +44,6 @@ module.exports.index = (req, res, next) => {
             next()
         })
         .catch(err => {
-            debug(err, __filename, __line)
             next(err)
         })
 }
@@ -173,8 +169,6 @@ module.exports.update = (req, res, next) => {
         return invalidMessageJson(res, valid)
     }
 
-    const settingsRef = admin.firestore().collection('settings')
-
     // build settings from body
     let settings = {}
     Object.keys(body).forEach(key => {
@@ -188,6 +182,7 @@ module.exports.update = (req, res, next) => {
 
     // set promise to updates
     let updates = []
+    const settingsRef = admin.firestore().collection('settings')
     Object.keys(settings).forEach(key => {
         const updateDoc = settingsRef.doc(key).update(settings[key])
         updates.push(updateDoc)
@@ -196,7 +191,7 @@ module.exports.update = (req, res, next) => {
     Promise.all(updates)
         .then(_ => {
             // send seccess message
-            successMessageJson(res, 'is updated.', body)
+            successMessageJson(res, 'is updated.', 'update', body)
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

@@ -33,7 +33,6 @@ module.exports.index = (req, res, next) => {
             next()
         })
         .catch(err => {
-            debug(err, __filename, __line)
             next(err)
         })
 }
@@ -69,7 +68,6 @@ module.exports.edit = (req, res, next) => {
             }
         })
         .catch(err => {
-            debug(err, __filename, __line)
             next(err)
         })
 }
@@ -119,15 +117,11 @@ module.exports.create = (req, res, next) => {
             id = divisionDoc.id
             params.id = id
 
-            divisionDoc.set(params)
+            return divisionDoc.set(params)
                 .then(_ => {
                     // send success messages json
-                    successMessageJson(res, 'Successfully created new division.', null, {
-                        mode: 'create',
-                        id: id
-                    })
+                    return successMessageJson(res, 'Successfully created new division.', 'create', { id })
                 })
-                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
@@ -163,7 +157,7 @@ module.exports.update = (req, res, next) => {
 
     // if id undefined return err
     if (!id) {
-        errorMessageJson(res, null, 'id is undefined!')
+        return errorMessageJson(res, null, 'id is undefined!')
     }
 
     // get unique from body
@@ -185,30 +179,29 @@ module.exports.update = (req, res, next) => {
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, validationResult)
-            } else {
-                const allowaKeys = [
-                    'name',
-                    'unique',
-                    'order',
-                    'description'
-                ]
-                const intKeys = ['order']
-                const params = filterDody(body, allowaKeys, intKeys)
-
-                if (Object.keys(params).length === 0) {
-                    errorMessageJson(res, null, 'There are no items that can be updated.')
-                }
-
-                admin.firestore().collection('divisions')
-                    .doc(id)
-                    .update(params)
-                    .then(_ => {
-                        // send seccess message
-                        successMessageJson(res, '{{key}} is updated.', body)
-                    })
-                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                return invalidMessageJson(res, validationResult)
             }
+
+            const allowaKeys = [
+                'name',
+                'unique',
+                'order',
+                'description'
+            ]
+            const intKeys = ['order']
+            const params = filterDody(body, allowaKeys, intKeys)
+
+            if (Object.keys(params).length === 0) {
+                return errorMessageJson(res, null, 'There are no items that can be updated.')
+            }
+
+            return admin.firestore().collection('divisions')
+                .doc(id)
+                .update(params)
+                .then(_ => {
+                    // send seccess message
+                    return successMessageJson(res, '{{key}} is updated.', 'update', body)
+                })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
@@ -247,30 +240,26 @@ module.exports.delete = (req, res, next) => {
 
     if (!id) {
         // if id undefined return err
-        errorMessageJson(res, null, 'id is undefined!')
-    } else {
-        // get division by id
-        admin.firestore().collection('divisions')
-            .doc(id)
-            .get()
-            .then(doc => {
-                // check division exist
-                if (doc.exists) {
-                    // delete division
-                    doc.ref.delete()
-                        .then(_ => {
-                            // send success message
-                            successMessageJson(res, 'Successfully deleted division.', null, {
-                                mode: 'delete',
-                                id: id
-                            })
-                        })
-                        .catch(err => errorMessageJson(res, err, null, __filename, __line))
-                } else {
-                    // not exist division
-                    errorMessageJson(res, null, req.__('id is undefined!'))
-                }
-            })
-            .catch(err => errorMessageJson(res, err, null, __filename, __line))
+        return errorMessageJson(res, null, 'id is undefined!')
     }
+
+    // get division by id
+    admin.firestore().collection('divisions')
+        .doc(id)
+        .get()
+        .then(doc => {
+
+            // division is not exist
+            if (!doc.exists) {
+                return errorMessageJson(res, null, req.__('id is undefined!'))
+            }
+
+            // delete division
+            return doc.ref.delete()
+                .then(_ => {
+                    // send success message
+                    return successMessageJson(res, 'Successfully deleted division.', 'delete', { id })
+                })
+        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

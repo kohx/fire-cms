@@ -32,7 +32,6 @@ module.exports.index = (req, res, next) => {
             next()
         })
         .catch(err => {
-            debug(err, __filename, __line)
             next(err)
         })
 }
@@ -75,7 +74,6 @@ module.exports.edit = (req, res, next) => {
             }
         })
         .catch(err => {
-            debug(err, __filename, __line)
             next(err)
         })
 }
@@ -110,7 +108,7 @@ module.exports.create = (req, res, next) => {
                 // send invalid messages json
                 return invalidMessageJson(res, validationResult)
             }
-            
+
             const allowaKeys = [
                 'name',
                 'unique',
@@ -126,15 +124,11 @@ module.exports.create = (req, res, next) => {
             id = templateDoc.id
             params.id = id
 
-            templateDoc.set(params)
+            return templateDoc.set(params)
                 .then(_ => {
                     // send success messages json
-                    successMessageJson(res, 'Successfully created new templates.', null, {
-                        mode: 'create',
-                        id: id
-                    })
+                    return successMessageJson(res, 'Successfully created new templates.', 'create', { id })
                 })
-                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
@@ -172,7 +166,7 @@ module.exports.update = (req, res, next) => {
 
     // if id undefined return err
     if (!id) {
-        errorMessageJson(res, null, 'id is undefined!')
+        return errorMessageJson(res, null, 'id is undefined!')
     }
 
     // get unique from body
@@ -194,31 +188,30 @@ module.exports.update = (req, res, next) => {
             // validation invalid
             if (!validationResult.check) {
                 // send invalid messages json
-                invalidMessageJson(res, validationResult)
-            } else {
-                const allowaKeys = [
-                    'name',
-                    'unique',
-                    'order',
-                    'type',
-                    'content'
-                ]
-                const intKeys = ['order']
-                const params = filterDody(body, allowaKeys, intKeys)
-
-                if (Object.keys(params).length === 0) {
-                    errorMessageJson(res, null, 'There are no items that can be updated.')
-                }
-
-                admin.firestore().collection('templates')
-                    .doc(id)
-                    .update(params)
-                    .then(_ => {
-                        // send seccess message
-                        successMessageJson(res, '{{key}} is updated.', body)
-                    })
-                    .catch(err => errorMessageJson(res, err, null, __filename, __line))
+                return invalidMessageJson(res, validationResult)
             }
+
+            const allowaKeys = [
+                'name',
+                'unique',
+                'order',
+                'type',
+                'content'
+            ]
+            const intKeys = ['order']
+            const params = filterDody(body, allowaKeys, intKeys)
+
+            if (Object.keys(params).length === 0) {
+                return errorMessageJson(res, null, 'There are no items that can be updated.')
+            }
+
+            return admin.firestore().collection('templates')
+                .doc(id)
+                .update(params)
+                .then(_ => {
+                    // send seccess message
+                    return successMessageJson(res, '{{key}} is updated.', 'update', body)
+                })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
@@ -262,30 +255,26 @@ module.exports.delete = (req, res, next) => {
 
     if (!id) {
         // if id undefined return err
-        errorMessageJson(res, null, 'id is undefined!')
-    } else {
-        // get template by id
-        admin.firestore().collection('templates')
-            .doc(id)
-            .get()
-            .then(doc => {
-                // check template exist
-                if (doc.exists) {
-                    // delete template
-                    doc.ref.delete()
-                        .then(_ => {
-                            // send success message
-                            successMessageJson(res, 'Successfully deleted template.', null, {
-                                mode: 'delete',
-                                id: id
-                            })
-                        })
-                        .catch(err => errorMessageJson(res, err, null, __filename, __line))
-                } else {
-                    // not exist template
-                    errorMessageJson(res, null, req.__('id is undefined!'))
-                }
-            })
-            .catch(err => errorMessageJson(res, err, null, __filename, __line))
+        return errorMessageJson(res, null, 'id is undefined!')
     }
+
+    // get template by id
+    admin.firestore().collection('templates')
+        .doc(id)
+        .get()
+        .then(doc => {
+
+            // template is not exist
+            if (!doc.exists) {
+                return errorMessageJson(res, null, req.__('id is undefined!'))
+            }
+
+            // delete template
+            return doc.ref.delete()
+                .then(_ => {
+                    // send success message
+                    return successMessageJson(res, 'Successfully deleted template.', 'delete', { id })
+                })
+        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

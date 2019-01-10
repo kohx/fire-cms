@@ -117,7 +117,7 @@ module.exports.user = (req, res, next) => {
         debug(`DEBAG SIGNIN`, __filename, __line)
         isSigned = true
         req.vessel.sign.status = true
-        req.vessel.user.id = `aWSzf8nrLYOr1pVuWYl3`
+        req.vessel.user.id = `G1XHYrF6YuBKCCPyRBPU`
         req.vessel.user.email = `kohei.0728@gmail.com`
     }
 
@@ -190,8 +190,8 @@ module.exports.in = (req, res, next) => {
     // セッションCookieを作成、これにより、プロセス内のIDトークンも検証
     // セッションクッキーは、IDトークンと同じ要求を持つ
     admin.auth().createSessionCookie(idToken, {
-            expiresIn
-        })
+        expiresIn
+    })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {
@@ -221,12 +221,7 @@ module.exports.out = (req, res, next) => {
 
     // セッション Cookie を取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
-    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
-
-    if (!sessionCookie) {
-        errorMessageJson(res, null, 'there is not sessionCookie.')
-        return
-    }
+    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : ''
 
     // セッションをクリア
     res.clearCookie('__session')
@@ -234,12 +229,11 @@ module.exports.out = (req, res, next) => {
     admin.auth().verifySessionCookie(sessionCookie)
         .then(decodedClaims => {
             return admin.auth().revokeRefreshTokens(decodedClaims.sub)
-                .then(() => {
-                    successMessageJson(res, 'sign out.', null, {
-                        mode: 'signout'
-                    })
-                })
-                .catch(err => errorMessageJson(res, err, null, __filename, __line))
+        })
+        .then(() => {
+            successMessageJson(res, 'sign out.', null, {
+                mode: 'signout'
+            })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

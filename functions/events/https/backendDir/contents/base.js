@@ -561,10 +561,6 @@ export class Base {
                 // return server sign in result
                 return result
             })
-            .then(result => {
-                // return server sign in result
-                return result
-            })
             .catch(err => {
                 // if client sign in failed then throw error
                 throw new Error('email address or password is wrong.')

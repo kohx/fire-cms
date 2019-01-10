@@ -16,22 +16,23 @@ const debug = require('../../../modules/debug').debug
  */
 function errorMessageJson(res, err = null, message = null, filename = null, line = null) {
 
+    let selectedMessage = 'error !'
     // if has err object
     if (err) {
         // set error message
-        message = err.message
+        selectedMessage = err.message
         // show debug log
-        debug(err.message, filename, line)
+        debug(err, filename, line)
     }
 
     // if there is not message set default message 
-    message = message != null ? message : 'error !'
+    selectedMessage = message != null ? message : 'error !'
 
     res.json({
         code: 'error',
         messages: [{
             key: null,
-            content: res.__(message),
+            content: res.__(selectedMessage),
         }]
     })
 
@@ -49,8 +50,6 @@ function invalidMessageJson(res, validationResult) {
     let messages = []
     Object.keys(validationResult.errors).forEach(key => {
         validationResult.errors[key].forEach(error => {
-            // {path: xxx.xxx, message: 'asdf asdf asdf.'}
-            // change to 
             // {key: xxx.xxx, content: 'asdf asdf asdf.'}
             messages.push({
                 key: key,
@@ -72,15 +71,15 @@ function invalidMessageJson(res, validationResult) {
  * Success Message Json
  * 
  * @example
- * successMessageJson(res, 'Successfully created new thing.', 'create', {id: id})
+ * successMessageJson(res, 'Successfully created new thing.', 'create', {id})
  * successMessageJson(res, 'is updated.', 'update', body)
- * successMessageJson(res, 'Successfully deleted.', 'delete', {id: id})
- * successMessageJson(res, 'Successfully created new thing.', 'create', {id: id})
- * successMessageJson(res, 'Successfully created new thing.', 'create', {id: id})
+ * successMessageJson(res, 'Successfully deleted.', 'delete', {id})
+ * successMessageJson(res, 'Successfully created new thing.', 'create', {id})
+ * successMessageJson(res, 'Successfully created new thing.', 'create', {id})
  * 
  * @param {object} res 
  * @param {string} message 
- * @param {string} mode create update delete signin signout
+ * @param {any} mode create update delete signin signout
  * @param {object} [data = {}]
  */
 function successMessageJson(res, message, mode, data = {}) {
@@ -88,21 +87,24 @@ function successMessageJson(res, message, mode, data = {}) {
     let messages = []
     let updateData = {}
 
-    // TODO: effectにいれる？
-    if (mode === 'update') {
+    if(typeof mode === 'string'){
+        mode = [mode]
+    }
+
+    if (mode.includes('update')) {
         Object.keys(data).forEach(key => {
             // {key: xxx.xxx, content: 'asdf asdf asdf.'}
             if (key !== 'id') {
                 messages.push({
                     key,
-                    content: res.__(`{{key}} ${message}`, {
-                        key
-                    })
+                    content: res.__(`{{key}} ${message}`, { key })
                 })
-                values[key] = data[key]
+                updateData[key] = data[key]
             }
         })
     } else {
+        updateData = data
+
         messages.push({
             key: null,
             content: res.__(message),
@@ -111,9 +113,8 @@ function successMessageJson(res, message, mode, data = {}) {
 
     res.json({
         code: 'success',
-        code: 'success',
         messages,
-        data,
+        data: updateData,
     })
 
     return
@@ -147,16 +148,15 @@ function signoutMessageJson(req, res, message, effect = null) {
 
     return admin.auth().verifySessionCookie(sessionCookie)
         .then(decodedClaims => {
-            admin.auth().revokeRefreshTokens(decodedClaims.sub)
-                .then(_ => {
-                    res.json({
-                        code: 'success',
-                        messages,
-                        values,
-                        effect,
-                    })
-                })
-                .catch(err => errorMessageJson(res, err, null, __filename, __line))
+            return admin.auth().revokeRefreshTokens(decodedClaims.sub)
+        })
+        .then(_ => {
+            res.json({
+                code: 'success',
+                messages,
+                values,
+                effect,
+            })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

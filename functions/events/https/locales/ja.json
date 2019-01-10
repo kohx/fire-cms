@@ -83,5 +83,14 @@
 	"id is undefined!": "id is undefined!",
 	"Argument \"documentPath\" is not a valid ResourcePath. Path must be a non-empty string.": "Argument \"documentPath\" is not a valid ResourcePath. Path must be a non-empty string.",
 	"{{param1}} is not alphanumeric and space.": "{{param1}} is not alphanumeric and space.",
-	"asdf": "asdf"
+	"asdf": "asdf",
+	"Cannot read property 'json' of undefined": "Cannot read property 'json' of undefined",
+	"user is undefined!": "user is undefined!",
+	"reject is not defined": "reject is not defined",
+	"Decoding Firebase session cookie failed": {
+		" Make sure you passed the entire string JWT which represents a session cookie": {
+			" See https": "//firebase.google.com/docs/auth/admin/manage-cookies for details on how to retrieve a session cookie."
+		}
+	},
+	"Failed signout.": "Failed signout."
 }
