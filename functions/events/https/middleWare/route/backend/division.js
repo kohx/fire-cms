@@ -52,7 +52,7 @@ module.exports.edit = (req, res, next) => {
     const target = segments.shift()
 
     if (!target) {
-        res.notFound('not found!')
+        res.throwNotFound('not found!')
     }
 
     return admin.firestore().collection('divisions')
@@ -61,7 +61,7 @@ module.exports.edit = (req, res, next) => {
         .then(doc => {
             // user is not found
             if (!doc.exists) {
-                res.notFound('not found!')
+                res.throwNotFound('not found!')
             } else {
                 let data = doc.data()
                 req.vessel.thing.target = data

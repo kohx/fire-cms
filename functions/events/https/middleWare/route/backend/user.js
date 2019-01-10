@@ -81,7 +81,7 @@ module.exports.edit = (req, res, next) => {
     const target = segments.shift()
 
     if (!target) {
-        res.notFound('not found!')
+        res.throwNotFound('not found!')
     }
 
     return admin.firestore().collection('users')
@@ -90,7 +90,7 @@ module.exports.edit = (req, res, next) => {
         .then(doc => {
             // user is not found
             if (!doc.exists) {
-                res.notFound('not found!')
+                res.throwNotFound('not found!')
             } else {
                 let data = doc.data()
                 req.vessel.thing.target = data
@@ -379,6 +379,33 @@ module.exports.delete = (req, res, next) => {
                 // not exist user
                 errorMessageJson(res, null, 'user is undefined!')
             }
+        })
+        .catch(err => errorMessageJson(res, err, null, __filename, __line))
+}
+
+function signout(){
+    // セッション Cookie を取得
+    const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
+    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
+
+    if (!sessionCookie) {
+        return errorMessageJson(res, null, 'there is not sessionCookie.')
+    }
+    // セッションをクリア
+    res.clearCookie('__session')
+
+    return admin.auth().verifySessionCookie(sessionCookie)
+        .then(decodedClaims => {
+            admin.auth().revokeRefreshTokens(decodedClaims.sub)
+                .then(_ => {
+                    res.json({
+                        code: 'success',
+                        messages,
+                        values,
+                        effect,
+                    })
+                })
+                .catch(err => errorMessageJson(res, err, null, __filename, __line))
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

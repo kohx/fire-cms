@@ -285,13 +285,10 @@ module.exports.getThing = (req, res, next) => {
         const thing = backendThings.get(unique)
 
         if (!thing) {
-            let err = new Error(`Thing [${thing}] Not Found!`)
-            err.status = 404
-            next(err)
-            return
+            return {}
         }
 
-        // if has content file\
+        // if has content file
         let content = ''
         if (thing.contentFile) {
             // file path
@@ -315,6 +312,7 @@ module.exports.getThing = (req, res, next) => {
 
         // set thing content
         thing.content = content
+
         // console.timeEnd('[time] init app')
         return thing
     }

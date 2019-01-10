@@ -40,6 +40,11 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
+/* サブルートでERRORに飛ばす場合に使う */
+// res.throwNotFound()
+// res.throwForbidden()
+app.use(errWare.setThrowError)
+
 /* initWare getInfo */
 app.use(initWare.getInfo)
 /* set language */
@@ -71,14 +76,11 @@ app.use(signWare.csrf)
 /* wavebar */
 app.use(wavebar.init)
 
-/* サブルートで使うnotfound */
-app.use(errWare.setNotFound)
-
 /* route */
 app.use(`/*`, frontendRouter)
 app.use(`/*`, backendRouter)
 
-// TODO:: メールはnodeでしかできないで作成
+// TODO:: メールはnodeでしかできないので作成
 // app.use('/mailEndPoint', mailEndPointRouter)
 
 /* errWare notFound */

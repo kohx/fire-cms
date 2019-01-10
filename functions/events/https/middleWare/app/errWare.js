@@ -8,14 +8,18 @@ const debug = require('../../../../modules/debug').debug
 
 // init
 // サブルートで404に飛ばす場合これを使う
-module.exports.setNotFound = (req, res, next) => {
-
-    res.notFound = (message) => {
+module.exports.setThrowError = (req, res, next) => {
+    res.throwNotFound = (message = 'Not Found!') => {
         let err = new Error(message)
         err.status = 404
         next(err)
     }
 
+    res.throwForbidden = (message = 'Forbidden!') => {
+        let err = new Error(message)
+        err.status = 403
+        next(err)
+    }
     next()
 }
 

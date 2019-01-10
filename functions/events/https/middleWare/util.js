@@ -73,20 +73,23 @@ function invalidMessageJson(res, validationResult) {
  * 
  * @example
  * successMessageJson(res, 'Successfully created new thing.', 'create', {id: id})
- * successMessageJson(res, 'Successfully created new thing.', 'update', body)
+ * successMessageJson(res, 'is updated.', 'update', body)
+ * successMessageJson(res, 'Successfully deleted.', 'delete', {id: id})
+ * successMessageJson(res, 'Successfully created new thing.', 'create', {id: id})
+ * successMessageJson(res, 'Successfully created new thing.', 'create', {id: id})
  * 
  * @param {object} res 
  * @param {string} message 
- * @param {string} type
- * @param {object} data
+ * @param {string} mode create update delete signin signout
+ * @param {object} [data = {}]
  */
-function successMessageJson(res, message, type, data) {
+function successMessageJson(res, message, mode, data = {}) {
 
     let messages = []
-    let values = {}
+    let updateData = {}
 
     // TODO: effectにいれる？
-    if (type != 'update') {
+    if (mode === 'update') {
         Object.keys(data).forEach(key => {
             // {key: xxx.xxx, content: 'asdf asdf asdf.'}
             if (key !== 'id') {
@@ -107,6 +110,7 @@ function successMessageJson(res, message, type, data) {
     }
 
     res.json({
+        code: 'success',
         code: 'success',
         messages,
         data,

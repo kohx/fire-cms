@@ -488,5 +488,5 @@ module.exports.get = (unique) => {
         }
     }
 
-    return backendThings[unique] != null ? backendThings[unique] : false
+    return backendThings[unique] != null ? backendThings[unique] : null
 }

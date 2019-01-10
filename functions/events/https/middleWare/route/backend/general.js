@@ -30,11 +30,7 @@ module.exports.checkThing = (req, res, next) => {
     if (thing.unique) {
         next()
     } else {
-
-        let err = new Error('Thing unique Not Found!')
-        err.status = 404
-        next(err)
-        return
+        res.throwNotFound('not found!')
     }
 }
 
@@ -104,9 +100,7 @@ module.exports.checkSingIn = (req, res, next) => {
         // サインインしていてロールが一致しない場合 401?
         else if (!thing.hasRole) {
 
-            let err = new Error('Role Unauthorized.')
-            err.status = 401
-            next(err)
+            res.throwForbidden('Role Unauthorized.')
         }
         else {
 
