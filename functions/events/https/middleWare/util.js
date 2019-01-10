@@ -26,14 +26,16 @@ function errorMessageJson(res, err = null, message = null, filename = null, line
     }
 
     // if there is not message set default message 
-    selectedMessage = message != null ? message : 'error !'
+    selectedMessage = message != null ? message : selectedMessage
 
     res.json({
         code: 'error',
         messages: [{
             key: null,
             content: res.__(selectedMessage),
-        }]
+        }],
+        mode: [],
+        data: {},
     })
 
     return
@@ -62,6 +64,8 @@ function invalidMessageJson(res, validationResult) {
     res.json({
         code: validationResult.status,
         messages,
+        mode: [],
+        data: {},
     })
 
     return
@@ -116,51 +120,11 @@ function successMessageJson(res, message, mode, data = {}) {
     res.json({
         code: 'success',
         messages,
+        mode,
         data: updateData,
     })
 
     return
-}
-
-/**
- * Signout and Success Message Json
- * 
- * @param {object} req 
- * @param {object} res 
- * @param {string} message 
- * @param {object} effect 
- */
-function signoutMessageJson(req, res, message, effect = null) {
-
-    let messages = [{
-        key: null,
-        content: res.__(message),
-    }]
-    let values = {}
-
-    // セッション Cookie を取得
-    const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
-    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
-
-    if (!sessionCookie) {
-        return errorMessageJson(res, null, 'there is not sessionCookie.')
-    }
-    // セッションをクリア
-    res.clearCookie('__session')
-
-    return admin.auth().verifySessionCookie(sessionCookie)
-        .then(decodedClaims => {
-            return admin.auth().revokeRefreshTokens(decodedClaims.sub)
-        })
-        .then(_ => {
-            res.json({
-                code: 'success',
-                messages,
-                values,
-                effect,
-            })
-        })
-        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
 
 /**
@@ -190,5 +154,4 @@ function filterDody(body, allowaKeys, intKeys = []) {
 exports.errorMessageJson = errorMessageJson
 exports.invalidMessageJson = invalidMessageJson
 exports.successMessageJson = successMessageJson
-exports.signoutMessageJson = signoutMessageJson
 exports.filterDody = filterDody

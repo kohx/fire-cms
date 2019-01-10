@@ -70,11 +70,10 @@ module.exports.check = (req, res, next) => {
 
     // セッション Cookie を確認して権限をチェック
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
-    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : false
+    const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : ''
 
     // sessionCookieがない場合
-    if (!sessionCookie) {
-
+    if (sessionCookie === '') {
         req.vessel.sign.status = false
         next()
     } else {
@@ -216,7 +215,6 @@ module.exports.in = (req, res, next) => {
  *  out function (post)
  */
 module.exports.out = (req, res, next) => {
-
     // セッション Cookie を取得
     const session = (req.cookies.__session != null) ? JSON.parse(req.cookies.__session) : []
     const sessionCookie = (session['sessionCookie'] != null) ? session['sessionCookie'] : ''
@@ -227,9 +225,12 @@ module.exports.out = (req, res, next) => {
     admin.auth().verifySessionCookie(sessionCookie)
         .then(decodedClaims => {
             return admin.auth().revokeRefreshTokens(decodedClaims.sub)
+                .then(() => {
+                    return successMessageJson(res, 'sign out.', 'signout')
+                })
         })
-        .then(() => {
-            successMessageJson(res, 'sign out.', 'signout')
+        .catch(err =>
+        {
+            errorMessageJson(res, err, 'sign out failed.', __filename, __line)
         })
-        .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }

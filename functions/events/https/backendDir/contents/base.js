@@ -398,24 +398,27 @@ export class Base {
 
                 // get code
                 const code = result.code
-                // get values
-                const values = result.values
-                // get effect
-                const effect = result.effect
+                // get messages
+                const messages = result.messages
+                // get mode
+                const mode = result.mode
+                // get data
+                const data = result.data
 
                 // set notice
-                this.setNotice(result.code, result.messages)
+                this.setNotice(code, messages)
 
-                if (code === 'success' && effect != null) {
-                    if (effect.mode === 'create' && effect.id != null && redirectUrl) {
+                // mode select
+                if (code === 'success') {
+                    if (mode.includes('create') && data.id != null && redirectUrl) {
 
                         // redirect to
-                        window.location.assign(`${redirectUrl}/${effect.id}`)
+                        window.location.assign(`${redirectUrl}/${data.id}`)
                     }
 
-                    if (effect.mode === 'delete' && effect.id != null) {
+                    if (mode.includes('delete') && data.id != null) {
 
-                        const target = document.querySelector(`#id_${effect.id}`)
+                        const target = document.querySelector(`#id_${data.id}`)
                         if (target) {
                             target.classList.add('__success');
                             setTimeout(() => {
@@ -424,13 +427,14 @@ export class Base {
                         }
                     }
 
-                    if (effect.mode === 'signout' && effect.id != null) {
+                    if (mode.includes('signout') && data.id != null) {
+                        firebase.auth().signOut()
                         window.location.reload()
                     }
                 }
 
                 // get message
-                result.messages.forEach(message => {
+                messages.forEach(message => {
 
                     // get message key
                     let key = message.key
@@ -449,7 +453,7 @@ export class Base {
                             if (code === 'success') {
 
                                 // set new value to default
-                                this.defaults[key] = values[key]
+                                this.defaults[key] = data[key]
 
                                 // remove class
                                 element.classList.remove('_modified')
@@ -606,11 +610,6 @@ export class Base {
                         }
                         // reload
                         window.location.reload()
-                    })
-                    .catch(err => {
-                        this.setNotice('error', err.message, 'Signout failed')
-                        this.processing = false
-                        target.disabled = false
                     })
             })
             .catch(err => {

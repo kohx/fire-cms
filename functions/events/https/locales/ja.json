@@ -92,5 +92,7 @@
 			" See https": "//firebase.google.com/docs/auth/admin/manage-cookies for details on how to retrieve a session cookie."
 		}
 	},
-	"Failed signout.": "Failed signout."
+	"Failed signout.": "Failed signout.",
+	"error !": "error !",
+	"sign out failed.": "sign out failed."
 }
