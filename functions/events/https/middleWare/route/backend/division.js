@@ -120,7 +120,9 @@ module.exports.create = (req, res, next) => {
             return divisionDoc.set(params)
                 .then(_ => {
                     // send success messages json
-                    return successMessageJson(res, 'Successfully created new division.', 'create', { id })
+                    return successMessageJson(res, 'Successfully created new division.', 'create', {
+                        id
+                    })
                 })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
@@ -258,7 +260,9 @@ module.exports.delete = (req, res, next) => {
             return doc.ref.delete()
                 .then(_ => {
                     // send success message
-                    return successMessageJson(res, 'Successfully deleted division.', 'delete', { id })
+                    return successMessageJson(res, 'Successfully deleted division.', 'delete', {
+                        id
+                    })
                 })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
