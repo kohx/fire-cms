@@ -87,7 +87,7 @@ function successMessageJson(res, message, mode, data = {}) {
     let messages = []
     let updateData = {}
 
-    if(typeof mode === 'string'){
+    if (typeof mode === 'string') {
         mode = [mode]
     }
 
@@ -97,7 +97,9 @@ function successMessageJson(res, message, mode, data = {}) {
             if (key !== 'id') {
                 messages.push({
                     key,
-                    content: res.__(`{{key}} ${message}`, { key })
+                    content: res.__(`{{key}} ${message}`, {
+                        key
+                    })
                 })
                 updateData[key] = data[key]
             }

@@ -202,7 +202,7 @@ module.exports.update = (req, res, next) => {
                 .update(params)
                 .then(_ => {
                     // send seccess message
-                    return successMessageJson(res, '{{key}} is updated.', 'update', body)
+                    return successMessageJson(res, 'is updated.', 'update', body)
                 })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))

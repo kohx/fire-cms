@@ -148,7 +148,9 @@ module.exports.create = (req, res, next) => {
             return userDoc.set(params)
                 .then(_ => {
                     // send success messages json
-                    return successMessageJson(res, 'Successfully created new user.', 'create', { id })
+                    return successMessageJson(res, 'Successfully created new user.', 'create', {
+                        id
+                    })
                 })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
@@ -251,12 +253,12 @@ module.exports.update = (req, res, next) => {
 
                     // Unless the id is self user and key is not email or password
                     if (!(req.vessel.get('user.id') === id && Object.keys(body).includes('email', 'password'))) {
-                        return successMessageJson(res, '{{key}} is updated.', 'update', body)
+                        return successMessageJson(res, 'is updated.', 'update', body)
                     }
                     // if self user and change password or email then signout
                     return signout(req, res)
                         .then(_ => {
-                            return successMessageJson(res, '{{key}} is updated.', ['update', 'signout'], body)
+                            return successMessageJson(res, 'is updated.', ['update', 'signout'], body)
                         })
                 })
         })
@@ -359,13 +361,17 @@ module.exports.delete = (req, res, next) => {
                     if (req.vessel.get('user.id') !== id) {
 
                         // send seccess message
-                        return successMessageJson(res, 'Successfully deleted user.', 'delete', { id })
+                        return successMessageJson(res, 'Successfully deleted user.', 'delete', {
+                            id
+                        })
                     }
 
                     // if self user and change password or email then signout
                     return signout(req, res)
                         .then(_ => {
-                            return successMessageJson(res, 'Successfully deleted user.', ['delete', 'signout'], { id })
+                            return successMessageJson(res, 'Successfully deleted user.', ['delete', 'signout'], {
+                                id
+                            })
                         })
                 })
         })

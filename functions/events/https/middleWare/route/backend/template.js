@@ -127,7 +127,9 @@ module.exports.create = (req, res, next) => {
             return templateDoc.set(params)
                 .then(_ => {
                     // send success messages json
-                    return successMessageJson(res, 'Successfully created new templates.', 'create', { id })
+                    return successMessageJson(res, 'Successfully created new templates.', 'create', {
+                        id
+                    })
                 })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
@@ -210,7 +212,7 @@ module.exports.update = (req, res, next) => {
                 .update(params)
                 .then(_ => {
                     // send seccess message
-                    return successMessageJson(res, '{{key}} is updated.', 'update', body)
+                    return successMessageJson(res, 'is updated.', 'update', body)
                 })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
@@ -273,7 +275,9 @@ module.exports.delete = (req, res, next) => {
             return doc.ref.delete()
                 .then(_ => {
                     // send success message
-                    return successMessageJson(res, 'Successfully deleted template.', 'delete', { id })
+                    return successMessageJson(res, 'Successfully deleted template.', 'delete', {
+                        id
+                    })
                 })
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))

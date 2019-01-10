@@ -190,8 +190,8 @@ module.exports.in = (req, res, next) => {
     // セッションCookieを作成、これにより、プロセス内のIDトークンも検証
     // セッションクッキーは、IDトークンと同じ要求を持つ
     admin.auth().createSessionCookie(idToken, {
-        expiresIn
-    })
+            expiresIn
+        })
         .then(sessionCookie => {
             // セッションCookieのCookieポリシーを設定
             const options = {
@@ -204,9 +204,7 @@ module.exports.in = (req, res, next) => {
             // サインイン成功
             session.sessionCookie = sessionCookie
             res.cookie('__session', JSON.stringify(session), options)
-            successMessageJson(res, 'sign in success.', null, {
-                mode: 'signin'
-            })
+            successMessageJson(res, 'sign in success.', 'signin')
         })
         .catch(err => {
             // errorMessageJson(res, err, null, __filename, __line)
@@ -231,9 +229,7 @@ module.exports.out = (req, res, next) => {
             return admin.auth().revokeRefreshTokens(decodedClaims.sub)
         })
         .then(() => {
-            successMessageJson(res, 'sign out.', null, {
-                mode: 'signout'
-            })
+            successMessageJson(res, 'sign out.', 'signout')
         })
         .catch(err => errorMessageJson(res, err, null, __filename, __line))
 }
