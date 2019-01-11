@@ -246,7 +246,7 @@ module.exports.update = (req, res, next) => {
                 return errorMessageJson(res, null, 'There are no items that can be updated.')
             }
 
-            admin.firestore().collection('users')
+            return admin.firestore().collection('users')
                 .doc(id)
                 .update(params)
                 .then(_ => {

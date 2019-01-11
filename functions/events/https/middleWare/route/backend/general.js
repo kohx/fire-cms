@@ -88,13 +88,13 @@ module.exports.checkSingIn = (req, res, next) => {
                 referer = `${backendBase}/${backend.topUnique}`
             }
 
-            debug(`@ already sigin in. redirect to ${referer}`, __filename, __line)
+            // debug(`@ already sigin in. redirect to ${referer}`, __filename, __line)
             res.redirect(referer)
         }
         // サインインしていてフリーロールの場合
         else if (thing.isFreeRole) {
 
-            debug(`@ [ ${thing.unique} ] is free page.`, __filename, __line)
+            // debug(`@ [ ${thing.unique} ] is free page.`, __filename, __line)
             next()
         }
         // サインインしていてロールが一致しない場合 401?
@@ -112,7 +112,7 @@ module.exports.checkSingIn = (req, res, next) => {
         // サインインしていなくてフリーページの場合
         if (thing.isFreeRole) {
 
-            debug(`@ [ ${thing.unique} ] is free page.`, __filename, __line)
+            // debug(`@ [ ${thing.unique} ] is free page.`, __filename, __line)
             next()
         }
         // サインインしていない場合
@@ -125,7 +125,7 @@ module.exports.checkSingIn = (req, res, next) => {
             // redirect to signin
             else {
                 const redirectPath = `${backendBase}/${backend.signinUnique}`
-                debug(`@ [ ${thing.uniqueng} ] not sigin in. redirect to ${redirectPath}`, __filename, __line)
+                // debug(`@ [ ${thing.uniqueng} ] not sigin in. redirect to ${redirectPath}`, __filename, __line)
                 res.redirect(`${redirectPath}`)
             }
         }

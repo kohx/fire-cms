@@ -206,8 +206,7 @@ module.exports.in = (req, res, next) => {
             successMessageJson(res, 'sign in success.', 'signin')
         })
         .catch(err => {
-            // errorMessageJson(res, err, null, __filename, __line)
-            errorMessageJson(res, null, 'email address or password is wrong.')
+            errorMessageJson(res, err, 'email address or password is wrong.')
         })
 }
 
