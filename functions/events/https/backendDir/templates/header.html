@@ -15,61 +15,61 @@
     </div>
     
     {|# sign.status |}
-    <ul class="gnav col12 grid7 gap1">
-        <li class="gnav-item col1 row1 cen mid{|# inParents('index') |} _active{|/#|}">
+    <ul class="gnav col0">
+        <li class="gnav-item {|# inParents('index') |} _active{|/#|}">
             {|# is('index') |}
-            <span>index</span>
+            <div><i class="fas fa-tachometer-alt"></i><div>index</div></div>
             {|/#|}
             {|^ is('index') |}
-            <a href="/{|backendFirstPath|}/index">index</a>
+            <a href="/{|backendFirstPath|}/index"><i class="fas fa-tachometer-alt"></i><div>index</div></a>
             {|/^|}
         </li>
-        <li class="gnav-item col1 row1 cen mid{|# inParents('settings') |} _active{|/#|}">
+        <li class="gnav-item {|# inParents('settings') |} _active{|/#|}">
             {|# is('settings') |}
-            <span>settings</span>
+            <div><i class="fas fa-cog"></i><div>settings</div></div>
             {|/#|}
             {|^ is('settings') |}
-            <a href="/{|backendFirstPath|}/settings">settings</a>
+            <a href="/{|backendFirstPath|}/settings"><i class="fas fa-cog"></i><div>settings</div></a>
             {|/^|}
         </li>
-        <li class="gnav-item col1 row1 cen mid{|# inParents('users') |} _active{|/#|}">
+        <li class="gnav-item {|# inParents('users') |} _active{|/#|}">
             {|# is('users') |}
-            <span>users</span>
+            <div><i class="fas fa-user"></i><div>users</div></div>
             {|/#|}
             {|^ is('users') |}
-            <a href="/{|backendFirstPath|}/users">users</a>
+            <a href="/{|backendFirstPath|}/users"><i class="fas fa-user"></i><div>users</div></a>
             {|/^|}
         </li>
-        <li class="gnav-item col1 row1 cen mid{|# inParents('divisions') |} _active{|/#|}">
+        <li class="gnav-item {|# inParents('divisions') |} _active{|/#|}">
             {|# is('divisions') |}
-            <span>divisions</span>
+            <div><i class="fas fa-project-diagram"></i><div>divisions</div></div>
             {|/#|}
             {|^ is('divisions') |}
-            <a href="/{|backendFirstPath|}/divisions">divisions</a>
+            <a href="/{|backendFirstPath|}/divisions"><i class="fas fa-project-diagram"></i><div>divisions</div></a>
             {|/^|}
         </li>
-        <li class="gnav-item col1 row1 cen mid{|# inParents('templates') |} _active{|/#|}">
+        <li class="gnav-item {|# inParents('templates') |} _active{|/#|}">
             {|# is('templates') |}
-            <span>templates</span>
+            <div><i class="fas fa-clone"></i><div>templates</div></div>
             {|/#|}
             {|^ is('templates') |}
-            <a href="/{|backendFirstPath|}/templates">templates</a>
+            <a href="/{|backendFirstPath|}/templates"><i class="fas fa-clone"></i><div>templates</div></a>
             {|/^|}
         </li>
-        <li class="gnav-item col1 row1 cen mid{|# inParents('things') |} _active{|/#|}">
+        <li class="gnav-item {|# inParents('things') |} _active{|/#|}">
             {|# is('things') |}
-            <span>things</span>
+            <div><i class="fas fa-file"></i><div>things</div></div>
             {|/#|}
             {|^ is('things') |}
-            <a href="/{|backendFirstPath|}/things">things</a>
+            <a href="/{|backendFirstPath|}/things"><i class="fas fa-file"></i><div>things</div></a>
             {|/^|}
         </li>
-        <li class="gnav-item col1 row1 cen mid{|# inParents('assets') |} _active{|/#|}">
+        <li class="gnav-item {|# inParents('assets') |} _active{|/#|}">
             {|# is('assets') |}
-            <span>assets</span>
+            <div><i class="fas fa-grip-horizontal"></i><div>assets</div></div>
             {|/#|}
             {|^ is('assets') |}
-            <a href="/{|backendFirstPath|}/assets">assets</a>
+            <a href="/{|backendFirstPath|}/assets"><i class="fas fa-grip-horizontal"></i><div>assets</div></a>
             {|/^|}
         </li>
     </ul>

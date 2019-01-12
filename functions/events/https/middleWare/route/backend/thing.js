@@ -82,6 +82,40 @@ module.exports.edit = (req, res, next) => {
 }
 
 /**
+ * thing assets
+ */
+module.exports.assets = (req, res, next) => {
+
+    // get unique
+    const segments = req.vessel.get('paths.segments')
+    const target = segments.shift()
+/*  */
+    if (!target) {
+        res.throwNotFound('not found!')
+    }
+
+    return admin.firestore().collection('things')
+        .doc(target)
+        .get()
+        .then(doc => {
+            // user is not found
+            if (!doc.exists) {
+                res.throwNotFound('not found!')
+            } else {
+                let data = doc.data()
+                req.vessel.thing.target = data
+                data.issue = data.issue.toDate().toLocaleString()
+                const templateTypes = req.vessel.get('settings.general.template_types')
+                req.vessel.thing.templateTypes = templateTypes
+                next()
+            }
+        })
+        .catch(err => {
+            next(err)
+        })
+}
+
+/**
  * thing create(post)
  */
 module.exports.create = (req, res, next) => {
