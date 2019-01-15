@@ -59,6 +59,12 @@
         </div>
         {| /* |}
     </div>
+    <div>
+        {| * target.assets : key : asset |}
+        {|# equal(asset.type, "image")|}<img src="{| asset.content |}">{|/#|}
+        {|^ equal(asset.type, "image")|}<p>{| asset.content |}</p>{|/^|}
+        {| /* |}
+    </div>
     <div class="col1">
         <label for="content">content</label>
         <textarea id="content" name="content" class="target_item">{| target.content |}</textarea>

@@ -15,6 +15,9 @@ const successMessageJson = util.successMessageJson
 /* filter body */
 const filterDody = util.filterDody
 
+// TODO: どこで呼び出すか？
+const bucketName = admin.storage().bucket().name
+
 /**
  * thing index (things)
  */
@@ -64,17 +67,56 @@ module.exports.edit = (req, res, next) => {
         .doc(target)
         .get()
         .then(doc => {
+
             // user is not found
             if (!doc.exists) {
                 res.throwNotFound('not found!')
-            } else {
-                let data = doc.data()
-                req.vessel.thing.target = data
-                data.issue = data.issue.toDate().toLocaleString()
-                const templateTypes = req.vessel.get('settings.general.template_types')
-                req.vessel.thing.templateTypes = templateTypes
-                next()
             }
+
+            let data = doc.data()
+            const assetRefs = data.assets != null ? data.assets : {}
+
+            if (Object.keys(assetRefs) !== 0) {
+                let assetGets = []
+                Object.keys(assetRefs).forEach(key => {
+                    assetGet = assetRefs[key].get()
+                        .then(doc => {
+                            const asset = doc.data()
+                            asset.key = key
+                            return asset
+                        })
+                        .then(asset => {
+                            if (asset.type != null && asset.type === 'image') {
+                                // TODO:　呼び出し方法を考える
+                                asset.content = `https://storage.cloud.google.com/${bucketName}/${encodeURIComponent(asset.content)}`
+                            }
+                            return asset
+                        })
+                    assetGets.push(assetGet)
+                })
+
+                return Promise.all(assetGets)
+                    .then(assets => {
+                        data.assets = assets
+                        return data
+                    })
+
+            } else {
+                return data
+            }
+        })
+        .then(data => {
+
+            debug(data, __filename, __line)
+
+            // テンプレート側で変換？
+            data.issue = data.issue.toDate().toLocaleString()
+
+            // リファレンスで持つ？
+            const templateTypes = req.vessel.get('settings.general.template_types')
+            req.vessel.thing.templateTypes = templateTypes
+            req.vessel.thing.target = data
+            next()
         })
         .catch(err => {
             next(err)
@@ -89,26 +131,21 @@ module.exports.assets = (req, res, next) => {
     // get unique
     const segments = req.vessel.get('paths.segments')
     const target = segments.shift()
-/*  */
+    /*  */
     if (!target) {
         res.throwNotFound('not found!')
     }
 
     return admin.firestore().collection('things')
         .doc(target)
+        .collection(`assets`)
         .get()
-        .then(doc => {
-            // user is not found
-            if (!doc.exists) {
-                res.throwNotFound('not found!')
-            } else {
+        .then(docs => {
+            docs.forEach(doc => {
                 let data = doc.data()
-                req.vessel.thing.target = data
-                data.issue = data.issue.toDate().toLocaleString()
-                const templateTypes = req.vessel.get('settings.general.template_types')
-                req.vessel.thing.templateTypes = templateTypes
-                next()
-            }
+
+                debug(data, __filename, __line)
+            })
         })
         .catch(err => {
             next(err)

@@ -1,113 +1,45 @@
 {
-    "frontendBase": "http://localhost:5000",
-    "backendBase": "http://localhost:5000/backend",
-    "settings": {
-        "asset": {
-            "squarePrefix": "s_",
-            "portraitPrefix": "p_",
-            "landscapePrefix": "l_",
-            "portraitSize": "640x800",
-            "thumbPrefix": "t_",
-            "order": 1,
-            "squareSize": "640x640",
-            "landscapeSize": "800x640",
-            "thumbSize": "100x100"
-        },
-        "backend": {
-            "order": 2,
-            "firstPath": "backend",
-            "signinUnique": "signin",
-            "signinLImit": 86400,
-            "topUnique": "index",
-            "expiresIn": "432000000",
-            "lang": "ja"
-        },
-        "cart": {
-            "order": 3
-        },
-        "chat": {
-            "order": 4
-        },
-        "comment": {
-            "order": 5
-        },
-        "frontend": {
-            "lang": "ja",
-            "topUnique": "home",
-            "order": 6,
-            "signinUnique": "signin"
-        },
-        "general": {
-            "baseUrl": "fire-cms.com",
-            "roles": [
-                "owner",
-                "direct",
-                "admin",
-                "editor",
-                "writer",
-                "user"
-            ],
-            "order": 7,
-            "template_types": [
-                "part",
-                "wrap"
-            ]
-        },
-        "lang": {
-            "locales": [
-                "en",
-                "id",
-                "ja",
-                "nl",
-                "zh"
-            ],
-            "default": "ja",
-            "order": 8,
-            "dirname": "locales"
-        },
-        "mail": {
-            "order": 9
-        }
+    "unique": "home",
+    "summary": "home summary",
+    "issue": {
+        "_seconds": 1545750000,
+        "_nanoseconds": 0
     },
-    "templates": {
-        "footer": ""
+    "description": "home description",
+    "order": 1,
+    "keywords": [
+        " aaa",
+        "bbb"
+    ],
+    "roles": {
+        "owner": true,
+        "admin": true,
+        "user": true,
+        "writer": true,
+        "direct": true,
+        "editor": true
     },
-    "paths": {
-        "isFrontend": false,
-        "isBackend": true,
-        "segments": [],
-        "first": "backend",
-        "last": "user-update",
-        "number": "",
-        "unique": "user-update"
-    },
-    "thing": {
-        "unique": "user-update",
-        "roles": {
-            "owner": true,
-            "direct": true,
-            "admin": true,
-            "editor": true,
-            "writer": true,
-            "user": true
-        },
-        "contentType": "json",
-        "content": "",
-        "isSigninPage": false,
-        "isFreeRole": false,
-        "hasRole": true
-    },
-    "sign": {
-        "status": true,
-        "message": "sign in success."
-    },
-    "csrfToken": "",
-    "date": "",
-    "baseUrl": "http: //localhost:5000",
-    "user": {
-        "uid": "TFHZ4VowjVbtcxPnrvNzM1LtlNv1",
-        "name": "kohei",
-        "email": "kohei0728@gmail.com",
-        "role": "admin"
-    }
+    "name": "HOME",
+    "content": "",
+    "parents": [
+        "aaa",
+        "bbb"
+    ],
+    "id": "Q6bPvQM67MRrIbCH3HnG"
 }
+[
+    {
+        "content": "asdasdfasdf",
+        "unique": "text1",
+        "name": "text1",
+        "description": "",
+        "key": "text1"
+    },
+    {
+        "unique": "text2",
+        "name": "test2",
+        "description": "",
+        "content": "",
+        "key": "text2"
+    }
+]
