@@ -15,9 +15,6 @@ const successMessageJson = util.successMessageJson
 /* filter body */
 const filterDody = util.filterDody
 
-// TODO: どこで呼び出すか？
-const bucketName = admin.storage().bucket().name
-
 /**
  * thing index (things)
  */
@@ -67,16 +64,22 @@ module.exports.edit = (req, res, next) => {
         .doc(target)
         .get()
         .then(doc => {
-
             // user is not found
             if (!doc.exists) {
                 res.throwNotFound('not found!')
             }
 
+            // get doc data
             let data = doc.data()
+
+            // get assets, if it does not exist set empty object
             const assetRefs = data.assets != null ? data.assets : {}
 
+            // if there are asset
             if (Object.keys(assetRefs) !== 0) {
+
+                // if type is not file get  
+                const bucketName = admin.storage().bucket().name
                 let assetGets = []
                 Object.keys(assetRefs).forEach(key => {
                     assetGet = assetRefs[key].get()
@@ -87,11 +90,13 @@ module.exports.edit = (req, res, next) => {
                         })
                         .then(asset => {
                             if (asset.type != null && asset.type === 'image') {
-                                // TODO:　呼び出し方法を考える
-                                asset.content = `https://storage.cloud.google.com/${bucketName}/${encodeURIComponent(asset.content)}`
+                                // TODO: 呼び出し方法を考える
+                                asset.content = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(asset.content)}?alt=media`
+                                // asset.content = `https://storage.cloud.google.com/${bucketName}/${encodeURIComponent(asset.content)}`
                             }
                             return asset
                         })
+
                     assetGets.push(assetGet)
                 })
 

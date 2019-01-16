@@ -29,6 +29,11 @@
             <input id="parents" name="parents" class="target_item" type="text" value="{| parent |}">
         </div>
         {| /* |}
+        {| ^ target.parents |}
+        <div>
+            <input id="parents" name="parents" class="target_item" type="text" value="">
+        </div>
+        {| /^ |}
     </div>
     <div class="col1">
         <label for="issue">issue</label>
@@ -58,11 +63,16 @@
             <input id="keywords" name="keywords" class="target_item" type="text" value="{| keyword |}">
         </div>
         {| /* |}
+        {| ^ target.keywords |}
+        <div>
+            <input id="keywords" name="keywords" class="target_item" type="text" value="">
+        </div>
+        {| /^ |}
     </div>
     <div>
         {| * target.assets : key : asset |}
-        {|# equal(asset.type, "image")|}<img src="{| asset.content |}">{|/#|}
-        {|^ equal(asset.type, "image")|}<p>{| asset.content |}</p>{|/^|}
+        {|# equal(asset.type, "text")|}<p>{| asset.content |}</p>{|/#|}
+        {|^ equal(asset.type, "text")|}<img width="40" src="{| asset.content |}">{|/^|}
         {| /* |}
     </div>
     <div class="col1">
